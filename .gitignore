@@ -36,3 +36,9 @@ validasi-asset-laptop.csv
 *.sql
 *.bak
 /storage/framework/testing/
+
+# kunci penanda tangan update agent: TIDAK BOLEH masuk repositori (simpan di PC admin IT)
+agent-signing-*.xml
+.sima-agent-keys/
+*.pem
+*.pfx

@@ -129,6 +129,18 @@ class Qa61_SimaImportTest extends QaTestCase
         $this->assertSame([], $bad);
     }
 
+    public function test_old_sima_qr_urls_and_old_tags_still_open_the_asset(): void
+    {
+        $this->import();
+        $legacyId = 6;
+        $newId = DB::table('legacy_map')->where('entity', 'asset')->where('legacy_id', $legacyId)->value('new_id');
+        $view = \App\Filament\Resources\Assets\AssetResource::getUrl('view', ['record' => $newId]);
+
+        $this->get("/hardware/{$legacyId}")->assertRedirect($view);                       // QR lama: /hardware/<id SIMA>
+        $this->get('/hardware/bytag/LAP-006')->assertRedirect(\App\Filament\Resources\Assets\AssetResource::getUrl('view', ['record' => Asset::findByCode('LAP-006')]));   // tag lama via alias
+        $this->get('/hardware/999999')->assertRedirect('/admin');                          // tak dikenal: tidak 404 membingungkan
+    }
+
     public function test_holders_history_and_balancing_rows(): void
     {
         $this->import();

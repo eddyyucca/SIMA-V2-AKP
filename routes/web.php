@@ -11,6 +11,17 @@ Route::get('/s/{code}', fn (string $code) => redirect(\App\Filament\Pages\ScanPa
 
 require __DIR__ . '/requisition.php';
 
+// Kompatibilitas label SIMA lama: QR yang sudah tercetak berisi https://<domain>/hardware/<id SIMA> (dan /hardware/bytag/<tag>).
+// Dialihkan ke halaman aset yang sama (login / SSO diminta seperti biasa); id SIMA dipetakan lewat tabel legacy_map hasil impor.
+Route::get('/hardware/bytag/{tag}', function (string $tag) {
+    $asset = \App\Models\Asset::findByCode($tag);
+    return $asset ? redirect(\App\Filament\Resources\Assets\AssetResource::getUrl('view', ['record' => $asset])) : redirect('/admin');
+})->where('tag', '[^/]+');
+Route::get('/hardware/{id}', function (string $id) {
+    $newId = \Illuminate\Support\Facades\DB::table('legacy_map')->where('entity', 'asset')->where('legacy_id', $id)->value('new_id');
+    return $newId ? redirect(\App\Filament\Resources\Assets\AssetResource::getUrl('view', ['record' => $newId])) : redirect('/admin');
+})->whereNumber('id');
+
 Route::middleware([Authenticate::class])->group(function () {
     Route::get('/bast/{assignment}', [ReportController::class, 'bast'])->name('bast.download');
     Route::get('/bast/{assignment}/lihat', [ReportController::class, 'bastView'])->name('bast.view');

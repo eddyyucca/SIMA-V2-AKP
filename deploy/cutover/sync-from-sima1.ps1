@@ -69,7 +69,11 @@ if (-not $SkipFiles) {
 }
 
 $envs = "-e APP_CONFIG_CACHE=/tmp/no-config-cache.php -e LEGACY_DB_HOST=$Legacy -e LEGACY_DB_PORT=3306 -e LEGACY_DB_DATABASE=$SimaDbName -e LEGACY_DB_USERNAME=root -e LEGACY_DB_PASSWORD=$legacyPw"
-function Artisan($args) { & cmd /c "docker exec $envs $Asset runuser -u www-data -- php artisan $args 2>&1"; return $LASTEXITCODE }
+function Artisan([string]$ArtisanArgs) {
+  # keluaran ditampilkan langsung; yang dikembalikan HANYA kode keluar
+  & cmd /c "docker exec $envs $Asset runuser -u www-data -- php artisan $ArtisanArgs 2>&1" | Out-Host
+  return [int]$LASTEXITCODE
+}
 Run "docker exec $Asset chown -R www-data:www-data storage" | Out-Null
 
 Step ("4. sima:import " + $(if ($DryRun) { '(SIMULASI)' } else { '(NYATA)' }))
@@ -81,7 +85,6 @@ if ($DryRun) { Write-Host "`nSimulasi selesai; tidak ada yang berubah." -Foregro
 Step "5. sima:reconcile (gerbang)"
 $rc = Artisan 'sima:reconcile'
 Step "6. sima:smoke"
-Artisan 'sima:smoke --skip-network' | Out-Null
 $rc2 = Artisan 'sima:smoke --skip-network'
 
 if ($rc -ne 0) { Write-Host "`nREKONSILIASI ADA SELISIH: jangan lanjut cutover sebelum dijelaskan." -ForegroundColor Red; exit 1 }

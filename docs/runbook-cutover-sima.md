@@ -7,6 +7,45 @@ Peran: **Pelaksana** (Tim IT), **Pengamat** (orang kedua yang memeriksa gerbang)
 
 ---
 
+## 0. Cutover di server `lm-srv-01` (hostname SAMA: sima.lameruru.web.id → SIMA2)
+
+Kondisi per 2026-11-19 (sudah diverifikasi di server):
+
+| Item | Status |
+|---|---|
+| SIMA1 = stack `sima_akp` (web 8105, DB `sima_akp-db-1`), SIMA2 = stack `sima-v2-akp` (web 8116, URL uji `sima-v2.lameruru.web.id`) | berjalan |
+| Data SIMA1 sudah diimpor ke SIMA2 (725 aset, 128 token agent, ...), rekonsiliasi bersih | selesai; diperbarui dengan `sync-from-sima1.ps1` |
+| Versi paket agent: SIMA1 = SIMA2 = **v9**; tanda tangan v9 VALID terhadap kunci publik yang tertanam di agent | terverifikasi |
+| Kunci privat penanda tangan (RSA-3072) berpasangan dengan kunci publik agent | terverifikasi; file ada di PC admin, **bukan** di repo/server |
+| QR label lama (`/hardware/<id SIMA>`, `/hardware/bytag/<tag>`) dialihkan ke aset yang sama | terpasang + tes |
+| Domain diarahkan lewat **Cloudflare Tunnel** (token, dikelola di dashboard Cloudflare) | **dilakukan manual oleh pemilik akun Cloudflare** |
+
+### Hari-H (urut)
+
+1. **Latihan terakhir** (kapan saja sebelumnya): `powershell -ExecutionPolicy Bypass -File C:\akp-backup\sync-from-sima1.ps1 -DryRun`, lalu tanpa `-DryRun`. Gerbang: "Rekonsiliasi BERSIH".
+2. **Bekukan SIMA1** (baca-saja): `docker exec sima_akp-sima-1 php artisan down --retry=60`. Agent akan mencoba lagi sendiri (tidak error permanen).
+3. **Sinkron akhir**: `powershell -ExecutionPolicy Bypass -File C:\akp-backup\sync-from-sima1.ps1`. Gerbang: "Rekonsiliasi BERSIH" dan exit code 0. Jika selisih: STOP, `php artisan up` di SIMA1, selidiki.
+4. **Ubah env stack SIMA2** di Portainer: `ASSET_URL=https://sima.lameruru.web.id`, Pull and redeploy. (`APP_URL` dipakai untuk tautan di BAST/notifikasi.)
+5. **Cloudflare Zero Trust > Networks > Tunnels > (tunnel server) > Public hostname**: ubah `sima.lameruru.web.id` dari `http://localhost:8105` menjadi `http://localhost:8116`. (Pertahankan `sima-v2.lameruru.web.id` sampai selesai uji.)
+6. **Portal** (Admin > Modul > asset): ubah URL modul menjadi `https://sima.lameruru.web.id` (kode `asset` dan rahasia tetap). Modul lama `sima`, jika ada, dinonaktifkan.
+7. **HRIS**: `SIMA_URL=https://sima.lameruru.web.id`, `SIMA_API_TOKEN` = nilai di SIMA2; redeploy HRIS. Di SIMA2: `HRIS_API_TOKEN` = token layanan HRIS (64 karakter), lalu `php artisan hris:sync-employees` (simulasi) dan `--apply`.
+8. `php artisan sima:smoke` di kontainer `asset` (tanpa `--skip-network`), lalu uji manual (login Portal, buka `/hardware/<id lama>`, kartu Agent pada satu aset, Monitor Agent).
+9. **Pantau agent**: menu Monitor Agent; ≥95% lapor dalam 30 menit. Agent tidak perlu disentuh: URL, token, dan kunci update sama.
+
+### Rollback (dalam 48 jam)
+Cloudflare: kembalikan `sima.lameruru.web.id` ke `http://localhost:8105`; di SIMA1 `php artisan up`; HRIS `SIMA_URL` kembali. Token agent di SIMA1 tidak pernah diubah. Perubahan yang terjadi di SIMA2 selama itu tidak kembali otomatis (ekspor lalu input ulang).
+
+### Kunci penanda tangan update agent
+- Lokasi: `~/develop/sima/agent-signing-private.xml` (Mac pengembang). Standar rancangan: `%USERPROFILE%\.sima-agent-keys\agent-signing-private.xml` di PC admin IT. **Jangan** di repo, server, atau chat; `.gitignore` memblokirnya.
+- Merilis versi baru ke agent (tanpa mengubah kunci): naikkan `$AgentVersion` di `agent-client/agent-update.ps1`, jalankan `agent-installer\tools\publish-agent-update.ps1 -Version 10 -Notes "..."` (kunci privat dibaca dari PC admin), lalu `git add agent-updates && git commit && git push`; CI membangun image dan Anda tekan Pull and redeploy. Server hanya menyajikan berkas; keaslian diperiksa agent dengan kunci publiknya.
+- **Jangan ganti pasangan kunci** saat cutover: agent hanya menerima paket yang ditandatangani kunci yang tertanam di agent.
+
+### Yang berubah bagi pengguna
+- Tag aset memakai format baru (`AKP-IT-NB-0001`). Tag lama tetap berlaku sebagai alias: pindai barcode 1D lama atau cari tag lama di sistem tetap menemukan aset. QR lama tetap membuka aset yang sama. Label lama tidak perlu dicetak ulang.
+- Login lewat Portal (SSO); pengguna butuh akses modul `asset` di Portal.
+
+---
+
 ## A. Persiapan (H-14 sampai H-7)
 
 | # | Langkah | Gerbang |
