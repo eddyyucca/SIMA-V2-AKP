@@ -19,7 +19,8 @@ param(
   [string]$Asset   = 'sima-v2-akp-asset-1',      # kontainer web SIMA2
   [string]$AssetDb = 'sima-v2-akp-db-1',         # kontainer PostgreSQL SIMA2
   [string]$Network = 'sima-v2-akp_default',
-  [string]$Uploads = 'akp_sima_uploads',         # volume berkas SIMA1 (hanya dibaca)
+  [string]$Uploads = 'akp_sima_uploads',         # volume berkas publik SIMA1 (hanya dibaca)
+  [string]$Storage = 'akp_sima_storage',         # volume storage SIMA1: private_uploads = lampiran aset/PDF BAST (hanya dibaca)
   [string]$Backup  = 'C:\akp-backup',
   [switch]$DryRun,
   [switch]$SkipFiles
@@ -55,12 +56,13 @@ Write-Host '  salinan siap'
 
 $filesArg = ''
 if (-not $SkipFiles) {
-  Step "3. Salin foto aset (volume $Uploads, hanya baca)"
+  Step "3. Salin foto & lampiran aset (volume $Uploads + $Storage, hanya baca)"
   docker rm -f sima-files-tmp 2>$null | Out-Null
-  Run "docker create --name sima-files-tmp -v ${Uploads}:/u:ro ghcr.io/eddyyucca/akp-asset:latest true" | Out-Null
+  Run "docker create --name sima-files-tmp -v ${Uploads}:/u:ro -v ${Storage}:/s:ro ghcr.io/eddyyucca/akp-asset:latest true" | Out-Null
   Remove-Item -Recurse -Force "$Backup\sima-files" -ErrorAction SilentlyContinue
   New-Item -ItemType Directory -Force "$Backup\sima-files\public" | Out-Null
   Run "docker cp sima-files-tmp:/u $Backup\sima-files\public\uploads" | Out-Null
+  Run "docker cp sima-files-tmp:/s/private_uploads $Backup\sima-files\private_uploads" | Out-Null
   docker rm sima-files-tmp 2>$null | Out-Null
   Run "docker exec $Asset rm -rf /tmp/sima-files" | Out-Null
   Run "docker cp $Backup\sima-files ${Asset}:/tmp/sima-files" | Out-Null

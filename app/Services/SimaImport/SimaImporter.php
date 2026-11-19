@@ -585,6 +585,40 @@ class SimaImporter
             DB::table('assets')->where('id', $id)->update(['photo_path' => $dest]);
             $this->stat('files_photos');
         }
+        // foto aksesori
+        foreach ($this->L->table('accessories')->whereNotNull('image')->where('image', '<>', '')->get(['id', 'image']) as $a) {
+            $id = $this->map->get('accessory', $a->id); if (! $id || DB::table('accessories')->where('id', $id)->whereNotNull('photo_path')->exists()) continue;
+            $src = $find('accessories/' . $a->image);
+            if (! $src) { $this->stat('files_missing'); continue; }
+            $dest = 'accessories/legacy-' . $id . '-' . basename($src);
+            Storage::disk('public')->put($dest, file_get_contents($src));
+            DB::table('accessories')->where('id', $id)->update(['photo_path' => $dest]);
+            $this->stat('files_accessory_photos');
+        }
+        // lampiran aset SIMA (action_logs 'uploaded' -> private_uploads/assets/<berkas>): PDF -> arsip BAST bertanda tangan, gambar -> dokumen aset
+        $deleted = $this->L->table('action_logs')->where('item_type', self::ASSET)->where('action_type', 'upload deleted')->pluck('filename')->filter()->all();
+        foreach ($this->L->table('action_logs')->where('item_type', self::ASSET)->where('action_type', 'uploaded')->whereNotNull('filename')->where('filename', '<>', '')->orderBy('id')->get() as $l) {
+            $id = $this->map->get('asset', $l->item_id); if (! $id) continue;
+            $src = $find('assets/' . $l->filename);
+            if (! $src) { if (! in_array($l->filename, $deleted, true)) $this->stat('files_missing'); continue; }
+            $name = basename($src);
+            $when = $this->dt($l->created_at) ?? now()->toDateTimeString();
+            if (strtolower(pathinfo($name, PATHINFO_EXTENSION)) === 'pdf') {
+                $dest = 'bast-signed/legacy/' . $id . '-' . $name;
+                if (DB::table('asset_bast_files')->where('path', $dest)->exists()) continue;
+                Storage::disk('local')->put($dest, file_get_contents($src));
+                DB::table('asset_bast_files')->insert(['asset_id' => $id, 'path' => $dest, 'note' => 'Lampiran SIMA: ' . $name, 'created_at' => $when, 'updated_at' => $when]);
+                $this->stat('files_attachments_pdf');
+            } else {
+                $dest = 'assets/documents/legacy-' . $id . '-' . $name;
+                $docs = json_decode((string) DB::table('assets')->where('id', $id)->value('documents'), true) ?: [];
+                if (in_array($dest, $docs, true)) continue;
+                Storage::disk('public')->put($dest, file_get_contents($src));
+                $docs[] = $dest;
+                DB::table('assets')->where('id', $id)->update(['documents' => json_encode($docs)]);
+                $this->stat('files_attachments_other');
+            }
+        }
         foreach ($this->L->table('bast_histories')->whereNotNull('pdf_path')->get() as $b) {
             $asg = $this->map->get('bast_history', $b->id); if (! $asg) continue;
             $src = $find($b->pdf_path);
