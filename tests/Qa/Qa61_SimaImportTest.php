@@ -179,6 +179,37 @@ class Qa61_SimaImportTest extends QaTestCase
         $this->assertSame(2, DB::table('license_seats')->whereIn('license_id', DB::table('legacy_map')->where('entity', 'license')->pluck('new_id'))->count());   // seat kosong tidak ikut
     }
 
+    public function test_reimport_resyncs_untouched_stock_but_never_overwrites_changes_made_here(): void
+    {
+        $this->import();
+        $L = DB::connection('legacy');
+        $nid = fn (string $e) => DB::table('legacy_map')->where('entity', $e)->value('new_id');
+        $row = fn (string $table, string $e) => DB::table($table)->where('id', $nid($e))->first();
+
+        // SIMA1 masih beroperasi: +5 mouse, consumable terpakai sampai 3, 1 RAM dipasang lagi
+        $L->table('accessories')->update(['qty' => 15]);
+        $L->table('consumables')->update(['qty' => 3]);
+        $L->table('components_assets')->where('component_id', DB::table('legacy_map')->where('entity', 'component')->value('legacy_id'))->update(['assigned_qty' => 3]);
+        $imp = $this->import();
+
+        $acc = $row('accessories', 'accessory'); $comp = $row('components', 'component');
+        $this->assertSame([15, 12], [(int) $acc->qty_total, (int) $acc->qty_available]);
+        $this->assertSame(3, (int) $row('consumables', 'consumable')->qty);
+        $this->assertSame([6, 3], [(int) $comp->qty_total, (int) $comp->qty_available]);
+        $this->assertGreaterThanOrEqual(3, $imp->stats['stock_resynced']);
+        // saldo = jumlah gerakan (riwayat tetap konsisten dengan angka)
+        $this->assertSame(15, (int) DB::table('stock_movements')->where('stockable_type', \App\Models\Accessory::class)->where('stockable_id', $acc->id)->whereIn('type', ['in', 'adjust'])->sum('qty'));
+
+        // perubahan dari aplikasi ini TIDAK ditimpa oleh impor ulang berikutnya
+        $conId = $nid('consumable');
+        DB::table('stock_movements')->insert(['stockable_type' => \App\Models\Consumable::class, 'stockable_id' => $conId, 'type' => 'out', 'qty' => 1, 'reason' => 'Dipakai di sistem baru', 'moved_at' => now(), 'created_at' => now(), 'updated_at' => now()]);
+        DB::table('consumables')->where('id', $conId)->update(['qty' => 2]);
+        $L->table('consumables')->update(['qty' => 9]);
+        $imp2 = $this->import();
+        $this->assertSame(2, (int) $row('consumables', 'consumable')->qty);
+        $this->assertSame(1, $imp2->stats['stock_resync_skipped']);
+    }
+
     public function test_legacy_agent_tokens_keep_working_and_revoked_stay_revoked(): void
     {
         $this->import();

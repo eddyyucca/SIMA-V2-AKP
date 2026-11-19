@@ -383,10 +383,10 @@ class SimaImporter
         // accessories
         $out = $this->L->table('accessories_checkout')->get()->groupBy('accessory_id');
         foreach ($this->L->table('accessories')->orderBy('id')->get() as $r) {
-            if ($this->map->get('accessory', $r->id)) continue;
             $held = ($out[$r->id] ?? collect())->where('assigned_type', self::USER);
             $total = max((int) $r->qty, 0);   // Snipe: accessories.qty = jumlah TOTAL; baris checkout = yang sedang dipegang
             $avail = max($total - $held->count(), 0);
+            if ($existing = $this->map->get('accessory', $r->id)) { $this->resyncStock(\App\Models\Accessory::class, 'accessories', $existing, $total, $avail, 'return'); continue; }
             $brand = $r->manufacturer_id ? $this->L->table('manufacturers')->where('id', $r->manufacturer_id)->value('name') : null;
             $id = DB::table('accessories')->insertGetId([
                 'name' => $this->s($r->name) ?: 'Tanpa nama', 'category_id' => $this->map->get('category', $r->category_id) ?: $this->fallbackCategory('accessory'),
@@ -403,8 +403,8 @@ class SimaImporter
         }
         // consumables: saldo saat ini
         foreach ($this->L->table('consumables')->orderBy('id')->get() as $r) {
-            if ($this->map->get('consumable', $r->id)) continue;
             $qty = max((int) $r->qty, 0);
+            if ($existing = $this->map->get('consumable', $r->id)) { $this->resyncStock(\App\Models\Consumable::class, 'consumables', $existing, $qty, $qty, null); continue; }
             $id = DB::table('consumables')->insertGetId([
                 'name' => $this->s($r->name) ?: 'Tanpa nama', 'category_id' => $this->map->get('category', $r->category_id) ?: $this->fallbackCategory('consumable'), 'unit' => 'pcs',
                 'qty' => $qty, 'min_qty' => (int) $r->min_amt, 'location_id' => $this->map->get('location', $r->location_id), 'unit_price' => (float) $r->purchase_cost,
@@ -417,9 +417,9 @@ class SimaImporter
         // components + yang terpasang di aset
         $inst = $this->L->table('components_assets')->get()->groupBy('component_id');
         foreach ($this->L->table('components')->orderBy('id')->get() as $r) {
-            if ($this->map->get('component', $r->id)) continue;
             $total = max((int) $r->qty, 0);
             $installed = ($inst[$r->id] ?? collect())->sum('assigned_qty');
+            if ($existing = $this->map->get('component', $r->id)) { $this->resyncStock(\App\Models\Component::class, 'components', $existing, $total, max($total - $installed, 0), 'uninstall'); continue; }
             $serial = $this->s($r->serial);
             if ($serial) {
                 $k = mb_strtolower($serial);
@@ -439,6 +439,36 @@ class SimaImporter
             }
             $this->stat('components');
         }
+    }
+
+    /**
+     * Impor ulang: samakan stok dengan SIMA bila SIMA1 masih beroperasi sejak impor sebelumnya. Hanya untuk barang yang BELUM diubah di aplikasi ini
+     * (semua gerakan stoknya berasal dari impor); selisih dicatat sebagai gerakan stok, bukan menimpa diam-diam. Bila sudah ada gerakan dari aplikasi
+     * ini, stok TIDAK disentuh dan dilaporkan.
+     * $availUp = jenis gerakan untuk menambah "tersedia" tanpa mengubah total (return / uninstall); null = barang habis pakai (hanya total).
+     */
+    private function resyncStock(string $model, string $table, int $id, int $total, int $avail, ?string $availUp): void
+    {
+        $row = DB::table($table)->where('id', $id)->first();
+        $isConsumable = $availUp === null;
+        $curTotal = (int) ($isConsumable ? $row->qty : $row->qty_total);
+        $curAvail = (int) ($isConsumable ? $row->qty : $row->qty_available);
+        if ($curTotal === $total && $curAvail === $avail) return;
+
+        $own = DB::table('stock_movements')->where('stockable_type', $model)->where('stockable_id', $id)->where(fn ($q) => $q->whereNull('reason')->orWhere(fn ($r) => $r->where('reason', 'not like', '%(impor SIMA)')->where('reason', 'not like', '%(sinkron SIMA)')))->exists();
+        if ($own) { $this->warn("Stok {$table} #{$id} berbeda dari SIMA tetapi sudah diubah di aplikasi ini; tidak ditimpa."); $this->stat('stock_resync_skipped'); return; }
+
+        $dTotal = $total - $curTotal;
+        $reason = 'Penyesuaian saldo (sinkron SIMA)';
+        if ($dTotal !== 0) $this->movement('adjust', $model, $id, $dTotal, ['reason' => $reason]);
+        if ($isConsumable) { DB::table($table)->where('id', $id)->update(['qty' => $total, 'updated_at' => now()]); }
+        else {
+            $dRest = ($avail - $curAvail) - $dTotal;   // perubahan "tersedia" di luar penambahan total (barang dipegang / dipasang)
+            if ($dRest < 0) $this->movement($model === \App\Models\Component::class ? 'install' : 'out', $model, $id, -$dRest, ['reason' => $reason]);
+            elseif ($dRest > 0) $this->movement($availUp, $model, $id, $dRest, ['reason' => $reason]);
+            DB::table($table)->where('id', $id)->update(['qty_total' => $total, 'qty_available' => $avail, 'updated_at' => now()]);
+        }
+        $this->stat('stock_resynced');
     }
 
     private function fallbackCategory(string $type): int
