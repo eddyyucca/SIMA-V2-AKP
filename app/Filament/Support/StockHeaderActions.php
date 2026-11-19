@@ -122,7 +122,7 @@ class StockHeaderActions
             Select::make('employee_id')->searchable()->native(false)->options(fn () => Employee::where('status', 'active')->orderBy('name')->pluck('name', 'id'))
                 ->label(fn (Get $get) => ($get('target') ?? 'employee') === 'employee' ? 'Karyawan penerima' : 'PIC penerima (opsional)')
                 ->required(fn (Get $get) => ($get('target') ?? 'employee') === 'employee'),
-            Select::make('department_id')->label('Department')->searchable()->native(false)->options(fn () => Department::orderBy('name')->pluck('name', 'id'))
+            Select::make('department_id')->label('Department')->searchable()->native(false)->options(fn () => Department::options())
                 ->visible(fn (Get $get) => $get('target') === 'department')->required(fn (Get $get) => $get('target') === 'department'),
             Select::make('location_id')->label('Lokasi')->searchable()->native(false)->options(fn () => \App\Models\Location::orderBy('name')->pluck('name', 'id'))
                 ->visible(fn (Get $get) => $get('target') === 'location')->required(fn (Get $get) => $get('target') === 'location'),

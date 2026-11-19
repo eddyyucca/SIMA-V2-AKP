@@ -10,6 +10,7 @@ class Employee extends Model
 {
     use SoftDeletes, Audited;
     protected $guarded = [];
+    protected $casts = ['hris_missing_at' => 'datetime', 'hris_synced_at' => 'datetime'];
 
     protected static function booted(): void
     {

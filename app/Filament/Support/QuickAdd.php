@@ -59,6 +59,7 @@ class QuickAdd
 
     public static function department(Select $select): Select
     {
+        if (\App\Support\Hris::managed()) return $select->helperText('Department dari HRIS (tidak bisa ditambah manual).');
         return self::wire($select, Department::class, [self::nameInput('Nama department', 'departments')],
             fn (array $d) => Department::create(['name' => trim($d['name'])])->id, 'Tambah department baru');
     }

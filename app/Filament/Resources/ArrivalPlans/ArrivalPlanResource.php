@@ -52,7 +52,7 @@ class ArrivalPlanResource extends Resource
                 ->rules([Rule::unique('employees', 'email')])
                 ->validationMessages(['unique' => 'Email ini sudah dipakai karyawan atau rencana lain.']),
             TextInput::make('phone')->label('Telepon')->tel()->maxLength(50),
-            \App\Filament\Support\QuickAdd::department(Select::make('department_id')->label('Department')->options(fn () => Department::orderBy('name')->pluck('name', 'id'))),
+            \App\Filament\Support\QuickAdd::department(Select::make('department_id')->label('Department')->options(fn () => Department::options())),
             TextInput::make('position')->label('Jabatan')->maxLength(100),
             \App\Filament\Support\QuickAdd::location(Select::make('location_id')->label('Lokasi onsite')->required()->options(fn () => Location::orderBy('name')->pluck('name', 'id'))),
             DatePicker::make('arrival_date')->label('Tanggal tiba')->required()->minDate(fn (string $operation) => $operation === 'create' ? today() : null),

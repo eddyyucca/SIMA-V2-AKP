@@ -75,7 +75,7 @@ class AccessoryHandoverResource extends Resource
                 ->helperText(fn (Get $get) => $get('type') === 'return'
                     ? 'Pilih asal barang. Hanya accessories yang masih berada di sana yang bisa dikembalikan.'
                     : 'Karyawan = tercatat sebagai pemegang barang. Department / Lokasi / Perangkat (kelengkapan laptop, PC, dll.) = tercatat keluar ke tujuan itu dan bisa dikembalikan. Dokumen BAST tetap dibuat.'),
-            Select::make('department_id')->label('Department tujuan')->searchable()->native(false)->options(fn () => Department::orderBy('name')->pluck('name', 'id'))
+            Select::make('department_id')->label('Department tujuan')->searchable()->native(false)->options(fn () => Department::options())
                 ->visible(fn (Get $get) => $get('target_type') === 'department')->required(fn (Get $get) => $get('target_type') === 'department')->live(),
             Select::make('location_id')->label('Lokasi tujuan')->searchable()->native(false)->options(fn () => Location::orderBy('name')->pluck('name', 'id'))
                 ->visible(fn (Get $get) => $get('target_type') === 'location')->required(fn (Get $get) => $get('target_type') === 'location')->live(),

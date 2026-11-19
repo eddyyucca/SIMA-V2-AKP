@@ -30,7 +30,7 @@ class EmployeeLookupTest extends RequisitionTestCase
         $d = $this->dept('Finance');
         $e = $this->makeRequester(['name' => 'Rahma Lookup', 'nik' => '55501', 'position' => 'Akuntan', 'department_id' => $d->id, 'email' => 'rahma.secret@x.test', 'phone' => '0812']);
         $r = $this->loginAs($this->makeUser('user'))->getJson('/requisition/lookup/employees?q=Rahma Lookup')->assertOk();
-        $this->assertSame(['id' => $e->id, 'name' => 'Rahma Lookup', 'nik' => '55501', 'position' => 'Akuntan', 'department' => $d->name], $r->json('data.0'));
+        $this->assertSame(['id' => $e->id, 'name' => 'Rahma Lookup', 'nik' => '55501', 'position' => 'Akuntan', 'department' => $d->name, 'section' => null], $r->json('data.0'));
         $this->assertStringNotContainsString('rahma.secret', $r->getContent());          // tidak ada email / data pribadi lain
         $this->assertStringNotContainsString('0812', $r->getContent());
     }

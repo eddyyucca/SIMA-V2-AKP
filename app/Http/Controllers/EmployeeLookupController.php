@@ -41,6 +41,7 @@ class EmployeeLookupController extends Controller
             'nik' => $e->nik ?: null,
             'position' => $e->position ?: null,
             'department' => $e->department?->name,
+            'section' => $e->section ?: null,
         ])->values()]);
     }
 

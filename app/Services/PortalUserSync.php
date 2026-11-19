@@ -62,7 +62,7 @@ class PortalUserSync
         if ($h = $this->hris->find($nik)) return $this->sync->upsert($h)['employee'];
 
         return Employee::create([
-            'nik' => $nik, 'name' => $p->name, 'status' => 'active',
+            'nik' => $nik, 'name' => $p->name, 'status' => 'active', 'hris_missing_at' => \App\Support\Hris::managed() ? now() : null,
             'email' => $p->email && ! Employee::withTrashed()->where('email', $p->email)->exists() ? $p->email : 'nik' . Str::slug($nik) . '@akp.test',
         ]);
     }

@@ -58,6 +58,13 @@ class SimaSmoke extends Command
             $this->check('HRIS terhubung', $all ? 'OK' : 'GAGAL', $all ? $all->count() . ' karyawan terbaca' : (string) EmployeeDirectory::$lastError);
         }
 
+        if (\App\Support\Hris::managed()) {
+            $missing = DB::table('employees')->whereNotNull('hris_missing_at')->whereNull('deleted_at')->count();
+            $never = DB::table('employees')->whereNull('hris_synced_at')->whereNull('hris_missing_at')->whereNull('deleted_at')->count();
+            $this->check('Karyawan semuanya dari HRIS', ($missing + $never) === 0 ? 'OK' : 'PERINGATAN', ($missing + $never) === 0 ? '' : "{$missing} tidak ada di HRIS, {$never} belum pernah sinkron: jalankan hris:sync-employees --apply dan putuskan sisanya (filter Sumber data di menu Karyawan)");
+            $this->check('Department dari HRIS', DB::table('departments')->whereNotNull('hris_synced_at')->exists() ? 'OK' : 'PERINGATAN', 'belum ada department hasil sinkron HRIS');
+        }
+
         // API untuk HRIS + agent
         $this->check('Token API untuk HRIS (SIMA_API_TOKEN)', filled(config('services.integration_token')) ? 'OK' : 'PERINGATAN', filled(config('services.integration_token')) ? '' : 'kosong: panel aset di offboarding HRIS mati');
         $m = app(AgentUpdateManifest::class)->read();

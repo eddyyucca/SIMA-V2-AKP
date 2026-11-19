@@ -42,6 +42,14 @@ class EmployeeResource extends Resource
     protected static ?string $pluralModelLabel = 'Karyawan';
     protected static ?string $recordTitleAttribute = 'name';
 
+    // HRIS terhubung = data karyawan hanya dari sinkronisasi HRIS (tidak ada tambah/ubah/hapus/impor manual).
+    public static function canCreate(): bool { return ! \App\Support\Hris::managed() && parent::canCreate(); }
+    public static function canEdit($record): bool { return ! \App\Support\Hris::managed() && parent::canEdit($record); }
+    public static function canDelete($record): bool { return ! \App\Support\Hris::managed() && parent::canDelete($record); }
+    public static function canDeleteAny(): bool { return ! \App\Support\Hris::managed() && parent::canDeleteAny(); }
+    public static function canRestore($record): bool { return ! \App\Support\Hris::managed() && parent::canRestore($record); }
+    public static function canForceDelete($record): bool { return false; }
+
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
@@ -53,7 +61,7 @@ class EmployeeResource extends Resource
             TextInput::make('name')->label('Nama')->required(),
             TextInput::make('email')->email()->required()->unique(ignoreRecord: true),
             TextInput::make('position')->label('Jabatan')->maxLength(100),
-            \App\Filament\Support\QuickAdd::department(Select::make('department_id')->label('Department')->options(fn () => Department::orderBy('name')->pluck('name', 'id'))),
+            \App\Filament\Support\QuickAdd::department(Select::make('department_id')->label('Department')->options(fn () => Department::options())),
             TextInput::make('phone')->label('Telepon')->tel(),
             Select::make('status')->options(['active' => 'Aktif', 'resigned' => 'Resigned'])->default('active')->required(),
             Section::make('Akses login')->columnSpanFull()->description('IT menentukan siapa yang boleh masuk ke aplikasi. Karyawan tanpa akses login tetap tercatat dan bisa memegang aset.')->schema([
@@ -114,6 +122,11 @@ class EmployeeResource extends Resource
             TextColumn::make('name')->label('Nama')->searchable()->sortable(),
             TextColumn::make('position')->label('Jabatan')->searchable()->placeholder('-'),
             TextColumn::make('department.name')->label('Department')->placeholder('-'),
+            TextColumn::make('section')->label('Section')->searchable()->placeholder('-')->toggleable(),
+            TextColumn::make('business_unit')->label('Business Unit')->placeholder('-')->toggleable(isToggledHiddenByDefault: true),
+            TextColumn::make('hris_source')->label('Sumber')->badge()->toggleable()
+                ->state(fn (Employee $r) => $r->hris_missing_at ? 'Tidak ada di HRIS' : ($r->hris_synced_at ? 'HRIS' : 'Belum sinkron'))
+                ->color(fn ($state) => match ($state) { 'HRIS' => 'success', 'Tidak ada di HRIS' => 'danger', default => 'gray' }),
             TextColumn::make('email')->searchable()->toggleable(),
             TextColumn::make('status')->badge()->color(fn ($state) => $state === 'active' ? 'success' : 'danger'),
             TextColumn::make('login')->label('Login')->badge()
@@ -130,6 +143,12 @@ class EmployeeResource extends Resource
                     default => $query,
                 }),
             SelectFilter::make('department_id')->label('Department')->relationship('department', 'name'),
+            SelectFilter::make('hris_state')->label('Sumber data')->options(['hris' => 'Dari HRIS', 'missing' => 'Tidak ada di HRIS (perlu diputuskan)'])
+                ->query(fn ($query, array $data) => match ($data['value'] ?? null) {
+                    'hris' => $query->whereNotNull('hris_synced_at')->whereNull('hris_missing_at'),
+                    'missing' => $query->whereNotNull('hris_missing_at'),
+                    default => $query,
+                }),
             TrashedFilter::make(),
         ])->recordActions([
             Action::make('items')->label('Barang')->icon(Heroicon::OutlinedInboxStack)

@@ -94,6 +94,7 @@ class Qa20_EmployeeNikLicensePriceBastTest extends QaTestCase
         );
         foreach ($files as $f) {
             if (! preg_match('/\.php$/', $f->getFilename())) continue;
+            if (str_contains($f->getPathname(), 'Services/Hris/')) continue;   // nama field API HRIS ('division') dipetakan ke kolom business_unit
             $this->assertStringNotContainsStringIgnoringCase('divisi', file_get_contents($f->getPathname()), $f->getPathname());
         }
         $this->as($this->admin());

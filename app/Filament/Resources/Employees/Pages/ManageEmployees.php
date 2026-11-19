@@ -35,7 +35,7 @@ class ManageEmployees extends ManageRecords
         return [
             ActionGroup::make([
                 Action::make('import')->label('Import dari Excel / CSV')->icon(Heroicon::OutlinedArrowUpTray)
-                    ->visible(fn () => auth()->user()->can('create', Employee::class))
+                    ->visible(fn () => ! \App\Support\Hris::managed() && auth()->user()->can('create', Employee::class))
                     ->modalHeading('Import karyawan')
                     ->modalDescription('Data dicocokkan lewat NIK (atau email bila NIK kosong): yang sudah ada diperbarui, yang belum ada ditambahkan. Sel kosong tidak menimpa data lama. Baris bermasalah dilewati dan dilaporkan.')
                     ->modalSubmitActionLabel('Import')
@@ -75,9 +75,19 @@ class ManageEmployees extends ManageRecords
                 Action::make('export_csv')->label('Export CSV')->icon(Heroicon::OutlinedArrowDownTray)
                     ->action(fn () => $this->export(ExcelType::CSV, 'csv')),
                 Action::make('template')->label('Unduh template import (CSV)')->icon(Heroicon::OutlinedDocumentText)
+                    ->visible(fn () => ! \App\Support\Hris::managed())
                     ->url(route('template.employees')),
             ])->label('Import / Export')->icon(Heroicon::OutlinedArrowsUpDown)->button()->color('gray'),
-            CreateAction::make()->using(fn (array $data, $action) => EmployeeResource::saveWithAccount(null, $data, $action)),
+            Action::make('sync_hris')->label('Sinkron dari HRIS')->icon(Heroicon::OutlinedArrowPath)->color('primary')
+                ->visible(fn () => \App\Support\Hris::managed() && auth()->user()->can('manage master'))
+                ->requiresConfirmation()->modalHeading('Sinkron karyawan dari HRIS?')
+                ->modalDescription(\App\Support\Hris::LOCKED_MESSAGE . ' Sinkron berjalan otomatis tiap malam; tombol ini untuk menjalankannya sekarang. Tidak ada data yang dihapus.')
+                ->action(function () {
+                    $exit = \Illuminate\Support\Facades\Artisan::call('hris:sync-employees', ['--apply' => true]);
+                    $out = trim(\Illuminate\Support\Facades\Artisan::output());
+                    Notification::make()->title($exit === 0 ? 'Sinkron HRIS selesai' : 'Sinkron HRIS gagal')->body(mb_substr($out, 0, 600))->{$exit === 0 ? 'success' : 'danger'}()->persistent()->send();
+                }),
+            CreateAction::make()->visible(fn () => ! \App\Support\Hris::managed())->using(fn (array $data, $action) => EmployeeResource::saveWithAccount(null, $data, $action)),
         ];
     }
 }

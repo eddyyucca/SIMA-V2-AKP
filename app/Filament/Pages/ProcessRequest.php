@@ -65,7 +65,7 @@ class ProcessRequest extends Page
 
     public function departments(): array
     {
-        $list = Department::orderBy('name')->pluck('name')->all();
+        $list = Department::names();
         $cur = $this->fields['department'] ?? '';
         if ($cur !== '' && ! in_array($cur, $list, true)) array_unshift($list, $cur);
         return $list;

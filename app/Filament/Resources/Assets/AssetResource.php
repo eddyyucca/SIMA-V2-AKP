@@ -209,7 +209,7 @@ class AssetResource extends Resource
                 SelectFilter::make('brand_id')->label('Merek')->options(fn () => Brand::orderBy('name')->pluck('name', 'id')),
                 SelectFilter::make('location_id')->label('Lokasi')->relationship('location', 'name'),
                 SelectFilter::make('department')->label('Department')
-                    ->options(fn () => \App\Models\Department::pluck('name', 'id'))
+                    ->options(fn () => \App\Models\Department::options())
                     ->query(fn ($query, $data) => $data['value'] ? $query->whereHas('employee', fn ($e) => $e->where('department_id', $data['value'])) : $query),
                 TrashedFilter::make(),
             ])
