@@ -1,0 +1,5370 @@
+{
+    "assets": {
+        "columns": [
+            [
+                "id",
+                "integer"
+            ],
+            [
+                "name",
+                "string"
+            ],
+            [
+                "asset_tag",
+                "string"
+            ],
+            [
+                "model_id",
+                "integer"
+            ],
+            [
+                "serial",
+                "string"
+            ],
+            [
+                "purchase_date",
+                "string"
+            ],
+            [
+                "asset_eol_date",
+                "string"
+            ],
+            [
+                "eol_explicit",
+                "integer"
+            ],
+            [
+                "purchase_cost",
+                "float"
+            ],
+            [
+                "order_number",
+                "string"
+            ],
+            [
+                "assigned_to",
+                "integer"
+            ],
+            [
+                "notes",
+                "string"
+            ],
+            [
+                "image",
+                "string"
+            ],
+            [
+                "created_by",
+                "integer"
+            ],
+            [
+                "created_at",
+                "string"
+            ],
+            [
+                "updated_at",
+                "string"
+            ],
+            [
+                "physical",
+                "integer"
+            ],
+            [
+                "deleted_at",
+                "string"
+            ],
+            [
+                "status_id",
+                "integer"
+            ],
+            [
+                "archived",
+                "integer"
+            ],
+            [
+                "warranty_months",
+                "integer"
+            ],
+            [
+                "depreciate",
+                "integer"
+            ],
+            [
+                "supplier_id",
+                "integer"
+            ],
+            [
+                "requestable",
+                "integer"
+            ],
+            [
+                "rtd_location_id",
+                "integer"
+            ],
+            [
+                "_snipeit_mac_address_1",
+                "string"
+            ],
+            [
+                "accepted",
+                "string"
+            ],
+            [
+                "last_checkout",
+                "string"
+            ],
+            [
+                "last_checkin",
+                "string"
+            ],
+            [
+                "expected_checkin",
+                "string"
+            ],
+            [
+                "company_id",
+                "integer"
+            ],
+            [
+                "assigned_type",
+                "string"
+            ],
+            [
+                "last_audit_date",
+                "string"
+            ],
+            [
+                "agent_last_seen",
+                "string"
+            ],
+            [
+                "agent_status",
+                "string"
+            ],
+            [
+                "next_audit_date",
+                "string"
+            ],
+            [
+                "location_id",
+                "integer"
+            ],
+            [
+                "checkin_counter",
+                "integer"
+            ],
+            [
+                "checkout_counter",
+                "integer"
+            ],
+            [
+                "requests_counter",
+                "integer"
+            ],
+            [
+                "byod",
+                "integer"
+            ]
+        ],
+        "rows": [
+            {
+                "id": 1,
+                "name": "PC-1",
+                "asset_tag": "AKP-IT-NB-0001",
+                "model_id": 1,
+                "serial": "SN-1",
+                "purchase_date": "2024-05-10",
+                "asset_eol_date": null,
+                "eol_explicit": 0,
+                "purchase_cost": "12501000.00",
+                "order_number": "PO-1",
+                "assigned_to": 1,
+                "notes": null,
+                "image": null,
+                "created_by": null,
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "physical": 1,
+                "deleted_at": null,
+                "status_id": 1,
+                "archived": 0,
+                "warranty_months": 36,
+                "depreciate": null,
+                "supplier_id": 1,
+                "requestable": 0,
+                "rtd_location_id": 1,
+                "_snipeit_mac_address_1": null,
+                "accepted": null,
+                "last_checkout": "2024-06-01 09:00:00",
+                "last_checkin": null,
+                "expected_checkin": null,
+                "company_id": null,
+                "assigned_type": "App\\Models\\User",
+                "last_audit_date": null,
+                "agent_last_seen": "2026-11-18 08:00:00",
+                "agent_status": "online",
+                "next_audit_date": null,
+                "location_id": null,
+                "checkin_counter": 0,
+                "checkout_counter": 0,
+                "requests_counter": 0,
+                "byod": 0
+            },
+            {
+                "id": 2,
+                "name": "PC-2",
+                "asset_tag": "AKP-IT-NB-0002",
+                "model_id": 1,
+                "serial": "SN-2",
+                "purchase_date": "2024-05-10",
+                "asset_eol_date": null,
+                "eol_explicit": 0,
+                "purchase_cost": "12502000.00",
+                "order_number": "PO-2",
+                "assigned_to": 2,
+                "notes": null,
+                "image": null,
+                "created_by": null,
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "physical": 1,
+                "deleted_at": null,
+                "status_id": 1,
+                "archived": 0,
+                "warranty_months": 36,
+                "depreciate": null,
+                "supplier_id": 1,
+                "requestable": 0,
+                "rtd_location_id": 1,
+                "_snipeit_mac_address_1": null,
+                "accepted": null,
+                "last_checkout": "2024-06-01 09:00:00",
+                "last_checkin": null,
+                "expected_checkin": null,
+                "company_id": null,
+                "assigned_type": "App\\Models\\User",
+                "last_audit_date": null,
+                "agent_last_seen": "2026-11-18 08:00:00",
+                "agent_status": "online",
+                "next_audit_date": null,
+                "location_id": null,
+                "checkin_counter": 0,
+                "checkout_counter": 0,
+                "requests_counter": 0,
+                "byod": 0
+            },
+            {
+                "id": 3,
+                "name": "PC-3",
+                "asset_tag": "AKP-IT-NB-0003",
+                "model_id": 1,
+                "serial": "SN-3",
+                "purchase_date": "2024-05-10",
+                "asset_eol_date": null,
+                "eol_explicit": 0,
+                "purchase_cost": "12503000.00",
+                "order_number": "PO-3",
+                "assigned_to": 3,
+                "notes": null,
+                "image": null,
+                "created_by": null,
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "physical": 1,
+                "deleted_at": null,
+                "status_id": 1,
+                "archived": 0,
+                "warranty_months": 36,
+                "depreciate": null,
+                "supplier_id": 1,
+                "requestable": 0,
+                "rtd_location_id": 1,
+                "_snipeit_mac_address_1": null,
+                "accepted": null,
+                "last_checkout": "2024-06-01 09:00:00",
+                "last_checkin": null,
+                "expected_checkin": null,
+                "company_id": null,
+                "assigned_type": "App\\Models\\User",
+                "last_audit_date": null,
+                "agent_last_seen": "2026-11-18 08:00:00",
+                "agent_status": "online",
+                "next_audit_date": null,
+                "location_id": null,
+                "checkin_counter": 0,
+                "checkout_counter": 0,
+                "requests_counter": 0,
+                "byod": 0
+            },
+            {
+                "id": 4,
+                "name": "PC-4",
+                "asset_tag": "AKP-IT-NB-0004",
+                "model_id": 1,
+                "serial": "SN-4",
+                "purchase_date": "2024-05-10",
+                "asset_eol_date": null,
+                "eol_explicit": 0,
+                "purchase_cost": "12504000.00",
+                "order_number": "PO-4",
+                "assigned_to": 4,
+                "notes": null,
+                "image": null,
+                "created_by": null,
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "physical": 1,
+                "deleted_at": null,
+                "status_id": 1,
+                "archived": 0,
+                "warranty_months": 36,
+                "depreciate": null,
+                "supplier_id": 1,
+                "requestable": 0,
+                "rtd_location_id": 1,
+                "_snipeit_mac_address_1": null,
+                "accepted": null,
+                "last_checkout": "2024-06-01 09:00:00",
+                "last_checkin": null,
+                "expected_checkin": null,
+                "company_id": null,
+                "assigned_type": "App\\Models\\User",
+                "last_audit_date": null,
+                "agent_last_seen": "2026-11-18 08:00:00",
+                "agent_status": "online",
+                "next_audit_date": null,
+                "location_id": null,
+                "checkin_counter": 0,
+                "checkout_counter": 0,
+                "requests_counter": 0,
+                "byod": 0
+            },
+            {
+                "id": 5,
+                "name": "PC-5",
+                "asset_tag": "AKP-IT-NB-0005",
+                "model_id": 1,
+                "serial": "SN-5",
+                "purchase_date": "2024-05-10",
+                "asset_eol_date": null,
+                "eol_explicit": 0,
+                "purchase_cost": "12505000.00",
+                "order_number": "PO-5",
+                "assigned_to": 5,
+                "notes": null,
+                "image": null,
+                "created_by": null,
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "physical": 1,
+                "deleted_at": null,
+                "status_id": 1,
+                "archived": 0,
+                "warranty_months": 36,
+                "depreciate": null,
+                "supplier_id": 1,
+                "requestable": 0,
+                "rtd_location_id": 1,
+                "_snipeit_mac_address_1": null,
+                "accepted": null,
+                "last_checkout": "2024-06-01 09:00:00",
+                "last_checkin": null,
+                "expected_checkin": null,
+                "company_id": null,
+                "assigned_type": "App\\Models\\User",
+                "last_audit_date": null,
+                "agent_last_seen": null,
+                "agent_status": "never_reported",
+                "next_audit_date": null,
+                "location_id": null,
+                "checkin_counter": 0,
+                "checkout_counter": 0,
+                "requests_counter": 0,
+                "byod": 0
+            },
+            {
+                "id": 6,
+                "name": "PC-6",
+                "asset_tag": "LAP-006",
+                "model_id": 1,
+                "serial": "SN-6",
+                "purchase_date": "2024-05-10",
+                "asset_eol_date": null,
+                "eol_explicit": 0,
+                "purchase_cost": "12506000.00",
+                "order_number": "PO-6",
+                "assigned_to": 2,
+                "notes": null,
+                "image": null,
+                "created_by": null,
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "physical": 1,
+                "deleted_at": null,
+                "status_id": 1,
+                "archived": 0,
+                "warranty_months": 36,
+                "depreciate": null,
+                "supplier_id": 1,
+                "requestable": 0,
+                "rtd_location_id": 1,
+                "_snipeit_mac_address_1": null,
+                "accepted": null,
+                "last_checkout": null,
+                "last_checkin": null,
+                "expected_checkin": null,
+                "company_id": null,
+                "assigned_type": "App\\Models\\User",
+                "last_audit_date": null,
+                "agent_last_seen": null,
+                "agent_status": "never_reported",
+                "next_audit_date": null,
+                "location_id": null,
+                "checkin_counter": 0,
+                "checkout_counter": 0,
+                "requests_counter": 0,
+                "byod": 0
+            },
+            {
+                "id": 7,
+                "name": "PC-7",
+                "asset_tag": "LAP-007",
+                "model_id": 1,
+                "serial": "SN-7",
+                "purchase_date": "2024-05-10",
+                "asset_eol_date": null,
+                "eol_explicit": 0,
+                "purchase_cost": "12507000.00",
+                "order_number": "PO-7",
+                "assigned_to": 3,
+                "notes": null,
+                "image": null,
+                "created_by": null,
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "physical": 1,
+                "deleted_at": null,
+                "status_id": 1,
+                "archived": 0,
+                "warranty_months": 36,
+                "depreciate": null,
+                "supplier_id": 1,
+                "requestable": 0,
+                "rtd_location_id": 1,
+                "_snipeit_mac_address_1": null,
+                "accepted": null,
+                "last_checkout": null,
+                "last_checkin": null,
+                "expected_checkin": null,
+                "company_id": null,
+                "assigned_type": "App\\Models\\User",
+                "last_audit_date": null,
+                "agent_last_seen": null,
+                "agent_status": "never_reported",
+                "next_audit_date": null,
+                "location_id": null,
+                "checkin_counter": 0,
+                "checkout_counter": 0,
+                "requests_counter": 0,
+                "byod": 0
+            },
+            {
+                "id": 8,
+                "name": "PC-8",
+                "asset_tag": "LAP-008",
+                "model_id": 1,
+                "serial": "SN-8",
+                "purchase_date": "2024-05-10",
+                "asset_eol_date": null,
+                "eol_explicit": 0,
+                "purchase_cost": "12508000.00",
+                "order_number": "PO-8",
+                "assigned_to": 7,
+                "notes": null,
+                "image": null,
+                "created_by": null,
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "physical": 1,
+                "deleted_at": null,
+                "status_id": 1,
+                "archived": 0,
+                "warranty_months": 36,
+                "depreciate": null,
+                "supplier_id": 1,
+                "requestable": 0,
+                "rtd_location_id": 1,
+                "_snipeit_mac_address_1": null,
+                "accepted": null,
+                "last_checkout": null,
+                "last_checkin": null,
+                "expected_checkin": null,
+                "company_id": null,
+                "assigned_type": "App\\Models\\User",
+                "last_audit_date": null,
+                "agent_last_seen": null,
+                "agent_status": "never_reported",
+                "next_audit_date": null,
+                "location_id": null,
+                "checkin_counter": 0,
+                "checkout_counter": 0,
+                "requests_counter": 0,
+                "byod": 0
+            },
+            {
+                "id": 9,
+                "name": "PC-9",
+                "asset_tag": "LAP-009",
+                "model_id": 1,
+                "serial": "SN-9",
+                "purchase_date": "2024-05-10",
+                "asset_eol_date": null,
+                "eol_explicit": 0,
+                "purchase_cost": "12509000.00",
+                "order_number": "PO-9",
+                "assigned_to": 3,
+                "notes": null,
+                "image": null,
+                "created_by": null,
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "physical": 1,
+                "deleted_at": null,
+                "status_id": 1,
+                "archived": 0,
+                "warranty_months": 36,
+                "depreciate": null,
+                "supplier_id": 1,
+                "requestable": 0,
+                "rtd_location_id": 1,
+                "_snipeit_mac_address_1": null,
+                "accepted": null,
+                "last_checkout": null,
+                "last_checkin": null,
+                "expected_checkin": null,
+                "company_id": null,
+                "assigned_type": "App\\Models\\Location",
+                "last_audit_date": null,
+                "agent_last_seen": null,
+                "agent_status": "never_reported",
+                "next_audit_date": null,
+                "location_id": null,
+                "checkin_counter": 0,
+                "checkout_counter": 0,
+                "requests_counter": 0,
+                "byod": 0
+            },
+            {
+                "id": 10,
+                "name": "PC-10",
+                "asset_tag": "LAP-010",
+                "model_id": 1,
+                "serial": "SN-10",
+                "purchase_date": "2024-05-10",
+                "asset_eol_date": null,
+                "eol_explicit": 0,
+                "purchase_cost": "12510000.00",
+                "order_number": "PO-10",
+                "assigned_to": null,
+                "notes": null,
+                "image": null,
+                "created_by": null,
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "physical": 1,
+                "deleted_at": null,
+                "status_id": 1,
+                "archived": 0,
+                "warranty_months": 36,
+                "depreciate": null,
+                "supplier_id": 1,
+                "requestable": 0,
+                "rtd_location_id": 1,
+                "_snipeit_mac_address_1": null,
+                "accepted": null,
+                "last_checkout": null,
+                "last_checkin": null,
+                "expected_checkin": null,
+                "company_id": null,
+                "assigned_type": null,
+                "last_audit_date": null,
+                "agent_last_seen": null,
+                "agent_status": "never_reported",
+                "next_audit_date": null,
+                "location_id": null,
+                "checkin_counter": 0,
+                "checkout_counter": 0,
+                "requests_counter": 0,
+                "byod": 0
+            },
+            {
+                "id": 11,
+                "name": "PC-11",
+                "asset_tag": "LAP-011",
+                "model_id": 1,
+                "serial": "SN-11",
+                "purchase_date": "2024-05-10",
+                "asset_eol_date": null,
+                "eol_explicit": 0,
+                "purchase_cost": "12511000.00",
+                "order_number": "PO-11",
+                "assigned_to": null,
+                "notes": null,
+                "image": null,
+                "created_by": null,
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "physical": 1,
+                "deleted_at": null,
+                "status_id": 1,
+                "archived": 0,
+                "warranty_months": 36,
+                "depreciate": null,
+                "supplier_id": 1,
+                "requestable": 0,
+                "rtd_location_id": 1,
+                "_snipeit_mac_address_1": null,
+                "accepted": null,
+                "last_checkout": null,
+                "last_checkin": null,
+                "expected_checkin": null,
+                "company_id": null,
+                "assigned_type": null,
+                "last_audit_date": null,
+                "agent_last_seen": null,
+                "agent_status": "never_reported",
+                "next_audit_date": null,
+                "location_id": null,
+                "checkin_counter": 0,
+                "checkout_counter": 0,
+                "requests_counter": 0,
+                "byod": 0
+            },
+            {
+                "id": 12,
+                "name": "PC-12",
+                "asset_tag": "LAP-012",
+                "model_id": 1,
+                "serial": "SN-12",
+                "purchase_date": "2024-05-10",
+                "asset_eol_date": null,
+                "eol_explicit": 0,
+                "purchase_cost": "12512000.00",
+                "order_number": "PO-12",
+                "assigned_to": null,
+                "notes": null,
+                "image": null,
+                "created_by": null,
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "physical": 1,
+                "deleted_at": null,
+                "status_id": 1,
+                "archived": 0,
+                "warranty_months": 36,
+                "depreciate": null,
+                "supplier_id": 1,
+                "requestable": 0,
+                "rtd_location_id": 1,
+                "_snipeit_mac_address_1": null,
+                "accepted": null,
+                "last_checkout": null,
+                "last_checkin": null,
+                "expected_checkin": null,
+                "company_id": null,
+                "assigned_type": null,
+                "last_audit_date": null,
+                "agent_last_seen": null,
+                "agent_status": "never_reported",
+                "next_audit_date": null,
+                "location_id": null,
+                "checkin_counter": 0,
+                "checkout_counter": 0,
+                "requests_counter": 0,
+                "byod": 0
+            },
+            {
+                "id": 13,
+                "name": "PC-13",
+                "asset_tag": "LAP-013",
+                "model_id": 1,
+                "serial": "SN-13",
+                "purchase_date": "2024-05-10",
+                "asset_eol_date": null,
+                "eol_explicit": 0,
+                "purchase_cost": "12513000.00",
+                "order_number": "PO-13",
+                "assigned_to": null,
+                "notes": null,
+                "image": null,
+                "created_by": null,
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "physical": 1,
+                "deleted_at": null,
+                "status_id": 1,
+                "archived": 0,
+                "warranty_months": 36,
+                "depreciate": null,
+                "supplier_id": 1,
+                "requestable": 0,
+                "rtd_location_id": 1,
+                "_snipeit_mac_address_1": null,
+                "accepted": null,
+                "last_checkout": null,
+                "last_checkin": null,
+                "expected_checkin": null,
+                "company_id": null,
+                "assigned_type": null,
+                "last_audit_date": null,
+                "agent_last_seen": null,
+                "agent_status": "never_reported",
+                "next_audit_date": null,
+                "location_id": null,
+                "checkin_counter": 0,
+                "checkout_counter": 0,
+                "requests_counter": 0,
+                "byod": 0
+            },
+            {
+                "id": 14,
+                "name": "PC-14",
+                "asset_tag": "LAP-014",
+                "model_id": 1,
+                "serial": "SN-14",
+                "purchase_date": "2024-05-10",
+                "asset_eol_date": null,
+                "eol_explicit": 0,
+                "purchase_cost": "12514000.00",
+                "order_number": "PO-14",
+                "assigned_to": null,
+                "notes": null,
+                "image": null,
+                "created_by": null,
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "physical": 1,
+                "deleted_at": null,
+                "status_id": 1,
+                "archived": 0,
+                "warranty_months": 36,
+                "depreciate": null,
+                "supplier_id": 1,
+                "requestable": 0,
+                "rtd_location_id": 1,
+                "_snipeit_mac_address_1": null,
+                "accepted": null,
+                "last_checkout": null,
+                "last_checkin": null,
+                "expected_checkin": null,
+                "company_id": null,
+                "assigned_type": null,
+                "last_audit_date": null,
+                "agent_last_seen": null,
+                "agent_status": "never_reported",
+                "next_audit_date": null,
+                "location_id": null,
+                "checkin_counter": 0,
+                "checkout_counter": 0,
+                "requests_counter": 0,
+                "byod": 0
+            },
+            {
+                "id": 15,
+                "name": "PC-15",
+                "asset_tag": "LAP-015",
+                "model_id": 1,
+                "serial": "SN-15",
+                "purchase_date": "2024-05-10",
+                "asset_eol_date": null,
+                "eol_explicit": 0,
+                "purchase_cost": "12515000.00",
+                "order_number": "PO-15",
+                "assigned_to": null,
+                "notes": null,
+                "image": null,
+                "created_by": null,
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "physical": 1,
+                "deleted_at": null,
+                "status_id": 1,
+                "archived": 0,
+                "warranty_months": 36,
+                "depreciate": null,
+                "supplier_id": 1,
+                "requestable": 0,
+                "rtd_location_id": 1,
+                "_snipeit_mac_address_1": null,
+                "accepted": null,
+                "last_checkout": null,
+                "last_checkin": null,
+                "expected_checkin": null,
+                "company_id": null,
+                "assigned_type": null,
+                "last_audit_date": null,
+                "agent_last_seen": null,
+                "agent_status": "never_reported",
+                "next_audit_date": null,
+                "location_id": null,
+                "checkin_counter": 0,
+                "checkout_counter": 0,
+                "requests_counter": 0,
+                "byod": 0
+            },
+            {
+                "id": 16,
+                "name": "PC-16",
+                "asset_tag": "LAP-016",
+                "model_id": 1,
+                "serial": "SN-16",
+                "purchase_date": "2024-05-10",
+                "asset_eol_date": null,
+                "eol_explicit": 0,
+                "purchase_cost": "12516000.00",
+                "order_number": "PO-16",
+                "assigned_to": null,
+                "notes": null,
+                "image": null,
+                "created_by": null,
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "physical": 1,
+                "deleted_at": null,
+                "status_id": 2,
+                "archived": 0,
+                "warranty_months": 36,
+                "depreciate": null,
+                "supplier_id": 1,
+                "requestable": 0,
+                "rtd_location_id": 1,
+                "_snipeit_mac_address_1": null,
+                "accepted": null,
+                "last_checkout": null,
+                "last_checkin": null,
+                "expected_checkin": null,
+                "company_id": null,
+                "assigned_type": null,
+                "last_audit_date": null,
+                "agent_last_seen": null,
+                "agent_status": "never_reported",
+                "next_audit_date": null,
+                "location_id": null,
+                "checkin_counter": 0,
+                "checkout_counter": 0,
+                "requests_counter": 0,
+                "byod": 0
+            },
+            {
+                "id": 17,
+                "name": "PC-17",
+                "asset_tag": "LAP-017",
+                "model_id": 1,
+                "serial": "SN-17",
+                "purchase_date": "2024-05-10",
+                "asset_eol_date": null,
+                "eol_explicit": 0,
+                "purchase_cost": "12517000.00",
+                "order_number": "PO-17",
+                "assigned_to": null,
+                "notes": null,
+                "image": null,
+                "created_by": null,
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "physical": 1,
+                "deleted_at": null,
+                "status_id": 3,
+                "archived": 0,
+                "warranty_months": 36,
+                "depreciate": null,
+                "supplier_id": 1,
+                "requestable": 0,
+                "rtd_location_id": 1,
+                "_snipeit_mac_address_1": null,
+                "accepted": null,
+                "last_checkout": null,
+                "last_checkin": null,
+                "expected_checkin": null,
+                "company_id": null,
+                "assigned_type": null,
+                "last_audit_date": null,
+                "agent_last_seen": null,
+                "agent_status": "never_reported",
+                "next_audit_date": null,
+                "location_id": null,
+                "checkin_counter": 0,
+                "checkout_counter": 0,
+                "requests_counter": 0,
+                "byod": 0
+            },
+            {
+                "id": 18,
+                "name": "PC-18",
+                "asset_tag": "LAP-018",
+                "model_id": 1,
+                "serial": "SN-18",
+                "purchase_date": "2024-05-10",
+                "asset_eol_date": null,
+                "eol_explicit": 0,
+                "purchase_cost": "12518000.00",
+                "order_number": "PO-18",
+                "assigned_to": null,
+                "notes": null,
+                "image": null,
+                "created_by": null,
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "physical": 1,
+                "deleted_at": null,
+                "status_id": 4,
+                "archived": 0,
+                "warranty_months": 36,
+                "depreciate": null,
+                "supplier_id": 1,
+                "requestable": 0,
+                "rtd_location_id": 1,
+                "_snipeit_mac_address_1": null,
+                "accepted": null,
+                "last_checkout": null,
+                "last_checkin": null,
+                "expected_checkin": null,
+                "company_id": null,
+                "assigned_type": null,
+                "last_audit_date": null,
+                "agent_last_seen": null,
+                "agent_status": "never_reported",
+                "next_audit_date": null,
+                "location_id": null,
+                "checkin_counter": 0,
+                "checkout_counter": 0,
+                "requests_counter": 0,
+                "byod": 0
+            },
+            {
+                "id": 19,
+                "name": "PC-19",
+                "asset_tag": "LAP-019",
+                "model_id": 1,
+                "serial": "SN-19",
+                "purchase_date": "2024-05-10",
+                "asset_eol_date": null,
+                "eol_explicit": 0,
+                "purchase_cost": "12519000.00",
+                "order_number": "PO-19",
+                "assigned_to": null,
+                "notes": null,
+                "image": null,
+                "created_by": null,
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "physical": 1,
+                "deleted_at": null,
+                "status_id": 5,
+                "archived": 0,
+                "warranty_months": 36,
+                "depreciate": null,
+                "supplier_id": 1,
+                "requestable": 0,
+                "rtd_location_id": 1,
+                "_snipeit_mac_address_1": null,
+                "accepted": null,
+                "last_checkout": null,
+                "last_checkin": null,
+                "expected_checkin": null,
+                "company_id": null,
+                "assigned_type": null,
+                "last_audit_date": null,
+                "agent_last_seen": null,
+                "agent_status": "never_reported",
+                "next_audit_date": null,
+                "location_id": null,
+                "checkin_counter": 0,
+                "checkout_counter": 0,
+                "requests_counter": 0,
+                "byod": 0
+            },
+            {
+                "id": 20,
+                "name": "PC-20",
+                "asset_tag": "LAP-020",
+                "model_id": 1,
+                "serial": "SN-20",
+                "purchase_date": "2024-05-10",
+                "asset_eol_date": null,
+                "eol_explicit": 0,
+                "purchase_cost": "12520000.00",
+                "order_number": "PO-20",
+                "assigned_to": 5,
+                "notes": null,
+                "image": null,
+                "created_by": null,
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "physical": 1,
+                "deleted_at": null,
+                "status_id": 6,
+                "archived": 0,
+                "warranty_months": 36,
+                "depreciate": null,
+                "supplier_id": 1,
+                "requestable": 0,
+                "rtd_location_id": 1,
+                "_snipeit_mac_address_1": null,
+                "accepted": null,
+                "last_checkout": null,
+                "last_checkin": null,
+                "expected_checkin": null,
+                "company_id": null,
+                "assigned_type": "App\\Models\\User",
+                "last_audit_date": null,
+                "agent_last_seen": null,
+                "agent_status": "never_reported",
+                "next_audit_date": null,
+                "location_id": null,
+                "checkin_counter": 0,
+                "checkout_counter": 0,
+                "requests_counter": 0,
+                "byod": 0
+            },
+            {
+                "id": 21,
+                "name": "PC-21",
+                "asset_tag": "LAP-021",
+                "model_id": 1,
+                "serial": "DUP-1",
+                "purchase_date": "2024-05-10",
+                "asset_eol_date": null,
+                "eol_explicit": 0,
+                "purchase_cost": "12521000.00",
+                "order_number": "PO-21",
+                "assigned_to": null,
+                "notes": null,
+                "image": null,
+                "created_by": null,
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "physical": 1,
+                "deleted_at": null,
+                "status_id": 1,
+                "archived": 0,
+                "warranty_months": 36,
+                "depreciate": null,
+                "supplier_id": 1,
+                "requestable": 0,
+                "rtd_location_id": 1,
+                "_snipeit_mac_address_1": null,
+                "accepted": null,
+                "last_checkout": null,
+                "last_checkin": null,
+                "expected_checkin": null,
+                "company_id": null,
+                "assigned_type": null,
+                "last_audit_date": null,
+                "agent_last_seen": null,
+                "agent_status": "never_reported",
+                "next_audit_date": null,
+                "location_id": null,
+                "checkin_counter": 0,
+                "checkout_counter": 0,
+                "requests_counter": 0,
+                "byod": 0
+            },
+            {
+                "id": 22,
+                "name": "PC-22",
+                "asset_tag": "LAP-022",
+                "model_id": 1,
+                "serial": "dup-1",
+                "purchase_date": "2024-05-10",
+                "asset_eol_date": null,
+                "eol_explicit": 0,
+                "purchase_cost": "12522000.00",
+                "order_number": "PO-22",
+                "assigned_to": null,
+                "notes": null,
+                "image": null,
+                "created_by": null,
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "physical": 1,
+                "deleted_at": null,
+                "status_id": 1,
+                "archived": 0,
+                "warranty_months": 36,
+                "depreciate": null,
+                "supplier_id": 1,
+                "requestable": 0,
+                "rtd_location_id": 1,
+                "_snipeit_mac_address_1": null,
+                "accepted": null,
+                "last_checkout": null,
+                "last_checkin": null,
+                "expected_checkin": null,
+                "company_id": null,
+                "assigned_type": null,
+                "last_audit_date": null,
+                "agent_last_seen": null,
+                "agent_status": "never_reported",
+                "next_audit_date": null,
+                "location_id": null,
+                "checkin_counter": 0,
+                "checkout_counter": 0,
+                "requests_counter": 0,
+                "byod": 0
+            },
+            {
+                "id": 23,
+                "name": "PC-23",
+                "asset_tag": "LAP-023",
+                "model_id": 1,
+                "serial": null,
+                "purchase_date": "2024-05-10",
+                "asset_eol_date": null,
+                "eol_explicit": 0,
+                "purchase_cost": "12523000.00",
+                "order_number": "PO-23",
+                "assigned_to": null,
+                "notes": null,
+                "image": null,
+                "created_by": null,
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "physical": 1,
+                "deleted_at": null,
+                "status_id": 1,
+                "archived": 0,
+                "warranty_months": 36,
+                "depreciate": null,
+                "supplier_id": 1,
+                "requestable": 0,
+                "rtd_location_id": 1,
+                "_snipeit_mac_address_1": null,
+                "accepted": null,
+                "last_checkout": null,
+                "last_checkin": null,
+                "expected_checkin": null,
+                "company_id": null,
+                "assigned_type": null,
+                "last_audit_date": null,
+                "agent_last_seen": null,
+                "agent_status": "never_reported",
+                "next_audit_date": null,
+                "location_id": null,
+                "checkin_counter": 0,
+                "checkout_counter": 0,
+                "requests_counter": 0,
+                "byod": 0
+            },
+            {
+                "id": 24,
+                "name": "PC-24",
+                "asset_tag": "LAP-024",
+                "model_id": null,
+                "serial": "SN-24",
+                "purchase_date": "2024-05-10",
+                "asset_eol_date": null,
+                "eol_explicit": 0,
+                "purchase_cost": "12524000.00",
+                "order_number": "PO-24",
+                "assigned_to": null,
+                "notes": null,
+                "image": null,
+                "created_by": null,
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "physical": 1,
+                "deleted_at": null,
+                "status_id": 1,
+                "archived": 0,
+                "warranty_months": 36,
+                "depreciate": null,
+                "supplier_id": 1,
+                "requestable": 0,
+                "rtd_location_id": 1,
+                "_snipeit_mac_address_1": null,
+                "accepted": null,
+                "last_checkout": null,
+                "last_checkin": null,
+                "expected_checkin": null,
+                "company_id": null,
+                "assigned_type": null,
+                "last_audit_date": null,
+                "agent_last_seen": null,
+                "agent_status": "never_reported",
+                "next_audit_date": null,
+                "location_id": null,
+                "checkin_counter": 0,
+                "checkout_counter": 0,
+                "requests_counter": 0,
+                "byod": 0
+            },
+            {
+                "id": 25,
+                "name": "PC-25",
+                "asset_tag": "LAP-025",
+                "model_id": 1,
+                "serial": "SN-25",
+                "purchase_date": "2024-05-10",
+                "asset_eol_date": null,
+                "eol_explicit": 0,
+                "purchase_cost": "12525000.00",
+                "order_number": "PO-25",
+                "assigned_to": null,
+                "notes": null,
+                "image": null,
+                "created_by": null,
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "physical": 1,
+                "deleted_at": "2025-02-01 00:00:00",
+                "status_id": 4,
+                "archived": 0,
+                "warranty_months": 36,
+                "depreciate": null,
+                "supplier_id": 1,
+                "requestable": 0,
+                "rtd_location_id": 1,
+                "_snipeit_mac_address_1": null,
+                "accepted": null,
+                "last_checkout": null,
+                "last_checkin": null,
+                "expected_checkin": null,
+                "company_id": null,
+                "assigned_type": null,
+                "last_audit_date": null,
+                "agent_last_seen": null,
+                "agent_status": "never_reported",
+                "next_audit_date": null,
+                "location_id": null,
+                "checkin_counter": 0,
+                "checkout_counter": 0,
+                "requests_counter": 0,
+                "byod": 0
+            },
+            {
+                "id": 26,
+                "name": "PC-26",
+                "asset_tag": "MON-001",
+                "model_id": 3,
+                "serial": "SN-26",
+                "purchase_date": "2024-05-10",
+                "asset_eol_date": null,
+                "eol_explicit": 0,
+                "purchase_cost": "2500000.00",
+                "order_number": "PO-26",
+                "assigned_to": null,
+                "notes": null,
+                "image": null,
+                "created_by": null,
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "physical": 1,
+                "deleted_at": null,
+                "status_id": 1,
+                "archived": 0,
+                "warranty_months": 36,
+                "depreciate": null,
+                "supplier_id": 1,
+                "requestable": 0,
+                "rtd_location_id": 1,
+                "_snipeit_mac_address_1": null,
+                "accepted": null,
+                "last_checkout": null,
+                "last_checkin": null,
+                "expected_checkin": null,
+                "company_id": null,
+                "assigned_type": null,
+                "last_audit_date": null,
+                "agent_last_seen": null,
+                "agent_status": "never_reported",
+                "next_audit_date": null,
+                "location_id": null,
+                "checkin_counter": 0,
+                "checkout_counter": 0,
+                "requests_counter": 0,
+                "byod": 0
+            },
+            {
+                "id": 27,
+                "name": "PC-27",
+                "asset_tag": "MON-002",
+                "model_id": 3,
+                "serial": "SN-27",
+                "purchase_date": "2024-05-10",
+                "asset_eol_date": null,
+                "eol_explicit": 0,
+                "purchase_cost": "2500000.00",
+                "order_number": "PO-27",
+                "assigned_to": null,
+                "notes": null,
+                "image": null,
+                "created_by": null,
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "physical": 1,
+                "deleted_at": null,
+                "status_id": 1,
+                "archived": 0,
+                "warranty_months": 36,
+                "depreciate": null,
+                "supplier_id": 1,
+                "requestable": 0,
+                "rtd_location_id": 1,
+                "_snipeit_mac_address_1": null,
+                "accepted": null,
+                "last_checkout": null,
+                "last_checkin": null,
+                "expected_checkin": null,
+                "company_id": null,
+                "assigned_type": null,
+                "last_audit_date": null,
+                "agent_last_seen": null,
+                "agent_status": "never_reported",
+                "next_audit_date": null,
+                "location_id": null,
+                "checkin_counter": 0,
+                "checkout_counter": 0,
+                "requests_counter": 0,
+                "byod": 0
+            },
+            {
+                "id": 28,
+                "name": "PC-28",
+                "asset_tag": "MON-003",
+                "model_id": 3,
+                "serial": "SN-28",
+                "purchase_date": "2024-05-10",
+                "asset_eol_date": null,
+                "eol_explicit": 0,
+                "purchase_cost": "2500000.00",
+                "order_number": "PO-28",
+                "assigned_to": null,
+                "notes": null,
+                "image": null,
+                "created_by": null,
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "physical": 1,
+                "deleted_at": null,
+                "status_id": 1,
+                "archived": 0,
+                "warranty_months": 36,
+                "depreciate": null,
+                "supplier_id": 1,
+                "requestable": 0,
+                "rtd_location_id": 1,
+                "_snipeit_mac_address_1": null,
+                "accepted": null,
+                "last_checkout": null,
+                "last_checkin": null,
+                "expected_checkin": null,
+                "company_id": null,
+                "assigned_type": null,
+                "last_audit_date": null,
+                "agent_last_seen": null,
+                "agent_status": "never_reported",
+                "next_audit_date": null,
+                "location_id": null,
+                "checkin_counter": 0,
+                "checkout_counter": 0,
+                "requests_counter": 0,
+                "byod": 0
+            },
+            {
+                "id": 29,
+                "name": "PC-29",
+                "asset_tag": "MON-004",
+                "model_id": 3,
+                "serial": "SN-29",
+                "purchase_date": "2024-05-10",
+                "asset_eol_date": null,
+                "eol_explicit": 0,
+                "purchase_cost": "2500000.00",
+                "order_number": "PO-29",
+                "assigned_to": null,
+                "notes": null,
+                "image": null,
+                "created_by": null,
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "physical": 1,
+                "deleted_at": null,
+                "status_id": 1,
+                "archived": 0,
+                "warranty_months": 36,
+                "depreciate": null,
+                "supplier_id": 1,
+                "requestable": 0,
+                "rtd_location_id": 1,
+                "_snipeit_mac_address_1": null,
+                "accepted": null,
+                "last_checkout": null,
+                "last_checkin": null,
+                "expected_checkin": null,
+                "company_id": null,
+                "assigned_type": null,
+                "last_audit_date": null,
+                "agent_last_seen": null,
+                "agent_status": "never_reported",
+                "next_audit_date": null,
+                "location_id": null,
+                "checkin_counter": 0,
+                "checkout_counter": 0,
+                "requests_counter": 0,
+                "byod": 0
+            }
+        ]
+    },
+    "users": {
+        "columns": [
+            [
+                "id",
+                "integer"
+            ],
+            [
+                "email",
+                "string"
+            ],
+            [
+                "password",
+                "string"
+            ],
+            [
+                "permissions",
+                "string"
+            ],
+            [
+                "activated",
+                "integer"
+            ],
+            [
+                "created_by",
+                "integer"
+            ],
+            [
+                "activation_code",
+                "string"
+            ],
+            [
+                "activated_at",
+                "string"
+            ],
+            [
+                "last_login",
+                "string"
+            ],
+            [
+                "persist_code",
+                "string"
+            ],
+            [
+                "reset_password_code",
+                "string"
+            ],
+            [
+                "first_name",
+                "string"
+            ],
+            [
+                "last_name",
+                "string"
+            ],
+            [
+                "display_name",
+                "string"
+            ],
+            [
+                "created_at",
+                "string"
+            ],
+            [
+                "updated_at",
+                "string"
+            ],
+            [
+                "deleted_at",
+                "string"
+            ],
+            [
+                "website",
+                "string"
+            ],
+            [
+                "country",
+                "string"
+            ],
+            [
+                "gravatar",
+                "string"
+            ],
+            [
+                "location_id",
+                "integer"
+            ],
+            [
+                "phone",
+                "string"
+            ],
+            [
+                "mobile",
+                "string"
+            ],
+            [
+                "jobtitle",
+                "string"
+            ],
+            [
+                "manager_id",
+                "integer"
+            ],
+            [
+                "employee_num",
+                "string"
+            ],
+            [
+                "avatar",
+                "string"
+            ],
+            [
+                "username",
+                "string"
+            ],
+            [
+                "notes",
+                "string"
+            ],
+            [
+                "company_id",
+                "integer"
+            ],
+            [
+                "remember_token",
+                "string"
+            ],
+            [
+                "ldap_import",
+                "integer"
+            ],
+            [
+                "locale",
+                "string"
+            ],
+            [
+                "show_in_list",
+                "integer"
+            ],
+            [
+                "two_factor_secret",
+                "string"
+            ],
+            [
+                "two_factor_enrolled",
+                "integer"
+            ],
+            [
+                "two_factor_optin",
+                "integer"
+            ],
+            [
+                "department_id",
+                "integer"
+            ],
+            [
+                "hris_section",
+                "string"
+            ],
+            [
+                "address",
+                "string"
+            ],
+            [
+                "city",
+                "string"
+            ],
+            [
+                "state",
+                "string"
+            ],
+            [
+                "zip",
+                "string"
+            ],
+            [
+                "skin",
+                "string"
+            ],
+            [
+                "nav_link_color",
+                "string"
+            ],
+            [
+                "link_light_color",
+                "string"
+            ],
+            [
+                "link_dark_color",
+                "string"
+            ],
+            [
+                "remote",
+                "integer"
+            ],
+            [
+                "start_date",
+                "string"
+            ],
+            [
+                "end_date",
+                "string"
+            ],
+            [
+                "scim_externalid",
+                "string"
+            ],
+            [
+                "autoassign_licenses",
+                "integer"
+            ],
+            [
+                "vip",
+                "integer"
+            ],
+            [
+                "enable_sounds",
+                "integer"
+            ],
+            [
+                "enable_confetti",
+                "integer"
+            ]
+        ],
+        "rows": [
+            {
+                "id": 1,
+                "email": "3260001@akp.test",
+                "password": "x",
+                "permissions": null,
+                "activated": 1,
+                "created_by": null,
+                "activation_code": null,
+                "activated_at": null,
+                "last_login": null,
+                "persist_code": null,
+                "reset_password_code": null,
+                "first_name": "Andi",
+                "last_name": "Uji",
+                "display_name": null,
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "deleted_at": null,
+                "website": null,
+                "country": null,
+                "gravatar": null,
+                "location_id": null,
+                "phone": null,
+                "mobile": null,
+                "jobtitle": "Staff",
+                "manager_id": null,
+                "employee_num": "3260001",
+                "avatar": null,
+                "username": "3260001",
+                "notes": null,
+                "company_id": null,
+                "remember_token": null,
+                "ldap_import": 0,
+                "locale": "en-US",
+                "show_in_list": 1,
+                "two_factor_secret": null,
+                "two_factor_enrolled": 0,
+                "two_factor_optin": 0,
+                "department_id": 1,
+                "hris_section": null,
+                "address": null,
+                "city": null,
+                "state": null,
+                "zip": null,
+                "skin": null,
+                "nav_link_color": "#ffffff",
+                "link_light_color": null,
+                "link_dark_color": null,
+                "remote": 0,
+                "start_date": null,
+                "end_date": null,
+                "scim_externalid": null,
+                "autoassign_licenses": 1,
+                "vip": 0,
+                "enable_sounds": 0,
+                "enable_confetti": 0
+            },
+            {
+                "id": 2,
+                "email": "3260002@akp.test",
+                "password": "x",
+                "permissions": null,
+                "activated": 1,
+                "created_by": null,
+                "activation_code": null,
+                "activated_at": null,
+                "last_login": null,
+                "persist_code": null,
+                "reset_password_code": null,
+                "first_name": "Siti",
+                "last_name": "Uji",
+                "display_name": null,
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "deleted_at": null,
+                "website": null,
+                "country": null,
+                "gravatar": null,
+                "location_id": null,
+                "phone": null,
+                "mobile": null,
+                "jobtitle": "Staff",
+                "manager_id": null,
+                "employee_num": "3260002",
+                "avatar": null,
+                "username": "3260002",
+                "notes": null,
+                "company_id": null,
+                "remember_token": null,
+                "ldap_import": 0,
+                "locale": "en-US",
+                "show_in_list": 1,
+                "two_factor_secret": null,
+                "two_factor_enrolled": 0,
+                "two_factor_optin": 0,
+                "department_id": 2,
+                "hris_section": null,
+                "address": null,
+                "city": null,
+                "state": null,
+                "zip": null,
+                "skin": null,
+                "nav_link_color": "#ffffff",
+                "link_light_color": null,
+                "link_dark_color": null,
+                "remote": 0,
+                "start_date": null,
+                "end_date": null,
+                "scim_externalid": null,
+                "autoassign_licenses": 1,
+                "vip": 0,
+                "enable_sounds": 0,
+                "enable_confetti": 0
+            },
+            {
+                "id": 3,
+                "email": "3260003@akp.test",
+                "password": "x",
+                "permissions": null,
+                "activated": 1,
+                "created_by": null,
+                "activation_code": null,
+                "activated_at": null,
+                "last_login": null,
+                "persist_code": null,
+                "reset_password_code": null,
+                "first_name": "Rudi",
+                "last_name": "Uji",
+                "display_name": null,
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "deleted_at": null,
+                "website": null,
+                "country": null,
+                "gravatar": null,
+                "location_id": null,
+                "phone": null,
+                "mobile": null,
+                "jobtitle": "Staff",
+                "manager_id": null,
+                "employee_num": "3260003",
+                "avatar": null,
+                "username": "3260003",
+                "notes": null,
+                "company_id": null,
+                "remember_token": null,
+                "ldap_import": 0,
+                "locale": "en-US",
+                "show_in_list": 1,
+                "two_factor_secret": null,
+                "two_factor_enrolled": 0,
+                "two_factor_optin": 0,
+                "department_id": 1,
+                "hris_section": null,
+                "address": null,
+                "city": null,
+                "state": null,
+                "zip": null,
+                "skin": null,
+                "nav_link_color": "#ffffff",
+                "link_light_color": null,
+                "link_dark_color": null,
+                "remote": 0,
+                "start_date": null,
+                "end_date": null,
+                "scim_externalid": null,
+                "autoassign_licenses": 1,
+                "vip": 0,
+                "enable_sounds": 0,
+                "enable_confetti": 0
+            },
+            {
+                "id": 4,
+                "email": "3260004@akp.test",
+                "password": "x",
+                "permissions": null,
+                "activated": 1,
+                "created_by": null,
+                "activation_code": null,
+                "activated_at": null,
+                "last_login": null,
+                "persist_code": null,
+                "reset_password_code": null,
+                "first_name": "Dewi",
+                "last_name": "Uji",
+                "display_name": null,
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "deleted_at": null,
+                "website": null,
+                "country": null,
+                "gravatar": null,
+                "location_id": null,
+                "phone": null,
+                "mobile": null,
+                "jobtitle": "Staff",
+                "manager_id": null,
+                "employee_num": "3260004",
+                "avatar": null,
+                "username": "3260004",
+                "notes": null,
+                "company_id": null,
+                "remember_token": null,
+                "ldap_import": 0,
+                "locale": "en-US",
+                "show_in_list": 1,
+                "two_factor_secret": null,
+                "two_factor_enrolled": 0,
+                "two_factor_optin": 0,
+                "department_id": 2,
+                "hris_section": null,
+                "address": null,
+                "city": null,
+                "state": null,
+                "zip": null,
+                "skin": null,
+                "nav_link_color": "#ffffff",
+                "link_light_color": null,
+                "link_dark_color": null,
+                "remote": 0,
+                "start_date": null,
+                "end_date": null,
+                "scim_externalid": null,
+                "autoassign_licenses": 1,
+                "vip": 0,
+                "enable_sounds": 0,
+                "enable_confetti": 0
+            },
+            {
+                "id": 5,
+                "email": "3260005@akp.test",
+                "password": "x",
+                "permissions": null,
+                "activated": 1,
+                "created_by": null,
+                "activation_code": null,
+                "activated_at": null,
+                "last_login": null,
+                "persist_code": null,
+                "reset_password_code": null,
+                "first_name": "Eko",
+                "last_name": "Uji",
+                "display_name": null,
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "deleted_at": null,
+                "website": null,
+                "country": null,
+                "gravatar": null,
+                "location_id": null,
+                "phone": null,
+                "mobile": null,
+                "jobtitle": "Staff",
+                "manager_id": null,
+                "employee_num": "3260005",
+                "avatar": null,
+                "username": "3260005",
+                "notes": null,
+                "company_id": null,
+                "remember_token": null,
+                "ldap_import": 0,
+                "locale": "en-US",
+                "show_in_list": 1,
+                "two_factor_secret": null,
+                "two_factor_enrolled": 0,
+                "two_factor_optin": 0,
+                "department_id": 1,
+                "hris_section": null,
+                "address": null,
+                "city": null,
+                "state": null,
+                "zip": null,
+                "skin": null,
+                "nav_link_color": "#ffffff",
+                "link_light_color": null,
+                "link_dark_color": null,
+                "remote": 0,
+                "start_date": null,
+                "end_date": null,
+                "scim_externalid": null,
+                "autoassign_licenses": 1,
+                "vip": 0,
+                "enable_sounds": 0,
+                "enable_confetti": 0
+            },
+            {
+                "id": 6,
+                "email": "3260006@akp.test",
+                "password": "x",
+                "permissions": null,
+                "activated": 0,
+                "created_by": null,
+                "activation_code": null,
+                "activated_at": null,
+                "last_login": null,
+                "persist_code": null,
+                "reset_password_code": null,
+                "first_name": "Resign",
+                "last_name": "Uji",
+                "display_name": null,
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "deleted_at": "2025-03-01 00:00:00",
+                "website": null,
+                "country": null,
+                "gravatar": null,
+                "location_id": null,
+                "phone": null,
+                "mobile": null,
+                "jobtitle": "Staff",
+                "manager_id": null,
+                "employee_num": "3260006",
+                "avatar": null,
+                "username": "3260006",
+                "notes": null,
+                "company_id": null,
+                "remember_token": null,
+                "ldap_import": 0,
+                "locale": "en-US",
+                "show_in_list": 1,
+                "two_factor_secret": null,
+                "two_factor_enrolled": 0,
+                "two_factor_optin": 0,
+                "department_id": 2,
+                "hris_section": null,
+                "address": null,
+                "city": null,
+                "state": null,
+                "zip": null,
+                "skin": null,
+                "nav_link_color": "#ffffff",
+                "link_light_color": null,
+                "link_dark_color": null,
+                "remote": 0,
+                "start_date": null,
+                "end_date": null,
+                "scim_externalid": null,
+                "autoassign_licenses": 1,
+                "vip": 0,
+                "enable_sounds": 0,
+                "enable_confetti": 0
+            },
+            {
+                "id": 7,
+                "email": "tanpa.nik@akp.test",
+                "password": "x",
+                "permissions": null,
+                "activated": 1,
+                "created_by": null,
+                "activation_code": null,
+                "activated_at": null,
+                "last_login": null,
+                "persist_code": null,
+                "reset_password_code": null,
+                "first_name": "Tanpa NIK",
+                "last_name": "Uji",
+                "display_name": null,
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "deleted_at": null,
+                "website": null,
+                "country": null,
+                "gravatar": null,
+                "location_id": null,
+                "phone": null,
+                "mobile": null,
+                "jobtitle": "Staff",
+                "manager_id": null,
+                "employee_num": null,
+                "avatar": null,
+                "username": "tanpa.nik",
+                "notes": null,
+                "company_id": null,
+                "remember_token": null,
+                "ldap_import": 0,
+                "locale": "en-US",
+                "show_in_list": 1,
+                "two_factor_secret": null,
+                "two_factor_enrolled": 0,
+                "two_factor_optin": 0,
+                "department_id": 1,
+                "hris_section": null,
+                "address": null,
+                "city": null,
+                "state": null,
+                "zip": null,
+                "skin": null,
+                "nav_link_color": "#ffffff",
+                "link_light_color": null,
+                "link_dark_color": null,
+                "remote": 0,
+                "start_date": null,
+                "end_date": null,
+                "scim_externalid": null,
+                "autoassign_licenses": 1,
+                "vip": 0,
+                "enable_sounds": 0,
+                "enable_confetti": 0
+            },
+            {
+                "id": 8,
+                "email": "admin.teknis@akp.test",
+                "password": "x",
+                "permissions": null,
+                "activated": 1,
+                "created_by": null,
+                "activation_code": null,
+                "activated_at": null,
+                "last_login": null,
+                "persist_code": null,
+                "reset_password_code": null,
+                "first_name": "Admin Teknis",
+                "last_name": "Uji",
+                "display_name": null,
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "deleted_at": null,
+                "website": null,
+                "country": null,
+                "gravatar": null,
+                "location_id": null,
+                "phone": null,
+                "mobile": null,
+                "jobtitle": "Staff",
+                "manager_id": null,
+                "employee_num": null,
+                "avatar": null,
+                "username": "admin.teknis",
+                "notes": null,
+                "company_id": null,
+                "remember_token": null,
+                "ldap_import": 0,
+                "locale": "en-US",
+                "show_in_list": 1,
+                "two_factor_secret": null,
+                "two_factor_enrolled": 0,
+                "two_factor_optin": 0,
+                "department_id": null,
+                "hris_section": null,
+                "address": null,
+                "city": null,
+                "state": null,
+                "zip": null,
+                "skin": null,
+                "nav_link_color": "#ffffff",
+                "link_light_color": null,
+                "link_dark_color": null,
+                "remote": 0,
+                "start_date": null,
+                "end_date": null,
+                "scim_externalid": null,
+                "autoassign_licenses": 1,
+                "vip": 0,
+                "enable_sounds": 0,
+                "enable_confetti": 0
+            }
+        ]
+    },
+    "departments": {
+        "columns": [
+            [
+                "id",
+                "integer"
+            ],
+            [
+                "name",
+                "string"
+            ],
+            [
+                "tag_color",
+                "string"
+            ],
+            [
+                "fax",
+                "string"
+            ],
+            [
+                "phone",
+                "string"
+            ],
+            [
+                "created_by",
+                "integer"
+            ],
+            [
+                "company_id",
+                "integer"
+            ],
+            [
+                "location_id",
+                "integer"
+            ],
+            [
+                "manager_id",
+                "integer"
+            ],
+            [
+                "notes",
+                "string"
+            ],
+            [
+                "created_at",
+                "string"
+            ],
+            [
+                "updated_at",
+                "string"
+            ],
+            [
+                "deleted_at",
+                "string"
+            ],
+            [
+                "image",
+                "string"
+            ]
+        ],
+        "rows": [
+            {
+                "id": 1,
+                "name": "IT",
+                "tag_color": null,
+                "fax": null,
+                "phone": null,
+                "created_by": 0,
+                "company_id": null,
+                "location_id": null,
+                "manager_id": null,
+                "notes": null,
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "deleted_at": null,
+                "image": null
+            },
+            {
+                "id": 2,
+                "name": "Finance",
+                "tag_color": null,
+                "fax": null,
+                "phone": null,
+                "created_by": 0,
+                "company_id": null,
+                "location_id": null,
+                "manager_id": null,
+                "notes": null,
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "deleted_at": null,
+                "image": null
+            },
+            {
+                "id": 3,
+                "name": "it",
+                "tag_color": null,
+                "fax": null,
+                "phone": null,
+                "created_by": 0,
+                "company_id": null,
+                "location_id": null,
+                "manager_id": null,
+                "notes": null,
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "deleted_at": null,
+                "image": null
+            }
+        ]
+    },
+    "locations": {
+        "columns": [
+            [
+                "id",
+                "integer"
+            ],
+            [
+                "name",
+                "string"
+            ],
+            [
+                "tag_color",
+                "string"
+            ],
+            [
+                "city",
+                "string"
+            ],
+            [
+                "state",
+                "string"
+            ],
+            [
+                "country",
+                "string"
+            ],
+            [
+                "created_at",
+                "string"
+            ],
+            [
+                "updated_at",
+                "string"
+            ],
+            [
+                "created_by",
+                "integer"
+            ],
+            [
+                "address",
+                "string"
+            ],
+            [
+                "address2",
+                "string"
+            ],
+            [
+                "zip",
+                "string"
+            ],
+            [
+                "fax",
+                "string"
+            ],
+            [
+                "phone",
+                "string"
+            ],
+            [
+                "deleted_at",
+                "string"
+            ],
+            [
+                "parent_id",
+                "integer"
+            ],
+            [
+                "currency",
+                "string"
+            ],
+            [
+                "ldap_ou",
+                "string"
+            ],
+            [
+                "manager_id",
+                "integer"
+            ],
+            [
+                "image",
+                "string"
+            ],
+            [
+                "company_id",
+                "integer"
+            ],
+            [
+                "notes",
+                "string"
+            ]
+        ],
+        "rows": [
+            {
+                "id": 1,
+                "name": "Kantor Pusat",
+                "tag_color": null,
+                "city": "Makassar",
+                "state": null,
+                "country": null,
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "created_by": null,
+                "address": null,
+                "address2": null,
+                "zip": null,
+                "fax": null,
+                "phone": null,
+                "deleted_at": null,
+                "parent_id": null,
+                "currency": null,
+                "ldap_ou": null,
+                "manager_id": null,
+                "image": null,
+                "company_id": null,
+                "notes": null
+            },
+            {
+                "id": 2,
+                "name": "Gudang IT",
+                "tag_color": null,
+                "city": null,
+                "state": null,
+                "country": null,
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "created_by": null,
+                "address": null,
+                "address2": null,
+                "zip": null,
+                "fax": null,
+                "phone": null,
+                "deleted_at": null,
+                "parent_id": 1,
+                "currency": null,
+                "ldap_ou": null,
+                "manager_id": null,
+                "image": null,
+                "company_id": null,
+                "notes": null
+            },
+            {
+                "id": 3,
+                "name": "Site A",
+                "tag_color": null,
+                "city": "Kolaka",
+                "state": null,
+                "country": null,
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "created_by": null,
+                "address": null,
+                "address2": null,
+                "zip": null,
+                "fax": null,
+                "phone": null,
+                "deleted_at": null,
+                "parent_id": null,
+                "currency": null,
+                "ldap_ou": null,
+                "manager_id": null,
+                "image": null,
+                "company_id": null,
+                "notes": null
+            }
+        ]
+    },
+    "categories": {
+        "columns": [
+            [
+                "id",
+                "integer"
+            ],
+            [
+                "name",
+                "string"
+            ],
+            [
+                "tag_color",
+                "string"
+            ],
+            [
+                "created_at",
+                "string"
+            ],
+            [
+                "updated_at",
+                "string"
+            ],
+            [
+                "created_by",
+                "integer"
+            ],
+            [
+                "deleted_at",
+                "string"
+            ],
+            [
+                "eula_text",
+                "string"
+            ],
+            [
+                "use_default_eula",
+                "integer"
+            ],
+            [
+                "require_acceptance",
+                "integer"
+            ],
+            [
+                "alert_on_response",
+                "integer"
+            ],
+            [
+                "category_type",
+                "string"
+            ],
+            [
+                "checkin_email",
+                "integer"
+            ],
+            [
+                "image",
+                "string"
+            ],
+            [
+                "notes",
+                "string"
+            ]
+        ],
+        "rows": [
+            {
+                "id": 1,
+                "name": "Laptop",
+                "tag_color": null,
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "created_by": null,
+                "deleted_at": null,
+                "eula_text": null,
+                "use_default_eula": 0,
+                "require_acceptance": 0,
+                "alert_on_response": 0,
+                "category_type": "asset",
+                "checkin_email": 0,
+                "image": null,
+                "notes": null
+            },
+            {
+                "id": 2,
+                "name": "Monitor",
+                "tag_color": null,
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "created_by": null,
+                "deleted_at": null,
+                "eula_text": null,
+                "use_default_eula": 0,
+                "require_acceptance": 0,
+                "alert_on_response": 0,
+                "category_type": "asset",
+                "checkin_email": 0,
+                "image": null,
+                "notes": null
+            },
+            {
+                "id": 3,
+                "name": "Aksesoris",
+                "tag_color": null,
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "created_by": null,
+                "deleted_at": null,
+                "eula_text": null,
+                "use_default_eula": 0,
+                "require_acceptance": 0,
+                "alert_on_response": 0,
+                "category_type": "accessory",
+                "checkin_email": 0,
+                "image": null,
+                "notes": null
+            },
+            {
+                "id": 4,
+                "name": "Tinta & Toner",
+                "tag_color": null,
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "created_by": null,
+                "deleted_at": null,
+                "eula_text": null,
+                "use_default_eula": 0,
+                "require_acceptance": 0,
+                "alert_on_response": 0,
+                "category_type": "consumable",
+                "checkin_email": 0,
+                "image": null,
+                "notes": null
+            },
+            {
+                "id": 5,
+                "name": "RAM",
+                "tag_color": null,
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "created_by": null,
+                "deleted_at": null,
+                "eula_text": null,
+                "use_default_eula": 0,
+                "require_acceptance": 0,
+                "alert_on_response": 0,
+                "category_type": "component",
+                "checkin_email": 0,
+                "image": null,
+                "notes": null
+            },
+            {
+                "id": 6,
+                "name": "Software",
+                "tag_color": null,
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "created_by": null,
+                "deleted_at": null,
+                "eula_text": null,
+                "use_default_eula": 0,
+                "require_acceptance": 0,
+                "alert_on_response": 0,
+                "category_type": "license",
+                "checkin_email": 0,
+                "image": null,
+                "notes": null
+            }
+        ]
+    },
+    "models": {
+        "columns": [
+            [
+                "id",
+                "integer"
+            ],
+            [
+                "name",
+                "string"
+            ],
+            [
+                "model_number",
+                "string"
+            ],
+            [
+                "min_amt",
+                "integer"
+            ],
+            [
+                "manufacturer_id",
+                "integer"
+            ],
+            [
+                "category_id",
+                "integer"
+            ],
+            [
+                "require_serial",
+                "integer"
+            ],
+            [
+                "created_at",
+                "string"
+            ],
+            [
+                "updated_at",
+                "string"
+            ],
+            [
+                "depreciation_id",
+                "integer"
+            ],
+            [
+                "created_by",
+                "integer"
+            ],
+            [
+                "eol",
+                "integer"
+            ],
+            [
+                "image",
+                "string"
+            ],
+            [
+                "deprecated_mac_address",
+                "integer"
+            ],
+            [
+                "deleted_at",
+                "string"
+            ],
+            [
+                "fieldset_id",
+                "integer"
+            ],
+            [
+                "notes",
+                "string"
+            ],
+            [
+                "requestable",
+                "integer"
+            ]
+        ],
+        "rows": [
+            {
+                "id": 1,
+                "name": "ThinkPad E14",
+                "model_number": null,
+                "min_amt": null,
+                "manufacturer_id": 1,
+                "category_id": 1,
+                "require_serial": 0,
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "depreciation_id": null,
+                "created_by": null,
+                "eol": null,
+                "image": null,
+                "deprecated_mac_address": 0,
+                "deleted_at": null,
+                "fieldset_id": null,
+                "notes": null,
+                "requestable": 0
+            },
+            {
+                "id": 2,
+                "name": "Latitude 5440",
+                "model_number": null,
+                "min_amt": null,
+                "manufacturer_id": 2,
+                "category_id": 1,
+                "require_serial": 0,
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "depreciation_id": null,
+                "created_by": null,
+                "eol": null,
+                "image": null,
+                "deprecated_mac_address": 0,
+                "deleted_at": null,
+                "fieldset_id": null,
+                "notes": null,
+                "requestable": 0
+            },
+            {
+                "id": 3,
+                "name": "P24h",
+                "model_number": null,
+                "min_amt": null,
+                "manufacturer_id": 3,
+                "category_id": 2,
+                "require_serial": 0,
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "depreciation_id": null,
+                "created_by": null,
+                "eol": null,
+                "image": null,
+                "deprecated_mac_address": 0,
+                "deleted_at": null,
+                "fieldset_id": null,
+                "notes": null,
+                "requestable": 0
+            }
+        ]
+    },
+    "manufacturers": {
+        "columns": [
+            [
+                "id",
+                "integer"
+            ],
+            [
+                "name",
+                "string"
+            ],
+            [
+                "tag_color",
+                "string"
+            ],
+            [
+                "created_at",
+                "string"
+            ],
+            [
+                "updated_at",
+                "string"
+            ],
+            [
+                "created_by",
+                "integer"
+            ],
+            [
+                "deleted_at",
+                "string"
+            ],
+            [
+                "url",
+                "string"
+            ],
+            [
+                "support_url",
+                "string"
+            ],
+            [
+                "warranty_lookup_url",
+                "string"
+            ],
+            [
+                "support_phone",
+                "string"
+            ],
+            [
+                "support_email",
+                "string"
+            ],
+            [
+                "image",
+                "string"
+            ],
+            [
+                "notes",
+                "string"
+            ]
+        ],
+        "rows": [
+            {
+                "id": 1,
+                "name": "Lenovo",
+                "tag_color": null,
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "created_by": null,
+                "deleted_at": null,
+                "url": null,
+                "support_url": null,
+                "warranty_lookup_url": null,
+                "support_phone": null,
+                "support_email": null,
+                "image": null,
+                "notes": null
+            },
+            {
+                "id": 2,
+                "name": "Dell",
+                "tag_color": null,
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "created_by": null,
+                "deleted_at": null,
+                "url": null,
+                "support_url": null,
+                "warranty_lookup_url": null,
+                "support_phone": null,
+                "support_email": null,
+                "image": null,
+                "notes": null
+            },
+            {
+                "id": 3,
+                "name": "HP",
+                "tag_color": null,
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "created_by": null,
+                "deleted_at": null,
+                "url": null,
+                "support_url": null,
+                "warranty_lookup_url": null,
+                "support_phone": null,
+                "support_email": null,
+                "image": null,
+                "notes": null
+            }
+        ]
+    },
+    "status_labels": {
+        "columns": [
+            [
+                "id",
+                "integer"
+            ],
+            [
+                "name",
+                "string"
+            ],
+            [
+                "created_by",
+                "integer"
+            ],
+            [
+                "created_at",
+                "string"
+            ],
+            [
+                "updated_at",
+                "string"
+            ],
+            [
+                "deleted_at",
+                "string"
+            ],
+            [
+                "deployable",
+                "integer"
+            ],
+            [
+                "pending",
+                "integer"
+            ],
+            [
+                "archived",
+                "integer"
+            ],
+            [
+                "notes",
+                "string"
+            ],
+            [
+                "color",
+                "string"
+            ],
+            [
+                "show_in_nav",
+                "integer"
+            ],
+            [
+                "default_label",
+                "integer"
+            ]
+        ],
+        "rows": [
+            {
+                "id": 1,
+                "name": "Ready to Deploy",
+                "created_by": null,
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "deleted_at": null,
+                "deployable": 1,
+                "pending": 0,
+                "archived": 0,
+                "notes": null,
+                "color": null,
+                "show_in_nav": 0,
+                "default_label": 0
+            },
+            {
+                "id": 2,
+                "name": "Out for Repair",
+                "created_by": null,
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "deleted_at": null,
+                "deployable": 0,
+                "pending": 0,
+                "archived": 0,
+                "notes": null,
+                "color": null,
+                "show_in_nav": 0,
+                "default_label": 0
+            },
+            {
+                "id": 3,
+                "name": "Lost\/Stolen",
+                "created_by": null,
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "deleted_at": null,
+                "deployable": 0,
+                "pending": 0,
+                "archived": 0,
+                "notes": null,
+                "color": null,
+                "show_in_nav": 0,
+                "default_label": 0
+            },
+            {
+                "id": 4,
+                "name": "Asset Disposed",
+                "created_by": null,
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "deleted_at": null,
+                "deployable": 0,
+                "pending": 0,
+                "archived": 1,
+                "notes": null,
+                "color": null,
+                "show_in_nav": 0,
+                "default_label": 0
+            },
+            {
+                "id": 5,
+                "name": "Status Aneh Cabang",
+                "created_by": null,
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "deleted_at": null,
+                "deployable": 0,
+                "pending": 0,
+                "archived": 0,
+                "notes": null,
+                "color": null,
+                "show_in_nav": 0,
+                "default_label": 0
+            },
+            {
+                "id": 6,
+                "name": "Dipinjam",
+                "created_by": null,
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "deleted_at": null,
+                "deployable": 1,
+                "pending": 0,
+                "archived": 0,
+                "notes": null,
+                "color": null,
+                "show_in_nav": 0,
+                "default_label": 0
+            }
+        ]
+    },
+    "suppliers": {
+        "columns": [
+            [
+                "id",
+                "integer"
+            ],
+            [
+                "name",
+                "string"
+            ],
+            [
+                "tag_color",
+                "string"
+            ],
+            [
+                "address",
+                "string"
+            ],
+            [
+                "address2",
+                "string"
+            ],
+            [
+                "city",
+                "string"
+            ],
+            [
+                "state",
+                "string"
+            ],
+            [
+                "country",
+                "string"
+            ],
+            [
+                "phone",
+                "string"
+            ],
+            [
+                "fax",
+                "string"
+            ],
+            [
+                "email",
+                "string"
+            ],
+            [
+                "contact",
+                "string"
+            ],
+            [
+                "notes",
+                "string"
+            ],
+            [
+                "created_at",
+                "string"
+            ],
+            [
+                "updated_at",
+                "string"
+            ],
+            [
+                "created_by",
+                "integer"
+            ],
+            [
+                "deleted_at",
+                "string"
+            ],
+            [
+                "zip",
+                "string"
+            ],
+            [
+                "url",
+                "string"
+            ],
+            [
+                "image",
+                "string"
+            ]
+        ],
+        "rows": [
+            {
+                "id": 1,
+                "name": "PT Sumber Teknologi",
+                "tag_color": null,
+                "address": null,
+                "address2": null,
+                "city": null,
+                "state": null,
+                "country": null,
+                "phone": "0811",
+                "fax": null,
+                "email": "s@x.test",
+                "contact": "Budi",
+                "notes": null,
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "created_by": null,
+                "deleted_at": null,
+                "zip": null,
+                "url": null,
+                "image": null
+            },
+            {
+                "id": 2,
+                "name": "CV Maju Jaya",
+                "tag_color": null,
+                "address": null,
+                "address2": null,
+                "city": null,
+                "state": null,
+                "country": null,
+                "phone": null,
+                "fax": null,
+                "email": null,
+                "contact": null,
+                "notes": null,
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "created_by": null,
+                "deleted_at": null,
+                "zip": null,
+                "url": null,
+                "image": null
+            }
+        ]
+    },
+    "accessories": {
+        "columns": [
+            [
+                "id",
+                "integer"
+            ],
+            [
+                "name",
+                "string"
+            ],
+            [
+                "category_id",
+                "integer"
+            ],
+            [
+                "created_by",
+                "integer"
+            ],
+            [
+                "qty",
+                "integer"
+            ],
+            [
+                "requestable",
+                "integer"
+            ],
+            [
+                "created_at",
+                "string"
+            ],
+            [
+                "updated_at",
+                "string"
+            ],
+            [
+                "deleted_at",
+                "string"
+            ],
+            [
+                "location_id",
+                "integer"
+            ],
+            [
+                "purchase_date",
+                "string"
+            ],
+            [
+                "purchase_cost",
+                "float"
+            ],
+            [
+                "order_number",
+                "string"
+            ],
+            [
+                "company_id",
+                "integer"
+            ],
+            [
+                "min_amt",
+                "integer"
+            ],
+            [
+                "manufacturer_id",
+                "integer"
+            ],
+            [
+                "model_number",
+                "string"
+            ],
+            [
+                "image",
+                "string"
+            ],
+            [
+                "supplier_id",
+                "integer"
+            ],
+            [
+                "notes",
+                "string"
+            ]
+        ],
+        "rows": [
+            {
+                "id": 1,
+                "name": "Mouse Logitech M185",
+                "category_id": 3,
+                "created_by": null,
+                "qty": 10,
+                "requestable": 0,
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "deleted_at": null,
+                "location_id": null,
+                "purchase_date": null,
+                "purchase_cost": "95000.00",
+                "order_number": null,
+                "company_id": null,
+                "min_amt": 3,
+                "manufacturer_id": 1,
+                "model_number": "M185",
+                "image": null,
+                "supplier_id": 1,
+                "notes": null
+            }
+        ]
+    },
+    "accessories_checkout": {
+        "columns": [
+            [
+                "id",
+                "integer"
+            ],
+            [
+                "created_by",
+                "integer"
+            ],
+            [
+                "accessory_id",
+                "integer"
+            ],
+            [
+                "assigned_to",
+                "integer"
+            ],
+            [
+                "created_at",
+                "string"
+            ],
+            [
+                "updated_at",
+                "string"
+            ],
+            [
+                "note",
+                "string"
+            ],
+            [
+                "assigned_type",
+                "string"
+            ]
+        ],
+        "rows": [
+            {
+                "id": 1,
+                "created_by": null,
+                "accessory_id": 1,
+                "assigned_to": 1,
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "note": null,
+                "assigned_type": "App\\Models\\User"
+            },
+            {
+                "id": 2,
+                "created_by": null,
+                "accessory_id": 1,
+                "assigned_to": 2,
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "note": null,
+                "assigned_type": "App\\Models\\User"
+            },
+            {
+                "id": 3,
+                "created_by": null,
+                "accessory_id": 1,
+                "assigned_to": 5,
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "note": null,
+                "assigned_type": "App\\Models\\User"
+            }
+        ]
+    },
+    "consumables": {
+        "columns": [
+            [
+                "id",
+                "integer"
+            ],
+            [
+                "name",
+                "string"
+            ],
+            [
+                "category_id",
+                "integer"
+            ],
+            [
+                "location_id",
+                "integer"
+            ],
+            [
+                "created_by",
+                "integer"
+            ],
+            [
+                "supplier_id",
+                "integer"
+            ],
+            [
+                "qty",
+                "integer"
+            ],
+            [
+                "requestable",
+                "integer"
+            ],
+            [
+                "created_at",
+                "string"
+            ],
+            [
+                "updated_at",
+                "string"
+            ],
+            [
+                "deleted_at",
+                "string"
+            ],
+            [
+                "purchase_date",
+                "string"
+            ],
+            [
+                "purchase_cost",
+                "float"
+            ],
+            [
+                "order_number",
+                "string"
+            ],
+            [
+                "company_id",
+                "integer"
+            ],
+            [
+                "min_amt",
+                "integer"
+            ],
+            [
+                "model_number",
+                "string"
+            ],
+            [
+                "manufacturer_id",
+                "integer"
+            ],
+            [
+                "item_no",
+                "string"
+            ],
+            [
+                "image",
+                "string"
+            ],
+            [
+                "notes",
+                "string"
+            ]
+        ],
+        "rows": [
+            {
+                "id": 1,
+                "name": "Toner HP 05A",
+                "category_id": 4,
+                "location_id": null,
+                "created_by": null,
+                "supplier_id": null,
+                "qty": 5,
+                "requestable": 0,
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "deleted_at": null,
+                "purchase_date": null,
+                "purchase_cost": "850000.00",
+                "order_number": null,
+                "company_id": null,
+                "min_amt": 2,
+                "model_number": null,
+                "manufacturer_id": null,
+                "item_no": null,
+                "image": null,
+                "notes": null
+            }
+        ]
+    },
+    "components": {
+        "columns": [
+            [
+                "id",
+                "integer"
+            ],
+            [
+                "name",
+                "string"
+            ],
+            [
+                "category_id",
+                "integer"
+            ],
+            [
+                "location_id",
+                "integer"
+            ],
+            [
+                "company_id",
+                "integer"
+            ],
+            [
+                "created_by",
+                "integer"
+            ],
+            [
+                "supplier_id",
+                "integer"
+            ],
+            [
+                "qty",
+                "integer"
+            ],
+            [
+                "order_number",
+                "string"
+            ],
+            [
+                "purchase_date",
+                "string"
+            ],
+            [
+                "purchase_cost",
+                "float"
+            ],
+            [
+                "model_number",
+                "string"
+            ],
+            [
+                "manufacturer_id",
+                "integer"
+            ],
+            [
+                "created_at",
+                "string"
+            ],
+            [
+                "updated_at",
+                "string"
+            ],
+            [
+                "deleted_at",
+                "string"
+            ],
+            [
+                "min_amt",
+                "integer"
+            ],
+            [
+                "serial",
+                "string"
+            ],
+            [
+                "image",
+                "string"
+            ],
+            [
+                "notes",
+                "string"
+            ]
+        ],
+        "rows": [
+            {
+                "id": 1,
+                "name": "RAM DDR4 8GB",
+                "category_id": 5,
+                "location_id": null,
+                "company_id": null,
+                "created_by": null,
+                "supplier_id": null,
+                "qty": 6,
+                "order_number": null,
+                "purchase_date": null,
+                "purchase_cost": "450000.00",
+                "model_number": null,
+                "manufacturer_id": null,
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "deleted_at": null,
+                "min_amt": 1,
+                "serial": "RAM-LOT-1",
+                "image": null,
+                "notes": null
+            }
+        ]
+    },
+    "components_assets": {
+        "columns": [
+            [
+                "id",
+                "integer"
+            ],
+            [
+                "created_by",
+                "integer"
+            ],
+            [
+                "assigned_qty",
+                "integer"
+            ],
+            [
+                "component_id",
+                "integer"
+            ],
+            [
+                "asset_id",
+                "integer"
+            ],
+            [
+                "created_at",
+                "string"
+            ],
+            [
+                "updated_at",
+                "string"
+            ],
+            [
+                "note",
+                "string"
+            ]
+        ],
+        "rows": [
+            {
+                "id": 1,
+                "created_by": null,
+                "assigned_qty": 2,
+                "component_id": 1,
+                "asset_id": 1,
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "note": null
+            }
+        ]
+    },
+    "licenses": {
+        "columns": [
+            [
+                "id",
+                "integer"
+            ],
+            [
+                "name",
+                "string"
+            ],
+            [
+                "serial",
+                "string"
+            ],
+            [
+                "purchase_date",
+                "string"
+            ],
+            [
+                "purchase_cost",
+                "float"
+            ],
+            [
+                "order_number",
+                "string"
+            ],
+            [
+                "seats",
+                "integer"
+            ],
+            [
+                "notes",
+                "string"
+            ],
+            [
+                "created_by",
+                "integer"
+            ],
+            [
+                "depreciation_id",
+                "integer"
+            ],
+            [
+                "created_at",
+                "string"
+            ],
+            [
+                "updated_at",
+                "string"
+            ],
+            [
+                "deleted_at",
+                "string"
+            ],
+            [
+                "license_name",
+                "string"
+            ],
+            [
+                "license_email",
+                "string"
+            ],
+            [
+                "depreciate",
+                "integer"
+            ],
+            [
+                "supplier_id",
+                "integer"
+            ],
+            [
+                "expiration_date",
+                "string"
+            ],
+            [
+                "purchase_order",
+                "string"
+            ],
+            [
+                "termination_date",
+                "string"
+            ],
+            [
+                "maintained",
+                "integer"
+            ],
+            [
+                "reassignable",
+                "integer"
+            ],
+            [
+                "company_id",
+                "integer"
+            ],
+            [
+                "manufacturer_id",
+                "integer"
+            ],
+            [
+                "category_id",
+                "integer"
+            ],
+            [
+                "min_amt",
+                "integer"
+            ]
+        ],
+        "rows": [
+            {
+                "id": 1,
+                "name": "Microsoft Office 2021",
+                "serial": "XXXXX-YYYYY",
+                "purchase_date": null,
+                "purchase_cost": "3000000.00",
+                "order_number": null,
+                "seats": 5,
+                "notes": null,
+                "created_by": null,
+                "depreciation_id": null,
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "deleted_at": null,
+                "license_name": null,
+                "license_email": null,
+                "depreciate": null,
+                "supplier_id": null,
+                "expiration_date": null,
+                "purchase_order": null,
+                "termination_date": null,
+                "maintained": null,
+                "reassignable": 1,
+                "company_id": null,
+                "manufacturer_id": null,
+                "category_id": 6,
+                "min_amt": null
+            },
+            {
+                "id": 2,
+                "name": "Antivirus 1 Tahun",
+                "serial": null,
+                "purchase_date": null,
+                "purchase_cost": null,
+                "order_number": null,
+                "seats": 10,
+                "notes": null,
+                "created_by": null,
+                "depreciation_id": null,
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "deleted_at": null,
+                "license_name": null,
+                "license_email": null,
+                "depreciate": null,
+                "supplier_id": null,
+                "expiration_date": "2026-12-31",
+                "purchase_order": null,
+                "termination_date": null,
+                "maintained": null,
+                "reassignable": 1,
+                "company_id": null,
+                "manufacturer_id": null,
+                "category_id": 6,
+                "min_amt": null
+            }
+        ]
+    },
+    "license_seats": {
+        "columns": [
+            [
+                "id",
+                "integer"
+            ],
+            [
+                "license_id",
+                "integer"
+            ],
+            [
+                "assigned_to",
+                "integer"
+            ],
+            [
+                "unreassignable_seat",
+                "integer"
+            ],
+            [
+                "notes",
+                "string"
+            ],
+            [
+                "created_by",
+                "integer"
+            ],
+            [
+                "created_at",
+                "string"
+            ],
+            [
+                "updated_at",
+                "string"
+            ],
+            [
+                "deleted_at",
+                "string"
+            ],
+            [
+                "asset_id",
+                "integer"
+            ]
+        ],
+        "rows": [
+            {
+                "id": 1,
+                "license_id": 1,
+                "assigned_to": 1,
+                "unreassignable_seat": 0,
+                "notes": null,
+                "created_by": null,
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "deleted_at": null,
+                "asset_id": null
+            },
+            {
+                "id": 2,
+                "license_id": 1,
+                "assigned_to": null,
+                "unreassignable_seat": 0,
+                "notes": null,
+                "created_by": null,
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "deleted_at": null,
+                "asset_id": 2
+            },
+            {
+                "id": 3,
+                "license_id": 1,
+                "assigned_to": null,
+                "unreassignable_seat": 0,
+                "notes": null,
+                "created_by": null,
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "deleted_at": null,
+                "asset_id": null
+            }
+        ]
+    },
+    "maintenances": {
+        "columns": [
+            [
+                "id",
+                "integer"
+            ],
+            [
+                "asset_id",
+                "integer"
+            ],
+            [
+                "supplier_id",
+                "integer"
+            ],
+            [
+                "asset_maintenance_type",
+                "string"
+            ],
+            [
+                "name",
+                "string"
+            ],
+            [
+                "url",
+                "string"
+            ],
+            [
+                "is_warranty",
+                "integer"
+            ],
+            [
+                "start_date",
+                "string"
+            ],
+            [
+                "completion_date",
+                "string"
+            ],
+            [
+                "asset_maintenance_time",
+                "integer"
+            ],
+            [
+                "notes",
+                "string"
+            ],
+            [
+                "image",
+                "string"
+            ],
+            [
+                "cost",
+                "float"
+            ],
+            [
+                "deleted_at",
+                "string"
+            ],
+            [
+                "created_at",
+                "string"
+            ],
+            [
+                "updated_at",
+                "string"
+            ],
+            [
+                "created_by",
+                "integer"
+            ]
+        ],
+        "rows": [
+            {
+                "id": 1,
+                "asset_id": 12,
+                "supplier_id": 2,
+                "asset_maintenance_type": "Repair",
+                "name": "Ganti SSD",
+                "url": null,
+                "is_warranty": 0,
+                "start_date": "2025-04-01",
+                "completion_date": "2025-04-03",
+                "asset_maintenance_time": 2,
+                "notes": null,
+                "image": null,
+                "cost": "750000.00",
+                "deleted_at": null,
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "created_by": null
+            },
+            {
+                "id": 2,
+                "asset_id": 2,
+                "supplier_id": null,
+                "asset_maintenance_type": "Maintenance",
+                "name": "Pembersihan",
+                "url": null,
+                "is_warranty": 0,
+                "start_date": "2025-05-01",
+                "completion_date": null,
+                "asset_maintenance_time": 0,
+                "notes": null,
+                "image": null,
+                "cost": "0.00",
+                "deleted_at": null,
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "created_by": null
+            }
+        ]
+    },
+    "action_logs": {
+        "columns": [
+            [
+                "id",
+                "integer"
+            ],
+            [
+                "created_by",
+                "integer"
+            ],
+            [
+                "action_type",
+                "string"
+            ],
+            [
+                "target_id",
+                "integer"
+            ],
+            [
+                "target_type",
+                "string"
+            ],
+            [
+                "location_id",
+                "integer"
+            ],
+            [
+                "note",
+                "string"
+            ],
+            [
+                "filename",
+                "string"
+            ],
+            [
+                "item_type",
+                "string"
+            ],
+            [
+                "item_id",
+                "integer"
+            ],
+            [
+                "expected_checkin",
+                "string"
+            ],
+            [
+                "quantity",
+                "integer"
+            ],
+            [
+                "accepted_id",
+                "integer"
+            ],
+            [
+                "created_at",
+                "string"
+            ],
+            [
+                "updated_at",
+                "string"
+            ],
+            [
+                "deleted_at",
+                "string"
+            ],
+            [
+                "thread_id",
+                "integer"
+            ],
+            [
+                "company_id",
+                "integer"
+            ],
+            [
+                "accept_signature",
+                "string"
+            ],
+            [
+                "log_meta",
+                "string"
+            ],
+            [
+                "action_date",
+                "string"
+            ],
+            [
+                "stored_eula",
+                "string"
+            ],
+            [
+                "action_source",
+                "string"
+            ],
+            [
+                "remote_ip",
+                "string"
+            ],
+            [
+                "user_agent",
+                "string"
+            ]
+        ],
+        "rows": [
+            {
+                "id": 1,
+                "created_by": null,
+                "action_type": "checkout",
+                "target_id": 1,
+                "target_type": "App\\Models\\User",
+                "location_id": null,
+                "note": "Awal",
+                "filename": null,
+                "item_type": "App\\Models\\Asset",
+                "item_id": 1,
+                "expected_checkin": null,
+                "quantity": 1,
+                "accepted_id": null,
+                "created_at": "2024-06-01 09:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "deleted_at": null,
+                "thread_id": null,
+                "company_id": null,
+                "accept_signature": null,
+                "log_meta": null,
+                "action_date": "2024-06-01 09:00:00",
+                "stored_eula": null,
+                "action_source": null,
+                "remote_ip": null,
+                "user_agent": null
+            },
+            {
+                "id": 2,
+                "created_by": null,
+                "action_type": "checkout",
+                "target_id": 2,
+                "target_type": "App\\Models\\User",
+                "location_id": null,
+                "note": "Awal",
+                "filename": null,
+                "item_type": "App\\Models\\Asset",
+                "item_id": 2,
+                "expected_checkin": null,
+                "quantity": 1,
+                "accepted_id": null,
+                "created_at": "2024-06-01 09:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "deleted_at": null,
+                "thread_id": null,
+                "company_id": null,
+                "accept_signature": null,
+                "log_meta": null,
+                "action_date": "2024-06-01 09:00:00",
+                "stored_eula": null,
+                "action_source": null,
+                "remote_ip": null,
+                "user_agent": null
+            },
+            {
+                "id": 3,
+                "created_by": null,
+                "action_type": "checkout",
+                "target_id": 3,
+                "target_type": "App\\Models\\User",
+                "location_id": null,
+                "note": "Awal",
+                "filename": null,
+                "item_type": "App\\Models\\Asset",
+                "item_id": 3,
+                "expected_checkin": null,
+                "quantity": 1,
+                "accepted_id": null,
+                "created_at": "2024-06-01 09:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "deleted_at": null,
+                "thread_id": null,
+                "company_id": null,
+                "accept_signature": null,
+                "log_meta": null,
+                "action_date": "2024-06-01 09:00:00",
+                "stored_eula": null,
+                "action_source": null,
+                "remote_ip": null,
+                "user_agent": null
+            },
+            {
+                "id": 4,
+                "created_by": null,
+                "action_type": "checkout",
+                "target_id": 4,
+                "target_type": "App\\Models\\User",
+                "location_id": null,
+                "note": "Awal",
+                "filename": null,
+                "item_type": "App\\Models\\Asset",
+                "item_id": 4,
+                "expected_checkin": null,
+                "quantity": 1,
+                "accepted_id": null,
+                "created_at": "2024-06-01 09:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "deleted_at": null,
+                "thread_id": null,
+                "company_id": null,
+                "accept_signature": null,
+                "log_meta": null,
+                "action_date": "2024-06-01 09:00:00",
+                "stored_eula": null,
+                "action_source": null,
+                "remote_ip": null,
+                "user_agent": null
+            },
+            {
+                "id": 5,
+                "created_by": null,
+                "action_type": "checkout",
+                "target_id": 5,
+                "target_type": "App\\Models\\User",
+                "location_id": null,
+                "note": "Awal",
+                "filename": null,
+                "item_type": "App\\Models\\Asset",
+                "item_id": 5,
+                "expected_checkin": null,
+                "quantity": 1,
+                "accepted_id": null,
+                "created_at": "2024-06-01 09:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "deleted_at": null,
+                "thread_id": null,
+                "company_id": null,
+                "accept_signature": null,
+                "log_meta": null,
+                "action_date": "2024-06-01 09:00:00",
+                "stored_eula": null,
+                "action_source": null,
+                "remote_ip": null,
+                "user_agent": null
+            },
+            {
+                "id": 6,
+                "created_by": null,
+                "action_type": "checkout",
+                "target_id": 1,
+                "target_type": "App\\Models\\User",
+                "location_id": null,
+                "note": null,
+                "filename": null,
+                "item_type": "App\\Models\\Asset",
+                "item_id": 6,
+                "expected_checkin": null,
+                "quantity": 1,
+                "accepted_id": null,
+                "created_at": "2024-02-01 09:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "deleted_at": null,
+                "thread_id": null,
+                "company_id": null,
+                "accept_signature": null,
+                "log_meta": null,
+                "action_date": "2024-02-01 09:00:00",
+                "stored_eula": null,
+                "action_source": null,
+                "remote_ip": null,
+                "user_agent": null
+            },
+            {
+                "id": 7,
+                "created_by": null,
+                "action_type": "checkin from",
+                "target_id": 1,
+                "target_type": "App\\Models\\User",
+                "location_id": null,
+                "note": null,
+                "filename": null,
+                "item_type": "App\\Models\\Asset",
+                "item_id": 6,
+                "expected_checkin": null,
+                "quantity": 1,
+                "accepted_id": null,
+                "created_at": "2024-04-01 09:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "deleted_at": null,
+                "thread_id": null,
+                "company_id": null,
+                "accept_signature": null,
+                "log_meta": null,
+                "action_date": "2024-04-01 09:00:00",
+                "stored_eula": null,
+                "action_source": null,
+                "remote_ip": null,
+                "user_agent": null
+            },
+            {
+                "id": 8,
+                "created_by": null,
+                "action_type": "checkout",
+                "target_id": 2,
+                "target_type": "App\\Models\\User",
+                "location_id": null,
+                "note": null,
+                "filename": null,
+                "item_type": "App\\Models\\Asset",
+                "item_id": 6,
+                "expected_checkin": null,
+                "quantity": 1,
+                "accepted_id": null,
+                "created_at": "2024-04-02 09:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "deleted_at": null,
+                "thread_id": null,
+                "company_id": null,
+                "accept_signature": null,
+                "log_meta": null,
+                "action_date": "2024-04-02 09:00:00",
+                "stored_eula": null,
+                "action_source": null,
+                "remote_ip": null,
+                "user_agent": null
+            },
+            {
+                "id": 9,
+                "created_by": null,
+                "action_type": "checkout",
+                "target_id": 4,
+                "target_type": "App\\Models\\User",
+                "location_id": null,
+                "note": null,
+                "filename": null,
+                "item_type": "App\\Models\\Asset",
+                "item_id": 10,
+                "expected_checkin": null,
+                "quantity": 1,
+                "accepted_id": null,
+                "created_at": "2023-01-01 09:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "deleted_at": null,
+                "thread_id": null,
+                "company_id": null,
+                "accept_signature": null,
+                "log_meta": null,
+                "action_date": "2023-01-01 09:00:00",
+                "stored_eula": null,
+                "action_source": null,
+                "remote_ip": null,
+                "user_agent": null
+            },
+            {
+                "id": 10,
+                "created_by": null,
+                "action_type": "checkin from",
+                "target_id": 4,
+                "target_type": "App\\Models\\User",
+                "location_id": null,
+                "note": null,
+                "filename": null,
+                "item_type": "App\\Models\\Asset",
+                "item_id": 10,
+                "expected_checkin": null,
+                "quantity": 1,
+                "accepted_id": null,
+                "created_at": "2023-12-01 09:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "deleted_at": null,
+                "thread_id": null,
+                "company_id": null,
+                "accept_signature": null,
+                "log_meta": null,
+                "action_date": "2023-12-01 09:00:00",
+                "stored_eula": null,
+                "action_source": null,
+                "remote_ip": null,
+                "user_agent": null
+            },
+            {
+                "id": 11,
+                "created_by": null,
+                "action_type": "checkout",
+                "target_id": 4,
+                "target_type": "App\\Models\\User",
+                "location_id": null,
+                "note": null,
+                "filename": null,
+                "item_type": "App\\Models\\Asset",
+                "item_id": 11,
+                "expected_checkin": null,
+                "quantity": 1,
+                "accepted_id": null,
+                "created_at": "2023-01-01 09:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "deleted_at": null,
+                "thread_id": null,
+                "company_id": null,
+                "accept_signature": null,
+                "log_meta": null,
+                "action_date": "2023-01-01 09:00:00",
+                "stored_eula": null,
+                "action_source": null,
+                "remote_ip": null,
+                "user_agent": null
+            },
+            {
+                "id": 12,
+                "created_by": null,
+                "action_type": "checkin from",
+                "target_id": 4,
+                "target_type": "App\\Models\\User",
+                "location_id": null,
+                "note": null,
+                "filename": null,
+                "item_type": "App\\Models\\Asset",
+                "item_id": 11,
+                "expected_checkin": null,
+                "quantity": 1,
+                "accepted_id": null,
+                "created_at": "2023-12-01 09:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "deleted_at": null,
+                "thread_id": null,
+                "company_id": null,
+                "accept_signature": null,
+                "log_meta": null,
+                "action_date": "2023-12-01 09:00:00",
+                "stored_eula": null,
+                "action_source": null,
+                "remote_ip": null,
+                "user_agent": null
+            }
+        ]
+    },
+    "bast_histories": {
+        "columns": [
+            [
+                "id",
+                "integer"
+            ],
+            [
+                "asset_id",
+                "integer"
+            ],
+            [
+                "user_id",
+                "integer"
+            ],
+            [
+                "generated_by",
+                "integer"
+            ],
+            [
+                "document_number",
+                "string"
+            ],
+            [
+                "pdf_path",
+                "string"
+            ],
+            [
+                "created_at",
+                "string"
+            ],
+            [
+                "updated_at",
+                "string"
+            ]
+        ],
+        "rows": [
+            {
+                "id": 1,
+                "asset_id": 1,
+                "user_id": 1,
+                "generated_by": 0,
+                "document_number": "IT\/BAST\/2024\/06\/0001",
+                "pdf_path": "bast\/legacy-1.pdf",
+                "created_at": "2024-06-01 09:05:00",
+                "updated_at": "2025-06-01 08:00:00"
+            },
+            {
+                "id": 2,
+                "asset_id": 2,
+                "user_id": 2,
+                "generated_by": 0,
+                "document_number": "IT\/BAST\/2024\/06\/0002",
+                "pdf_path": "bast\/legacy-2.pdf",
+                "created_at": "2024-06-01 09:05:00",
+                "updated_at": "2025-06-01 08:00:00"
+            },
+            {
+                "id": 3,
+                "asset_id": 3,
+                "user_id": 3,
+                "generated_by": 0,
+                "document_number": "IT\/BAST\/2024\/06\/0003",
+                "pdf_path": "bast\/legacy-3.pdf",
+                "created_at": "2024-06-01 09:05:00",
+                "updated_at": "2025-06-01 08:00:00"
+            },
+            {
+                "id": 4,
+                "asset_id": 4,
+                "user_id": 4,
+                "generated_by": 0,
+                "document_number": "IT\/BAST\/2024\/06\/0004",
+                "pdf_path": "bast\/legacy-4.pdf",
+                "created_at": "2024-06-01 09:05:00",
+                "updated_at": "2025-06-01 08:00:00"
+            },
+            {
+                "id": 5,
+                "asset_id": 5,
+                "user_id": 5,
+                "generated_by": 0,
+                "document_number": "IT\/BAST\/2024\/06\/0005",
+                "pdf_path": "bast\/legacy-5.pdf",
+                "created_at": "2024-06-01 09:05:00",
+                "updated_at": "2025-06-01 08:00:00"
+            }
+        ]
+    },
+    "asset_agent_tokens": {
+        "columns": [
+            [
+                "id",
+                "integer"
+            ],
+            [
+                "asset_id",
+                "integer"
+            ],
+            [
+                "token_hash",
+                "string"
+            ],
+            [
+                "created_by",
+                "integer"
+            ],
+            [
+                "revoked_at",
+                "string"
+            ],
+            [
+                "created_at",
+                "string"
+            ],
+            [
+                "updated_at",
+                "string"
+            ],
+            [
+                "token_lookup",
+                "string"
+            ]
+        ],
+        "rows": [
+            {
+                "id": 1,
+                "asset_id": 1,
+                "token_hash": "$2y$12$CJ92WzSWKItFjkkpxCdZ\/e\/6QNFY2Fxj4AbOtb2DA3laXy6YUsede",
+                "created_by": null,
+                "revoked_at": null,
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "token_lookup": "982c55bbdc78b901428febbd1ab5f9cc029ea9b2074d1598ee1d30e4d70b752f"
+            },
+            {
+                "id": 2,
+                "asset_id": 2,
+                "token_hash": "$2y$12$\/oVjmoH1cJoKct7aDVKUD.DkaO3P3YHkwXfpJ1ZD\/TRO1CcZmj1X.",
+                "created_by": null,
+                "revoked_at": null,
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "token_lookup": "cfc53be3cdf7cac577e3d62bfb28b67c16c90d2e5add91edbddfe0c56e36952d"
+            },
+            {
+                "id": 3,
+                "asset_id": 3,
+                "token_hash": "$2y$12$IIkYX1Ytpx0UHfLjHZHZqO8mtZn6NgVYoepOgAJy8xnXJs.X0Z.M2",
+                "created_by": null,
+                "revoked_at": null,
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "token_lookup": "26f26ac4272526d76c758c48e220e5314a1d41caba24fa9a31e1047d2eb70e8c"
+            },
+            {
+                "id": 4,
+                "asset_id": 4,
+                "token_hash": "$2y$12$2YVNp0qatCdA4ipFlY5OPe.XqlHOrI.142SDd5p8myHF3YoOdT5iy",
+                "created_by": null,
+                "revoked_at": null,
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "token_lookup": "6dd7d943ee4076708873fdefad869a7c6af3495805c7bf4f0f2e30c948c4a44e"
+            },
+            {
+                "id": 5,
+                "asset_id": 5,
+                "token_hash": "$2y$12$vV0ogIlfO0Xqcku.z.2Rde5Tc5eq5624lD1gicO.FlPFl29nZ218i",
+                "created_by": null,
+                "revoked_at": "2025-05-01 00:00:00",
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "token_lookup": "68530627a40ab66bb3a6170e65adde6315dd01aaba81a251baa7678ff73e0dfb"
+            }
+        ]
+    },
+    "asset_heartbeats": {
+        "columns": [
+            [
+                "id",
+                "integer"
+            ],
+            [
+                "asset_id",
+                "integer"
+            ],
+            [
+                "hostname",
+                "string"
+            ],
+            [
+                "ip_address",
+                "string"
+            ],
+            [
+                "os_version",
+                "string"
+            ],
+            [
+                "manufacturer",
+                "string"
+            ],
+            [
+                "model",
+                "string"
+            ],
+            [
+                "serial_number",
+                "string"
+            ],
+            [
+                "cpu",
+                "string"
+            ],
+            [
+                "ram_total_bytes",
+                "integer"
+            ],
+            [
+                "os_build",
+                "string"
+            ],
+            [
+                "os_architecture",
+                "string"
+            ],
+            [
+                "domain",
+                "string"
+            ],
+            [
+                "last_boot_at",
+                "string"
+            ],
+            [
+                "bitlocker_status",
+                "string"
+            ],
+            [
+                "defender_enabled",
+                "integer"
+            ],
+            [
+                "defender_signature_at",
+                "string"
+            ],
+            [
+                "last_patch_at",
+                "string"
+            ],
+            [
+                "disk_free_bytes",
+                "integer"
+            ],
+            [
+                "disk_total_bytes",
+                "integer"
+            ],
+            [
+                "agent_version",
+                "integer"
+            ],
+            [
+                "reported_at",
+                "string"
+            ],
+            [
+                "created_at",
+                "string"
+            ],
+            [
+                "updated_at",
+                "string"
+            ],
+            [
+                "network_type",
+                "string"
+            ],
+            [
+                "wifi_ssid",
+                "string"
+            ],
+            [
+                "mac_address",
+                "string"
+            ],
+            [
+                "gateway",
+                "string"
+            ],
+            [
+                "battery_present",
+                "integer"
+            ],
+            [
+                "battery_percent",
+                "integer"
+            ],
+            [
+                "battery_charging",
+                "integer"
+            ],
+            [
+                "battery_health_percent",
+                "integer"
+            ],
+            [
+                "disks",
+                "string"
+            ],
+            [
+                "physical_disks",
+                "string"
+            ],
+            [
+                "reboot_pending",
+                "integer"
+            ],
+            [
+                "pending_updates_count",
+                "integer"
+            ],
+            [
+                "pending_updates",
+                "string"
+            ],
+            [
+                "updates_checked_at",
+                "string"
+            ],
+            [
+                "software",
+                "string"
+            ],
+            [
+                "software_count",
+                "integer"
+            ],
+            [
+                "software_reported_at",
+                "string"
+            ],
+            [
+                "cpu_manufacturer",
+                "string"
+            ],
+            [
+                "cpu_cores",
+                "integer"
+            ],
+            [
+                "cpu_logical",
+                "integer"
+            ],
+            [
+                "cpu_max_mhz",
+                "integer"
+            ],
+            [
+                "cpu_current_mhz",
+                "integer"
+            ],
+            [
+                "cpu_load_percent",
+                "integer"
+            ],
+            [
+                "cpu_l2_kb",
+                "integer"
+            ],
+            [
+                "cpu_l3_kb",
+                "integer"
+            ],
+            [
+                "ram_free_bytes",
+                "integer"
+            ],
+            [
+                "ram_slots_total",
+                "integer"
+            ],
+            [
+                "ram_max_bytes",
+                "integer"
+            ],
+            [
+                "ram_modules",
+                "string"
+            ],
+            [
+                "ram_read_mbps",
+                "integer"
+            ],
+            [
+                "ram_write_mbps",
+                "integer"
+            ],
+            [
+                "disk_read_mbps",
+                "integer"
+            ],
+            [
+                "disk_write_mbps",
+                "integer"
+            ],
+            [
+                "benchmark_at",
+                "string"
+            ],
+            [
+                "local_admins",
+                "string"
+            ],
+            [
+                "builtin_admin_enabled",
+                "integer"
+            ],
+            [
+                "usb_storage",
+                "string"
+            ]
+        ],
+        "rows": [
+            {
+                "id": 1,
+                "asset_id": 1,
+                "hostname": "LAPTOP-1",
+                "ip_address": "10.0.0.1",
+                "os_version": "Windows 11 Pro",
+                "manufacturer": null,
+                "model": null,
+                "serial_number": null,
+                "cpu": null,
+                "ram_total_bytes": null,
+                "os_build": null,
+                "os_architecture": null,
+                "domain": null,
+                "last_boot_at": null,
+                "bitlocker_status": null,
+                "defender_enabled": null,
+                "defender_signature_at": null,
+                "last_patch_at": null,
+                "disk_free_bytes": null,
+                "disk_total_bytes": null,
+                "agent_version": 9,
+                "reported_at": "2026-11-18 08:00:00",
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "network_type": null,
+                "wifi_ssid": null,
+                "mac_address": null,
+                "gateway": null,
+                "battery_present": null,
+                "battery_percent": null,
+                "battery_charging": null,
+                "battery_health_percent": null,
+                "disks": null,
+                "physical_disks": null,
+                "reboot_pending": null,
+                "pending_updates_count": null,
+                "pending_updates": null,
+                "updates_checked_at": null,
+                "software": null,
+                "software_count": null,
+                "software_reported_at": null,
+                "cpu_manufacturer": null,
+                "cpu_cores": null,
+                "cpu_logical": null,
+                "cpu_max_mhz": null,
+                "cpu_current_mhz": null,
+                "cpu_load_percent": null,
+                "cpu_l2_kb": null,
+                "cpu_l3_kb": null,
+                "ram_free_bytes": null,
+                "ram_slots_total": null,
+                "ram_max_bytes": null,
+                "ram_modules": null,
+                "ram_read_mbps": null,
+                "ram_write_mbps": null,
+                "disk_read_mbps": null,
+                "disk_write_mbps": null,
+                "benchmark_at": null,
+                "local_admins": null,
+                "builtin_admin_enabled": null,
+                "usb_storage": null
+            },
+            {
+                "id": 2,
+                "asset_id": 2,
+                "hostname": "LAPTOP-2",
+                "ip_address": "10.0.0.2",
+                "os_version": "Windows 11 Pro",
+                "manufacturer": null,
+                "model": null,
+                "serial_number": null,
+                "cpu": null,
+                "ram_total_bytes": null,
+                "os_build": null,
+                "os_architecture": null,
+                "domain": null,
+                "last_boot_at": null,
+                "bitlocker_status": null,
+                "defender_enabled": null,
+                "defender_signature_at": null,
+                "last_patch_at": null,
+                "disk_free_bytes": null,
+                "disk_total_bytes": null,
+                "agent_version": 9,
+                "reported_at": "2026-11-18 08:00:00",
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "network_type": null,
+                "wifi_ssid": null,
+                "mac_address": null,
+                "gateway": null,
+                "battery_present": null,
+                "battery_percent": null,
+                "battery_charging": null,
+                "battery_health_percent": null,
+                "disks": null,
+                "physical_disks": null,
+                "reboot_pending": null,
+                "pending_updates_count": null,
+                "pending_updates": null,
+                "updates_checked_at": null,
+                "software": null,
+                "software_count": null,
+                "software_reported_at": null,
+                "cpu_manufacturer": null,
+                "cpu_cores": null,
+                "cpu_logical": null,
+                "cpu_max_mhz": null,
+                "cpu_current_mhz": null,
+                "cpu_load_percent": null,
+                "cpu_l2_kb": null,
+                "cpu_l3_kb": null,
+                "ram_free_bytes": null,
+                "ram_slots_total": null,
+                "ram_max_bytes": null,
+                "ram_modules": null,
+                "ram_read_mbps": null,
+                "ram_write_mbps": null,
+                "disk_read_mbps": null,
+                "disk_write_mbps": null,
+                "benchmark_at": null,
+                "local_admins": null,
+                "builtin_admin_enabled": null,
+                "usb_storage": null
+            },
+            {
+                "id": 3,
+                "asset_id": 3,
+                "hostname": "LAPTOP-3",
+                "ip_address": "10.0.0.3",
+                "os_version": "Windows 11 Pro",
+                "manufacturer": null,
+                "model": null,
+                "serial_number": null,
+                "cpu": null,
+                "ram_total_bytes": null,
+                "os_build": null,
+                "os_architecture": null,
+                "domain": null,
+                "last_boot_at": null,
+                "bitlocker_status": null,
+                "defender_enabled": null,
+                "defender_signature_at": null,
+                "last_patch_at": null,
+                "disk_free_bytes": null,
+                "disk_total_bytes": null,
+                "agent_version": 9,
+                "reported_at": "2026-11-18 08:00:00",
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "network_type": null,
+                "wifi_ssid": null,
+                "mac_address": null,
+                "gateway": null,
+                "battery_present": null,
+                "battery_percent": null,
+                "battery_charging": null,
+                "battery_health_percent": null,
+                "disks": null,
+                "physical_disks": null,
+                "reboot_pending": null,
+                "pending_updates_count": null,
+                "pending_updates": null,
+                "updates_checked_at": null,
+                "software": null,
+                "software_count": null,
+                "software_reported_at": null,
+                "cpu_manufacturer": null,
+                "cpu_cores": null,
+                "cpu_logical": null,
+                "cpu_max_mhz": null,
+                "cpu_current_mhz": null,
+                "cpu_load_percent": null,
+                "cpu_l2_kb": null,
+                "cpu_l3_kb": null,
+                "ram_free_bytes": null,
+                "ram_slots_total": null,
+                "ram_max_bytes": null,
+                "ram_modules": null,
+                "ram_read_mbps": null,
+                "ram_write_mbps": null,
+                "disk_read_mbps": null,
+                "disk_write_mbps": null,
+                "benchmark_at": null,
+                "local_admins": null,
+                "builtin_admin_enabled": null,
+                "usb_storage": null
+            },
+            {
+                "id": 4,
+                "asset_id": 4,
+                "hostname": "LAPTOP-4",
+                "ip_address": "10.0.0.4",
+                "os_version": "Windows 11 Pro",
+                "manufacturer": null,
+                "model": null,
+                "serial_number": null,
+                "cpu": null,
+                "ram_total_bytes": null,
+                "os_build": null,
+                "os_architecture": null,
+                "domain": null,
+                "last_boot_at": null,
+                "bitlocker_status": null,
+                "defender_enabled": null,
+                "defender_signature_at": null,
+                "last_patch_at": null,
+                "disk_free_bytes": null,
+                "disk_total_bytes": null,
+                "agent_version": 9,
+                "reported_at": "2026-11-18 08:00:00",
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00",
+                "network_type": null,
+                "wifi_ssid": null,
+                "mac_address": null,
+                "gateway": null,
+                "battery_present": null,
+                "battery_percent": null,
+                "battery_charging": null,
+                "battery_health_percent": null,
+                "disks": null,
+                "physical_disks": null,
+                "reboot_pending": null,
+                "pending_updates_count": null,
+                "pending_updates": null,
+                "updates_checked_at": null,
+                "software": null,
+                "software_count": null,
+                "software_reported_at": null,
+                "cpu_manufacturer": null,
+                "cpu_cores": null,
+                "cpu_logical": null,
+                "cpu_max_mhz": null,
+                "cpu_current_mhz": null,
+                "cpu_load_percent": null,
+                "cpu_l2_kb": null,
+                "cpu_l3_kb": null,
+                "ram_free_bytes": null,
+                "ram_slots_total": null,
+                "ram_max_bytes": null,
+                "ram_modules": null,
+                "ram_read_mbps": null,
+                "ram_write_mbps": null,
+                "disk_read_mbps": null,
+                "disk_write_mbps": null,
+                "benchmark_at": null,
+                "local_admins": null,
+                "builtin_admin_enabled": null,
+                "usb_storage": null
+            }
+        ]
+    },
+    "asset_helper_tokens": {
+        "columns": [
+            [
+                "id",
+                "integer"
+            ],
+            [
+                "asset_id",
+                "integer"
+            ],
+            [
+                "token_hash",
+                "string"
+            ],
+            [
+                "expires_at",
+                "string"
+            ],
+            [
+                "created_at",
+                "string"
+            ],
+            [
+                "updated_at",
+                "string"
+            ]
+        ],
+        "rows": [
+            {
+                "id": 1,
+                "asset_id": 1,
+                "token_hash": "5308b7ffc6791ab55404889642a7888d26944dab52fb4a4552cd119b5053009f",
+                "expires_at": "2026-12-31 00:00:00",
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00"
+            }
+        ]
+    },
+    "asset_agent_commands": {
+        "columns": [
+            [
+                "id",
+                "integer"
+            ],
+            [
+                "asset_id",
+                "integer"
+            ],
+            [
+                "type",
+                "string"
+            ],
+            [
+                "params",
+                "string"
+            ],
+            [
+                "status",
+                "string"
+            ],
+            [
+                "requested_by",
+                "integer"
+            ],
+            [
+                "requested_at",
+                "string"
+            ],
+            [
+                "delivered_at",
+                "string"
+            ],
+            [
+                "finished_at",
+                "string"
+            ],
+            [
+                "expires_at",
+                "string"
+            ],
+            [
+                "result",
+                "string"
+            ]
+        ],
+        "rows": [
+            {
+                "id": 1,
+                "asset_id": 1,
+                "type": "notify_user",
+                "params": "{\"message\":\"Halo\"}",
+                "status": "pending",
+                "requested_by": null,
+                "requested_at": "2026-11-18 08:00:00",
+                "delivered_at": null,
+                "finished_at": null,
+                "expires_at": "2026-11-30 08:00:00",
+                "result": null
+            },
+            {
+                "id": 2,
+                "asset_id": 1,
+                "type": "notify_user",
+                "params": "{\"message\":\"Lama\"}",
+                "status": "done",
+                "requested_by": null,
+                "requested_at": "2026-10-18 08:00:00",
+                "delivered_at": null,
+                "finished_at": null,
+                "expires_at": "2026-10-19 08:00:00",
+                "result": null
+            }
+        ]
+    },
+    "asset_spec_changes": {
+        "columns": [
+            [
+                "id",
+                "integer"
+            ],
+            [
+                "asset_id",
+                "integer"
+            ],
+            [
+                "category",
+                "string"
+            ],
+            [
+                "field",
+                "string"
+            ],
+            [
+                "old_value",
+                "string"
+            ],
+            [
+                "new_value",
+                "string"
+            ],
+            [
+                "changed_at",
+                "string"
+            ]
+        ],
+        "rows": []
+    },
+    "agent_announcements": {
+        "columns": [
+            [
+                "id",
+                "integer"
+            ],
+            [
+                "title",
+                "string"
+            ],
+            [
+                "body",
+                "string"
+            ],
+            [
+                "severity",
+                "string"
+            ],
+            [
+                "require_ack",
+                "integer"
+            ],
+            [
+                "target_mode",
+                "string"
+            ],
+            [
+                "starts_at",
+                "string"
+            ],
+            [
+                "ends_at",
+                "string"
+            ],
+            [
+                "ended_at",
+                "string"
+            ],
+            [
+                "created_by",
+                "integer"
+            ],
+            [
+                "created_at",
+                "string"
+            ],
+            [
+                "updated_at",
+                "string"
+            ]
+        ],
+        "rows": [
+            {
+                "id": 1,
+                "title": "Maintenance malam ini",
+                "body": "Server restart",
+                "severity": "important",
+                "require_ack": 1,
+                "target_mode": "selected",
+                "starts_at": null,
+                "ends_at": null,
+                "ended_at": null,
+                "created_by": null,
+                "created_at": "2025-01-10 08:00:00",
+                "updated_at": "2025-06-01 08:00:00"
+            }
+        ]
+    },
+    "agent_announcement_targets": {
+        "columns": [
+            [
+                "announcement_id",
+                "integer"
+            ],
+            [
+                "asset_id",
+                "integer"
+            ]
+        ],
+        "rows": [
+            {
+                "announcement_id": 1,
+                "asset_id": 1
+            }
+        ]
+    },
+    "agent_announcement_deliveries": {
+        "columns": [
+            [
+                "id",
+                "integer"
+            ],
+            [
+                "announcement_id",
+                "integer"
+            ],
+            [
+                "asset_id",
+                "integer"
+            ],
+            [
+                "shown_at",
+                "string"
+            ],
+            [
+                "acked_at",
+                "string"
+            ],
+            [
+                "created_at",
+                "string"
+            ],
+            [
+                "updated_at",
+                "string"
+            ]
+        ],
+        "rows": []
+    },
+    "agent_chat_sessions": {
+        "columns": [
+            [
+                "id",
+                "integer"
+            ],
+            [
+                "asset_id",
+                "integer"
+            ],
+            [
+                "started_by",
+                "integer"
+            ],
+            [
+                "closed_by",
+                "integer"
+            ],
+            [
+                "status",
+                "string"
+            ],
+            [
+                "started_at",
+                "string"
+            ],
+            [
+                "last_activity_at",
+                "string"
+            ],
+            [
+                "closed_at",
+                "string"
+            ],
+            [
+                "close_reason",
+                "string"
+            ]
+        ],
+        "rows": [
+            {
+                "id": 1,
+                "asset_id": 1,
+                "started_by": null,
+                "closed_by": null,
+                "status": "open",
+                "started_at": "2026-11-18 08:00:00",
+                "last_activity_at": "2026-11-18 08:00:00",
+                "closed_at": null,
+                "close_reason": null
+            }
+        ]
+    },
+    "agent_chat_messages": {
+        "columns": [
+            [
+                "id",
+                "integer"
+            ],
+            [
+                "chat_session_id",
+                "integer"
+            ],
+            [
+                "sender",
+                "string"
+            ],
+            [
+                "user_id",
+                "integer"
+            ],
+            [
+                "body",
+                "string"
+            ],
+            [
+                "created_at",
+                "string"
+            ]
+        ],
+        "rows": [
+            {
+                "id": 1,
+                "chat_session_id": 1,
+                "sender": "it",
+                "user_id": null,
+                "body": "Halo, ada masalah?",
+                "created_at": "2026-11-18 08:00:00"
+            }
+        ]
+    },
+    "agent_rollout_snapshots": {
+        "columns": [
+            [
+                "id",
+                "integer"
+            ],
+            [
+                "snapshot_date",
+                "string"
+            ],
+            [
+                "laptops_total",
+                "integer"
+            ],
+            [
+                "installed",
+                "integer"
+            ],
+            [
+                "online",
+                "integer"
+            ],
+            [
+                "created_at",
+                "string"
+            ]
+        ],
+        "rows": []
+    }
+}
