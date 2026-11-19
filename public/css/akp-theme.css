@@ -1,0 +1,171 @@
+/* AKP Premium — satu sistem desain untuk IT Asset (Filament) dan ITERA.
+   Palet sengaja sedikit: navy + biru logo AKP sebagai warna merek, teal logo sebagai aksen, sisanya netral.
+   Merah / kuning hanya untuk status yang memang perlu perhatian. */
+:root {
+    --akp-navy: #10264a;
+    --akp-navy-2: #183a6b;
+    --akp-blue: #1f6fb5;
+    --akp-blue-600: #195f9d;
+    --akp-sky: #29aae1;
+    --akp-teal: #2fa99b;
+    --akp-ink: #0f1c33;
+    --akp-muted: #64748b;
+    --akp-line: #e2e8f1;
+    --akp-line-2: #edf1f7;
+    --akp-bg: #f4f7fb;
+    --akp-tint: rgba(31, 111, 181, .08);
+    --akp-ring: 0 0 0 3px rgba(41, 170, 225, .22);
+    --akp-shadow: 0 1px 2px rgba(16, 38, 74, .04), 0 6px 18px -8px rgba(16, 38, 74, .10);
+    --akp-shadow-lg: 0 24px 60px -20px rgba(16, 38, 74, .35);
+    --akp-radius: 12px;
+}
+
+html:not(.dark) body, html:not(.dark) .fi-body { background: var(--akp-bg); color: var(--akp-ink); }
+body { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; font-feature-settings: "tnum", "cv11"; }
+
+/* ───────── kerangka: topbar & sidebar ───────── */
+html:not(.dark) .fi-topbar { background: #fff; border-bottom: 1px solid var(--akp-line); box-shadow: none; }
+html:not(.dark) .fi-topbar > nav, html:not(.dark) .fi-topbar-ctn { background: transparent; box-shadow: none; --tw-ring-color: transparent; }
+html:not(.dark) .fi-sidebar { background: #fff; border-right: 1px solid var(--akp-line); box-shadow: none; }
+.fi-sidebar-nav { padding-top: .75rem; }
+.fi-sidebar-group-label { font-size: .68rem; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; color: #8a97ab; }
+.fi-sidebar-item-btn { border-radius: 10px; padding: .5rem .7rem; position: relative; transition: background .15s, color .15s; }
+.fi-sidebar-item-label { font-size: .875rem; font-weight: 500; color: #334155; }
+.fi-sidebar-item-icon { color: #94a3b8; transition: color .15s; }
+.fi-sidebar-item-btn:hover { background: #f1f5fa; }
+.fi-sidebar-item-btn:hover .fi-sidebar-item-icon { color: var(--akp-blue); }
+.fi-sidebar-item.fi-active .fi-sidebar-item-btn { background: var(--akp-tint); }
+.fi-sidebar-item.fi-active .fi-sidebar-item-btn::before { content: ""; position: absolute; left: -2px; top: 22%; bottom: 22%; width: 3px; border-radius: 3px; background: linear-gradient(180deg, var(--akp-sky), var(--akp-blue)); }
+.fi-sidebar-item.fi-active .fi-sidebar-item-label { color: var(--akp-blue-600); font-weight: 650; }
+.fi-sidebar-item.fi-active .fi-sidebar-item-icon { color: var(--akp-blue); }
+.fi-topbar .fi-icon-btn, .fi-user-menu-trigger { border-radius: 10px; }
+
+/* ───────── judul halaman & breadcrumb ───────── */
+.fi-header-heading { font-size: 1.7rem; font-weight: 750; letter-spacing: -.02em; color: var(--akp-navy); line-height: 1.2; }
+.fi-header-subheading { color: var(--akp-muted); font-size: .9rem; }
+.fi-breadcrumbs-item-label { font-size: .8rem; color: #8a97ab; }
+.fi-header-actions-ctn { gap: .5rem; }
+
+/* ───────── kartu, seksi, tabel ───────── */
+html:not(.dark) .fi-section, html:not(.dark) .fi-ta-ctn, html:not(.dark) .fi-wi-stats-overview-stat {
+    background: #fff; border: 1px solid var(--akp-line); border-radius: 14px; box-shadow: var(--akp-shadow); --tw-ring-color: transparent; --tw-ring-shadow: 0 0 #0000;
+}
+.fi-section-header-heading { font-weight: 700; color: var(--akp-navy); letter-spacing: -.01em; }
+.fi-ta-header-toolbar { padding: .75rem 1rem; border-bottom: 1px solid var(--akp-line-2); }
+.fi-ta-table { border-collapse: separate; border-spacing: 0; }
+html:not(.dark) .fi-ta-header-cell { background: #f8fafd; border-bottom: 1px solid var(--akp-line); color: #64748b; font-size: .72rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; padding-block: .7rem; }
+.fi-ta-header-cell-sort-btn { font-weight: 700; }
+.fi-ta-cell { font-size: .875rem; color: #1e293b; }
+.fi-ta-row { transition: background .12s; }
+html:not(.dark) .fi-ta-row:hover { background: #f6f9fe; }
+html:not(.dark) .fi-ta-row td, html:not(.dark) .fi-ta-row > .fi-ta-cell { border-top: 1px solid var(--akp-line-2); }
+.fi-ta-text-item-label { font-weight: 500; }
+html:not(.dark) .fi-ta-footer, html:not(.dark) .fi-pagination { border-top: 1px solid var(--akp-line-2); }
+.fi-pagination-item-btn { border-radius: 8px; font-weight: 600; }
+.fi-pagination-item.fi-active .fi-pagination-item-btn { background: var(--akp-blue); color: #fff; }
+
+/* ───────── tombol: satu warna merek, sisanya netral ───────── */
+.fi-btn { border-radius: 10px; font-weight: 600; font-size: .85rem; letter-spacing: .005em; transition: background .15s, box-shadow .15s, transform .15s, border-color .15s; box-shadow: none; --tw-ring-shadow: 0 0 #0000; }
+.fi-btn:active { transform: translateY(1px); }
+.fi-btn:focus-visible { outline: none; box-shadow: var(--akp-ring); }
+/* tombol berwarna (primary/success/info/warning) = satu gaya biru merek */
+html .fi-btn.fi-color-primary:not(.fi-outlined), html .fi-btn.fi-color-success:not(.fi-outlined), html .fi-btn.fi-color-info:not(.fi-outlined), html .fi-btn.fi-color-warning:not(.fi-outlined) {
+    background: linear-gradient(180deg, #2b80c8 0%, var(--akp-blue) 100%); color: #fff; border: 1px solid rgba(16, 38, 74, .12);
+    box-shadow: 0 1px 2px rgba(16, 38, 74, .18), inset 0 1px 0 rgba(255, 255, 255, .16);
+}
+html .fi-btn.fi-color-primary:not(.fi-outlined):hover, html .fi-btn.fi-color-success:not(.fi-outlined):hover, html .fi-btn.fi-color-info:not(.fi-outlined):hover, html .fi-btn.fi-color-warning:not(.fi-outlined):hover { background: linear-gradient(180deg, var(--akp-blue) 0%, var(--akp-blue-600) 100%); }
+html .fi-btn.fi-color-primary:not(.fi-outlined) .fi-icon, html .fi-btn.fi-color-success:not(.fi-outlined) .fi-icon, html .fi-btn.fi-color-warning:not(.fi-outlined) .fi-icon { color: #fff; }
+/* tombol netral / sekunder: putih berbingkai */
+html:not(.dark) .fi-btn.fi-color-gray, html:not(.dark) .fi-btn.fi-outlined {
+    background: #fff; color: var(--akp-ink); border: 1px solid #d6deea; box-shadow: 0 1px 1px rgba(16, 38, 74, .04);
+}
+html:not(.dark) .fi-btn.fi-color-gray:hover, html:not(.dark) .fi-btn.fi-outlined:hover { background: #f5f8fc; border-color: #b9c6da; }
+html:not(.dark) .fi-btn.fi-color-gray .fi-icon, html:not(.dark) .fi-btn.fi-outlined .fi-icon { color: var(--akp-blue); }
+/* hanya tombol hapus yang merah */
+html:not(.dark) .fi-btn.fi-color-danger:not(.fi-outlined) { background: #d64545; color: #fff; border: 1px solid rgba(0, 0, 0, .08); }
+html:not(.dark) .fi-btn.fi-color-danger.fi-outlined { background: #fff; color: #c43a3a; border: 1px solid #efc4c4; }
+/* ikon aksi per baris: abu kebiruan, biru saat disorot, merah hanya untuk hapus */
+.fi-ta-actions .fi-icon-btn, .fi-ta-record .fi-icon-btn, .fi-ac-icon-btn-action { border-radius: 9px; width: 2rem; height: 2rem; transition: background .12s, color .12s; }
+html:not(.dark) .fi-ta-actions .fi-icon-btn, html:not(.dark) .fi-ac-icon-btn-action { color: #7b8aa3; }
+html:not(.dark) .fi-ta-actions .fi-icon-btn .fi-icon, html:not(.dark) .fi-ac-icon-btn-action .fi-icon { color: inherit; }
+html:not(.dark) .fi-ta-actions .fi-icon-btn:hover, html:not(.dark) .fi-ac-icon-btn-action:hover { background: var(--akp-tint); color: var(--akp-blue); }
+html:not(.dark) .fi-ta-actions .fi-icon-btn.fi-color-danger:hover, html:not(.dark) .fi-ac-icon-btn-action.fi-color-danger:hover { background: #fdecec; color: #c43a3a; }
+html:not(.dark) .fi-ta-actions .fi-icon-btn.fi-color-danger, html:not(.dark) .fi-ac-icon-btn-action.fi-color-danger { color: #b99; }
+.fi-link { font-weight: 600; }
+
+/* ───────── badge: warna sedikit, mudah dibaca ───────── */
+.fi-badge { border-radius: 999px; font-size: .72rem; font-weight: 650; padding: .15rem .6rem; letter-spacing: .01em; }
+html:not(.dark) .fi-badge { --tw-ring-shadow: 0 0 #0000; box-shadow: none; border: 1px solid transparent; }
+html:not(.dark) .fi-badge.fi-color-primary, html:not(.dark) .fi-badge.fi-color-info { background: #e8f1fa; color: #195f9d; border-color: #cfe2f4; }
+html:not(.dark) .fi-badge.fi-color-success { background: #e4f5f2; color: #17766b; border-color: #c4e8e2; }
+html:not(.dark) .fi-badge.fi-color-warning { background: #fdf3df; color: #8a5a0b; border-color: #f4dfae; }
+html:not(.dark) .fi-badge.fi-color-danger { background: #fdecec; color: #b13a3a; border-color: #f4c9c9; }
+html:not(.dark) .fi-badge.fi-color-gray { background: #f1f4f9; color: #475569; border-color: #e0e6ef; }
+
+/* ───────── form ───────── */
+.fi-fo-field-label { font-size: .8rem; font-weight: 650; color: #334155; }
+html:not(.dark) .fi-input-wrp { background: #fff; border: 1px solid #d6deea; border-radius: 10px; box-shadow: 0 1px 1px rgba(16, 38, 74, .03); transition: box-shadow .15s, border-color .15s; }
+html:not(.dark) .fi-input-wrp:focus-within { border-color: var(--akp-sky); box-shadow: var(--akp-ring); }
+html:not(.dark) .fi-input-wrp .fi-input, html:not(.dark) .fi-input-wrp input, html:not(.dark) .fi-input-wrp select { box-shadow: none !important; }
+.fi-input, .fi-select-input { font-size: .9rem; }
+.fi-fo-field-wrp-error-message { font-size: .78rem; }
+.fi-checkbox-input, .fi-radio-input { accent-color: var(--akp-blue); }
+
+/* ───────── modal, dropdown, notifikasi ───────── */
+html:not(.dark) .fi-modal-window { border-radius: 16px; box-shadow: var(--akp-shadow-lg); border: 1px solid var(--akp-line); --tw-ring-color: transparent; }
+.fi-modal-heading { font-weight: 700; color: var(--akp-navy); letter-spacing: -.01em; }
+.fi-modal-close-overlay { background: rgba(10, 24, 48, .55); backdrop-filter: blur(3px); }
+html:not(.dark) .fi-dropdown-panel { border-radius: 12px; border: 1px solid var(--akp-line); box-shadow: 0 18px 40px -16px rgba(16, 38, 74, .3); --tw-ring-color: transparent; }
+.fi-dropdown-list-item { border-radius: 8px; }
+html:not(.dark) .fi-no-notification { border-radius: 14px; border: 1px solid var(--akp-line); box-shadow: 0 18px 40px -16px rgba(16, 38, 74, .35); --tw-ring-color: transparent; }
+.fi-no-notification-title { font-weight: 700; }
+
+/* ───────── halaman masuk ───────── */
+html:not(.dark) .fi-simple-layout { background: radial-gradient(900px 420px at 85% -10%, rgba(41, 170, 225, .30), transparent 60%), radial-gradient(700px 360px at 0% 110%, rgba(47, 169, 155, .22), transparent 60%), linear-gradient(160deg, #0d2040, #153463 60%, #1b4a85); }
+html:not(.dark) .fi-simple-main { background: #fff; border-radius: 20px; box-shadow: var(--akp-shadow-lg); border: 1px solid rgba(255, 255, 255, .6); --tw-ring-color: transparent; }
+.fi-simple-header-heading { font-weight: 750; color: var(--akp-navy); letter-spacing: -.02em; }
+html:not(.dark) .fi-simple-layout img.akp-mark { background: transparent; }
+
+/* ───────── komponen buatan sendiri (halaman Blade) ───────── */
+/* tombol bergaya inline lama → gaya merek (tanpa menyentuh tiap halaman) */
+button[style*="background:#1f78b0"], a[style*="background:#1f78b0"], .set-btn { background: linear-gradient(180deg, #2b80c8, var(--akp-blue)) !important; color: #fff !important; border-radius: 10px !important; font-weight: 600 !important; font-size: .85rem !important; border: 1px solid rgba(16, 38, 74, .12) !important; box-shadow: 0 1px 2px rgba(16, 38, 74, .18), inset 0 1px 0 rgba(255, 255, 255, .16) !important; transition: filter .15s; }
+button[style*="background:#1f78b0"]:hover, a[style*="background:#1f78b0"]:hover, .set-btn:hover { filter: brightness(1.06); }
+span[style*="background:#1f78b0"] { background: var(--akp-tint) !important; color: var(--akp-blue-600) !important; border: 1px solid #cfe2f4; font-weight: 650; }
+button[style*="background:#37baab"] { background: #fff !important; color: var(--akp-blue-600) !important; border: 1px solid #b9d3ea !important; border-radius: 10px !important; font-weight: 600 !important; font-size: .85rem !important; }
+button[style*="background:#37baab"]:hover { background: var(--akp-tint) !important; }
+button[style*="background:#dc2626"] { border-radius: 10px !important; font-weight: 600 !important; font-size: .85rem !important; background: #d64545 !important; }
+button[style*="border:1px solid #1f78b0"] { border: 1px solid #b9d3ea !important; color: var(--akp-blue-600) !important; border-radius: 10px !important; background: #fff !important; font-weight: 600 !important; }
+button[style*="border:1px solid #1f78b0"]:hover { background: var(--akp-tint) !important; }
+/* kartu inline lama */
+html:not(.dark) div[style*="rgba(127,127,127,.08)"][style*="border-radius:12px"] { background: #fff !important; border: 1px solid var(--akp-line); border-radius: 14px !important; box-shadow: var(--akp-shadow); }
+html:not(.dark) div[style*="rgba(127,127,127,.08)"][style*="border-radius:12px"] h3 { color: var(--akp-navy); letter-spacing: -.01em; }
+/* isian inline lama */
+input[style*="#d1d5db"], select[style*="#d1d5db"], textarea[style*="#d1d5db"] { border: 1px solid #d6deea !important; border-radius: 10px !important; background: #fff !important; font-size: .9rem; transition: box-shadow .15s, border-color .15s; }
+input[style*="#d1d5db"]:focus, select[style*="#d1d5db"]:focus, textarea[style*="#d1d5db"]:focus { outline: none; border-color: var(--akp-sky) !important; box-shadow: var(--akp-ring); }
+html:not(.dark) input[style*="#d1d5db"], html:not(.dark) select[style*="#d1d5db"], html:not(.dark) textarea[style*="#d1d5db"] { color: var(--akp-ink); }
+/* tombol ITERA di topbar */
+
+/* ───────── kartu Pengaturan & komponen serupa ───────── */
+html:not(.dark) .set-card { background: #fff; border: 1px solid var(--akp-line); border-radius: 14px; box-shadow: var(--akp-shadow); }
+html:not(.dark) .set-card:hover { border-color: #b9d3ea; box-shadow: 0 10px 28px -14px rgba(31, 111, 181, .35); }
+.set-ico { background: var(--akp-tint) !important; color: var(--akp-blue) !important; }
+html:not(.dark) .set-sum { background: #f4f7fb; border: 1px solid var(--akp-line-2); color: #475569; }
+.set-btn.ghost { background: #fff !important; color: var(--akp-blue-600) !important; border: 1px solid #b9d3ea !important; box-shadow: none !important; }
+.set-card h3 { color: var(--akp-navy); letter-spacing: -.01em; }
+/* kolom aksi tabel menempel di kanan agar ikon selalu terlihat pada tabel yang lebar */
+html:not(.dark) .fi-ta-actions-cell, html:not(.dark) td.fi-ta-actions-cell { position: sticky; right: 0; background: linear-gradient(90deg, rgba(255,255,255,0), #fff 18%); z-index: 1; }
+
+/* ikon sebaris pengganti emoji */
+.ic { width: 1.05em; height: 1.05em; display: inline-block; vertical-align: -.17em; flex: none; }
+
+/* menu teks ITERA di topbar: sejajar logo, dipisah garis tipis, rapi di semua lebar layar */
+a.sr-topbar-link { display: inline-flex; align-items: center; height: 2.5rem; margin-inline-start: 1.1rem; padding-inline: 1.1rem 0; border-inline-start: 1px solid var(--akp-line, #e2e8f0); font-size: 1.1rem; font-weight: 700; letter-spacing: .01em; color: #000; text-decoration: none; white-space: nowrap; transition: color .15s; }
+a.sr-topbar-link:hover { color: #000; }
+.dark a.sr-topbar-link { color: #cbd5e1; border-inline-start-color: #334155; }
+.dark a.sr-topbar-link:hover { color: #fff; }
+@media (max-width: 640px) { a.sr-topbar-link { margin-inline-start: .6rem; padding-inline-start: .6rem; font-size: .8rem; } }
+a.sr-topbar-link-mobile { margin-inline: auto .75rem; padding-inline: 0; border-inline-start: 0; }
+@media (min-width: 1024px) { a.sr-topbar-link-mobile { display: none; } }
+
+/* ───────── merek: di dalam panel cukup logo AKP (nama aplikasi tetap tampil di halaman login) ───────── */
+.fi-sidebar .akp-brand-text, .fi-topbar .akp-brand-text, .fi-sidebar-header .akp-brand-text { display: none !important; }
