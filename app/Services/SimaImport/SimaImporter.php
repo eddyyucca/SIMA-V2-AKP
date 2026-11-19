@@ -240,6 +240,11 @@ class SimaImporter
                 if (in_array($status, ['lost', 'disposed', 'repair'], true) && ! $held) $empId = null;
                 $locId = $this->map->get('location', $a->rtd_location_id ?: $a->location_id);
                 $notes = [$this->s($a->notes)];
+                // Status non-standar tetap terlacak: nama status SIMA dicatat; "tidak bisa diperbaiki" -> kondisi Rusak Berat (BUKAN disposed: disposal butuh persetujuan).
+                $labelName = trim((string) ($labels[$a->status_id]->name ?? ''));
+                $condition = 'good';
+                if (in_array($status, ['repair', 'lost', 'disposed'], true) && $labelName !== '') $notes[] = "Status di SIMA: {$labelName}.";
+                if (preg_match('/non[\s-]*repair|not\s*fix|broken|rusak\s*berat|unrepair/i', $labelName)) $condition = 'major_damage';
                 if ($a->assigned_type === self::LOCATION && $a->assigned_to) { $locId = $this->map->get('location', $a->assigned_to) ?: $locId; $notes[] = 'Sebelumnya dikeluarkan ke lokasi (SIMA).'; }
                 if ($a->assigned_type === self::ASSET && $a->assigned_to) { $notes[] = 'Sebelumnya terpasang pada aset SIMA #' . $a->assigned_to . '.'; }
                 if ($mac = $this->s($a->_snipeit_mac_address_1)) $notes[] = "MAC: $mac";
@@ -278,7 +283,7 @@ class SimaImporter
                     'asset_tag' => $tag, 'legacy_tag' => $keep ? null : ($legacyTag ?: null), 'category_id' => $catId, 'brand' => $m['brand'], 'model' => $m['model'], 'brand_id' => $brandId, 'asset_model_id' => $m['model_id'],
                     'serial_number' => $serial, 'purchase_date' => $purchase, 'vendor_id' => $this->map->get('vendor', $a->supplier_id), 'po_pr_no' => $this->s($a->order_number),
                     'purchase_price' => (float) $a->purchase_cost, 'warranty_until' => $warranty, 'employee_id' => $empId, 'location_id' => $locId, 'status' => $status,
-                    'condition' => 'good', 'notes' => implode("\n", array_filter($notes)) ?: null, 'ownership' => 'owned',
+                    'condition' => $condition, 'notes' => implode("\n", array_filter($notes)) ?: null, 'ownership' => 'owned',
                     'spec_data' => ($n = $this->s($a->name)) ? json_encode(['name' => $n]) : null,
                     'agent_status' => in_array($a->agent_status, ['online', 'offline', 'never_reported'], true) ? $a->agent_status : 'never_reported', 'agent_last_seen' => $this->dt($a->agent_last_seen),
                     'created_at' => $this->dt($a->created_at) ?: now(), 'updated_at' => $this->dt($a->updated_at) ?: now(), 'deleted_at' => $this->dt($a->deleted_at),

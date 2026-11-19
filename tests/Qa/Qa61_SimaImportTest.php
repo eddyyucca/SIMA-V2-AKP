@@ -82,6 +82,17 @@ class Qa61_SimaImportTest extends QaTestCase
         $this->assertSame(Asset::count(), Asset::distinct('asset_tag')->count('asset_tag'));
     }
 
+    public function test_nonstandard_status_is_traceable_and_unrepairable_is_major_damage(): void
+    {
+        DB::connection('legacy')->table('status_labels')->insert(['id' => 90, 'name' => 'Non-Repairable', 'deployable' => 0, 'pending' => 0, 'archived' => 0]);
+        DB::connection('legacy')->table('assets')->where('id', 12)->update(['status_id' => 90]);
+        $this->import();
+        $a = Asset::find(DB::table('legacy_map')->where('entity', 'asset')->where('legacy_id', 12)->value('new_id'));
+        $this->assertSame('repair', $a->status);                       // bukan disposed: itu butuh persetujuan
+        $this->assertSame('major_damage', $a->condition);
+        $this->assertStringContainsString('Status di SIMA: Non-Repairable', $a->notes);
+    }
+
     public function test_holders_history_and_balancing_rows(): void
     {
         $this->import();
