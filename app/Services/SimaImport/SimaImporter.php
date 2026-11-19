@@ -158,7 +158,10 @@ class SimaImporter
     {
         $n = $this->s($u->employee_num);
         if ($n) return $n;
-        return preg_match('/^\d{5,}$/', (string) $u->username) ? (string) $u->username : null;
+        if (preg_match('/^\d{5,}$/', (string) $u->username)) return (string) $u->username;
+        // beberapa akun SIMA menyimpan NIK di nama, mis. "(DADANG SISWANTO) - #32601923"
+        foreach ([$u->display_name, $u->first_name, $u->last_name] as $n) if (preg_match('/#\s*(\d{6,})\b/', (string) $n, $m)) return $m[1];
+        return null;
     }
 
     /** Pengguna SIMA yang dirujuk data (pemegang aset, accessories, lisensi, log) -> wajib punya karyawan, walau tanpa NIK. */
@@ -226,6 +229,17 @@ class SimaImporter
         return $s === 'available' && $held ? 'deployed' : $s;
     }
 
+    private ?array $cfLabels = null;
+
+    /** db_column -> nama custom field di SIMA (kosong bila tabelnya tidak ada). */
+    private function customFieldLabels(): array
+    {
+        if ($this->cfLabels === null) {
+            $this->cfLabels = Schema::connection('legacy')->hasTable('custom_fields') ? $this->L->table('custom_fields')->pluck('name', 'db_column')->all() : [];
+        }
+        return $this->cfLabels;
+    }
+
     private function stepAssets(): void
     {
         $labels = $this->L->table('status_labels')->get()->keyBy('id');
@@ -247,7 +261,10 @@ class SimaImporter
                 if (preg_match('/non[\s-]*repair|not\s*fix|broken|rusak\s*berat|unrepair/i', $labelName)) $condition = 'major_damage';
                 if ($a->assigned_type === self::LOCATION && $a->assigned_to) { $locId = $this->map->get('location', $a->assigned_to) ?: $locId; $notes[] = 'Sebelumnya dikeluarkan ke lokasi (SIMA).'; }
                 if ($a->assigned_type === self::ASSET && $a->assigned_to) { $notes[] = 'Sebelumnya terpasang pada aset SIMA #' . $a->assigned_to . '.'; }
-                if ($mac = $this->s($a->_snipeit_mac_address_1)) $notes[] = "MAC: $mac";
+                // custom field Snipe-IT berbeda per instalasi (kolom _snipeit_*): semua nilai terisi dicatat di catatan, tidak dibuang
+                foreach (get_object_vars($a) as $col => $val) {
+                    if (str_starts_with($col, '_snipeit_') && ($v = $this->s($val))) $notes[] = ($this->customFieldLabels()[$col] ?? ucwords(str_replace('_', ' ', trim(preg_replace('/^_snipeit_|_\d+$/', '', $col), '_')))) . ": $v";
+                }
 
                 $newId = $this->map->get('asset', $a->id);
                 if ($newId) {   // sudah pernah diimpor: ikuti keadaan terakhir SIMA

@@ -93,6 +93,42 @@ class Qa61_SimaImportTest extends QaTestCase
         $this->assertStringContainsString('Status di SIMA: Non-Repairable', $a->notes);
     }
 
+    public function test_custom_field_values_are_kept_in_notes_and_missing_columns_are_fine(): void
+    {
+        DB::connection('legacy')->table('assets')->where('id', 3)->update(['_snipeit_mac_address_1' => 'AA:BB:CC:DD:EE:FF']);
+        $this->import();
+        $a = Asset::find(DB::table('legacy_map')->where('entity', 'asset')->where('legacy_id', 3)->value('new_id'));
+        $this->assertStringContainsString('AA:BB:CC:DD:EE:FF', (string) $a->notes);
+    }
+
+    public function test_import_works_when_legacy_has_no_custom_field_columns(): void
+    {
+        Schema::connection('legacy')->table('assets', fn ($t) => $t->dropColumn('_snipeit_mac_address_1'));
+        $imp = $this->import();
+        $this->assertSame(29, $imp->stats['assets_created']);
+    }
+
+    public function test_nik_embedded_in_the_name_is_recovered(): void
+    {
+        DB::connection('legacy')->table('users')->where('username', 'tanpa.nik')->update(['display_name' => '(TANPA NIK) - #32601923']);
+        $this->import();
+        $this->assertSame(1, DB::table('employees')->where('nik', '32601923')->count());
+    }
+
+    public function test_duplicate_accounts_with_the_same_nik_are_merged_and_reconciliation_stays_clean(): void
+    {
+        $L = DB::connection('legacy');
+        $u = (array) $L->table('users')->where('username', '3260001')->first();
+        $dupId = 900;
+        $L->table('users')->insert(['id' => $dupId, 'username' => 'andi.ganda', 'email' => 'andi.ganda@akp.test'] + $u);
+        $L->table('assets')->where('id', 20)->update(['assigned_type' => 'App\\Models\\User', 'assigned_to' => $dupId]);
+        $imp = $this->import();
+
+        $this->assertSame(1, DB::table('employees')->where('nik', '3260001')->count());
+        $bad = collect(app(SimaReconciler::class)->run($imp))->reject(fn ($r) => $r['ok'])->pluck('check')->all();
+        $this->assertSame([], $bad);
+    }
+
     public function test_holders_history_and_balancing_rows(): void
     {
         $this->import();

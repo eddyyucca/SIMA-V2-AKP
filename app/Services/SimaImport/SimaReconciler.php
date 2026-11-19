@@ -39,13 +39,14 @@ class SimaReconciler
         $add('Aset yang dipegang karyawan', $heldLegacy, DB::table('assets')->whereNotNull('employee_id')->whereIn('id', DB::table('legacy_map')->where('entity', 'asset')->pluck('new_id'))->count());
         $add('Total nilai pembelian aset', number_format((float) $L->table('assets')->sum('purchase_cost'), 2, '.', ''), number_format((float) DB::table('assets')->whereIn('id', DB::table('legacy_map')->where('entity', 'asset')->pluck('new_id'))->sum('purchase_price'), 2, '.', ''));
 
-        // pemegang per karyawan
-        $mism = 0;
+        // pemegang per karyawan. Akun SIMA ganda dengan NIK sama dijadikan satu karyawan, jadi jumlah dijumlahkan per karyawan BARU.
+        $expect = [];
         foreach ($L->table('assets')->where('assigned_type', 'App\\Models\\User')->whereNotNull('assigned_to')->selectRaw('assigned_to, count(*) c')->groupBy('assigned_to')->get() as $r) {
             $emp = DB::table('legacy_map')->where('entity', 'employee')->where('legacy_id', $r->assigned_to)->value('new_id');
-            $have = $emp ? DB::table('assets')->where('employee_id', $emp)->count() : 0;
-            if ($have !== (int) $r->c) $mism++;
+            $expect[$emp ?? 0] = ($expect[$emp ?? 0] ?? 0) + (int) $r->c;
         }
+        $mism = 0;
+        foreach ($expect as $emp => $c) if (! $emp || DB::table('assets')->where('employee_id', $emp)->whereIn('id', DB::table('legacy_map')->where('entity', 'asset')->pluck('new_id'))->count() !== $c) $mism++;
         $add('Karyawan dengan jumlah aset dipegang berbeda', 0, $mism);
 
         $add('Aset aktif tanpa riwayat serah terima sinkron', 0, (int) DB::table('assets')->whereNull('deleted_at')->whereNotNull('employee_id')->whereNotExists(fn ($q) => $q->select(DB::raw(1))->from('asset_assignments')->whereColumn('asset_assignments.asset_id', 'assets.id'))->count());
