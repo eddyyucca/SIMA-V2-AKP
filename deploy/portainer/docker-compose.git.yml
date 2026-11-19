@@ -34,6 +34,13 @@ x-asset-env: &asset-env
   HRIS_API_URL: ${HRIS_API_URL:-https://hris.lameruru.web.id}
   HRIS_API_TOKEN: ${HRIS_API_TOKEN}
   SIMA_API_TOKEN: ${SIMA_API_TOKEN}
+  # Impor SIMA (hanya saat migrasi; kosongkan sesudahnya)
+  LEGACY_DB_HOST: ${LEGACY_DB_HOST:-}
+  LEGACY_DB_PORT: ${LEGACY_DB_PORT:-3306}
+  LEGACY_DB_DATABASE: ${LEGACY_DB_DATABASE:-sima_legacy}
+  LEGACY_DB_USERNAME: ${LEGACY_DB_USERNAME:-}
+  LEGACY_DB_PASSWORD: ${LEGACY_DB_PASSWORD:-}
+  SIMA_FILES_PATH: ${SIMA_FILES_PATH:-}
   # Notifikasi
   VAPID_SUBJECT: ${VAPID_SUBJECT:-mailto:noreply@akp.co.id}
   VAPID_PUBLIC_KEY: ${VAPID_PUBLIC_KEY:-}

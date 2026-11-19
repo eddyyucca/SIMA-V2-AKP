@@ -1,6 +1,17 @@
 # Rencana Migrasi SIMA-AKP → Asset Management (ITERA) + Integrasi HRIS & Portal SSO
 
-Status (2026-11-19): **Fase 1 SELESAI dan teruji** (SSO Portal, sinkron HRIS, API aset untuk HRIS, paket deploy). Fase 0, 2, 3, 4 menunggu dump database SIMA.
+Status (2026-11-19): **Semua fase SUDAH DIBANGUN dan teruji terhadap data tiruan.** Yang tersisa hanya yang butuh produksi: dump database SIMA asli, latihan di data nyata, pilot agent, dan hari-H. Langkah operasional lengkap: `docs/runbook-cutover-sima.md`.
+
+| Fase | Status | Bukti |
+|---|---|---|
+| 0 Persiapan | Alat siap: `sima:import --dry-run` (laporan profil data), koneksi `legacy` | Qa61 |
+| 1 HRIS + SSO | Selesai | Qa60 (18 tes) + uji nyata dengan Portal lokal |
+| 2 Impor + rekonsiliasi | Selesai: `sima:import`, `sima:reconcile`, fixture legacy dari skema Snipe-IT asli | Qa61 (8 tes), impor 3x idempoten |
+| 3 Agent | Selesai: API kompatibel (termasuk bentuk error HTTP 200 Snipe-IT), UI Filament, token lama tetap berlaku | tests/Agent (67 tes, 59 dari SIMA) |
+| 4 Cutover | Runbook + `sima:smoke` | Qa62 |
+| 5 Rollback | Prosedur di runbook | - |
+
+Batasan yang jujur: semua tes memakai **data tiruan** yang meniru kasus sulit (serial duplikat, status tak dikenal, pengguna tanpa NIK, riwayat tak lengkap). Data produksi bisa memunculkan kasus baru; itulah gunanya latihan 3x dan laporan dry-run sebelum hari-H.
 
 ### Status Fase 1 (sudah dikerjakan)
 - Paket `akp/portal-sso` dipasang (`packages/portal-sso`, batas versi dilonggarkan ke Laravel 13). Modul `asset` didaftarkan di Portal lokal; "Tes koneksi" dan "Deteksi level" (admin / staff / user) lulus; alur token end-to-end terbukti.

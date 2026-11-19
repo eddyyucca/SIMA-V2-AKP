@@ -73,6 +73,9 @@ class Qa61_SimaImportTest extends QaTestCase
         $this->assertNotNull($legacy);
         $this->assertMatchesRegularExpression('/^AKP-IT-NB-\d{4}$/', Asset::find($legacy->asset_id)->asset_tag);
         $this->assertSame('LAP-006', Asset::find($legacy->asset_id)->legacy_tag);
+        // pindai label LAMA (QR/URL pendek) tetap menemukan asetnya
+        $this->assertSame($legacy->asset_id, Asset::findByCode('LAP-006')?->id);
+        $this->assertSame($legacy->asset_id, Asset::findByCode('https://x.test/s/LAP-006')?->id);
         // serial duplikat (beda huruf besar/kecil) tidak ikut; tercatat di catatan, bukan hilang diam-diam
         $this->assertSame(1, Asset::whereRaw("lower(serial_number) = 'dup-1'")->count());
         $this->assertSame(1, Asset::where('notes', 'like', '%duplikat%')->count());

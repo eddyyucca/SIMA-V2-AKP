@@ -8,6 +8,17 @@ Aplikasi internal PT Adhi Kartiko Pratama untuk **mengelola aset dan stok IT** (
   - `/admin` : panel **IT Asset** (Filament) untuk Admin dan Staff IT.
   - `/requisition` : **ITERA** (form request, approval, peminjaman). Karyawan biasa langsung diarahkan ke `/requisition/requests/create`.
 
+## Pengganti SIMA: login Portal, HRIS, dan Agent
+
+Aplikasi ini menggantikan **SIMA** (Snipe-IT) dan terhubung ke ekosistem AKPSatu:
+
+- **Login Portal AKPSatu (SSO)**: `SSO_ENABLED=true`; peran dari level modul (`admin` → Admin, `staff` → Staff IT, `user` → User). Login NIK lokal tetap ada sebagai akun darurat (`/admin/login?lokal=1`) sampai dimatikan.
+- **HRIS**: sumber data karyawan (REST baca-saja). `php artisan hris:sync-employees [--apply]`, terjadwal harian. HRIS membaca aset karyawan lewat `GET /api/integrations/employees/{nik}/assets` (token `SIMA_API_TOKEN`).
+- **SIMA Asset Agent**: API agent kompatibel dengan SIMA (agent terpasang tidak perlu diinstal ulang; token lama tetap berlaku). Menu **Monitor Agent**, **Pengumuman Agent**, dan aksi Agent di detail aset (token, perintah jarak jauh, chat).
+- **Migrasi dari SIMA**: `sima:import`, `sima:reconcile`, `sima:smoke`. Langkah lengkap: [docs/runbook-cutover-sima.md](docs/runbook-cutover-sima.md); rencana dan status: [docs/rencana-migrasi-sima.md](docs/rencana-migrasi-sima.md); deploy: [deploy/portainer/README.md](deploy/portainer/README.md).
+
+Tes: `php -d memory_limit=1G vendor/bin/phpunit tests/Agent tests/Qa tests/Requisition` (PostgreSQL, 782 tes).
+
 ---
 
 ## 1. Peran dan hak akses
