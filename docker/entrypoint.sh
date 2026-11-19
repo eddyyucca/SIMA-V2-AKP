@@ -18,7 +18,8 @@ fi
 mkdir -p storage/framework/cache storage/framework/sessions storage/framework/views storage/logs bootstrap/cache storage/app/private storage/app/public
 chown -R www-data:www-data storage bootstrap/cache 2>/dev/null || true
 # tautan publik (foto aset, lampiran): storage/app/public -> public/storage
-[ -e public/storage ] || runuser -u www-data -- php artisan storage:link >/dev/null 2>&1 || true
+# public/ dimiliki root: symlink harus dibuat sebagai root (jika tidak, foto/berkas publik 404)
+[ -e public/storage ] || php artisan storage:link || echo "peringatan: storage:link gagal" >&2
 
 # Konfigurasi dikunci dari environment kontainer ini. Route tidak di-cache karena ada route berbentuk closure.
 runuser -u www-data -- php artisan config:cache
