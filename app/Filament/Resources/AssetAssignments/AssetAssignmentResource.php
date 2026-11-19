@@ -38,13 +38,11 @@ class AssetAssignmentResource extends Resource
             ->filters([SelectFilter::make('type')->options(AssetAssignment::TYPES)])
             ->recordActions([
                 Action::make('bast_view')->label('Lihat')->icon(Heroicon::OutlinedEye)
-                    ->visible(fn ($record) => (bool) $record->bast_pdf_path)
                     ->url(fn ($record) => route('bast.view', $record), shouldOpenInNewTab: true),
                 Action::make('bast_signed')->label('Scan TTD')->icon(Heroicon::OutlinedDocumentCheck)
                     ->visible(fn ($record) => $record->bastFiles->isNotEmpty())
                     ->url(fn ($record) => route('bast.file', $record->bastFiles->sortByDesc('id')->first()), shouldOpenInNewTab: true),
                 Action::make('bast')->label('Unduh BAST')->icon(Heroicon::OutlinedArrowDownTray)
-                    ->visible(fn ($record) => (bool) $record->bast_pdf_path)
                     ->url(fn ($record) => route('bast.download', $record), shouldOpenInNewTab: true),
             ]);
     }

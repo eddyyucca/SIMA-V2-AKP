@@ -51,7 +51,7 @@ class ViewAsset extends ViewRecord
 
     private function hasBastDocs(): bool
     {
-        return $this->record->assignments()->whereNotNull('bast_pdf_path')->exists() || $this->record->bastFiles()->exists();
+        return $this->record->assignments()->exists() || $this->record->bastFiles()->exists();
     }
 
     protected function getHeaderActions(): array

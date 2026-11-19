@@ -56,20 +56,25 @@ class Qa16_BastViewTest extends QaTestCase
         $this->get(route('bast.view', $own))->assertRedirect();                                // tamu diarahkan login
     }
 
-    public function test_view_returns_404_when_the_file_is_missing(): void
+    public function test_missing_pdf_is_generated_on_demand_instead_of_404(): void
     {
         $this->as($this->staff());
         $a = AssetAssignment::whereNotNull('bast_pdf_path')->firstOrFail();
         $backup = \Storage::disk('local')->get($a->bast_pdf_path);              // file bersama seluruh tes: wajib dipulihkan
         \Storage::disk('local')->delete($a->bast_pdf_path);
         try {
-            $this->get(route('bast.view', $a))->assertNotFound();
-            $this->get(route('bast.download', $a))->assertNotFound();
+            // berkas hilang -> dibuat ulang dari data serah terima, bukan 404
+            $this->get(route('bast.view', $a))->assertOk()->assertHeader('content-type', 'application/pdf');
+            $this->assertTrue(\Storage::disk('local')->exists($a->fresh()->bast_pdf_path));
+            \Storage::disk('local')->delete($a->fresh()->bast_pdf_path);
+            $this->get(route('bast.download', $a))->assertOk();
         } finally {
             \Storage::disk('local')->put($a->bast_pdf_path, $backup);
         }
         $b = AssetAssignment::create(['asset_id' => Asset::first()->id, 'type' => 'checkin', 'bast_number' => 'BAST/TEST/0001', 'assigned_at' => now(), 'condition' => 'good']);
-        $this->get(route('bast.view', $b))->assertNotFound();                                  // belum ada PDF
+        // serah terima hasil impor SIMA tidak punya PDF: dibuat saat pertama dibuka
+        $this->get(route('bast.view', $b))->assertOk()->assertHeader('content-type', 'application/pdf');
+        $this->assertNotNull($b->fresh()->bast_pdf_path);
     }
 
     public function test_bast_list_shows_both_view_and_download_actions(): void
@@ -81,9 +86,9 @@ class Qa16_BastViewTest extends QaTestCase
             ->assertActionHasLabel(TestAction::make('bast_view')->table($a), 'Lihat')->assertActionHasLabel(TestAction::make('bast')->table($a), 'Unduh BAST')
             ->assertActionHasUrl(TestAction::make('bast_view')->table($a), route('bast.view', $a))
             ->assertActionHasUrl(TestAction::make('bast')->table($a), route('bast.download', $a));
-        // dokumen yang belum punya PDF: tidak ada tombol
+        // serah terima tanpa PDF (hasil impor SIMA): tombol tetap ada, PDF dibuat saat dibuka
         $b = AssetAssignment::create(['asset_id' => Asset::first()->id, 'type' => 'checkin', 'bast_number' => 'BAST/TEST/0002', 'assigned_at' => now()->addDay(), 'condition' => 'good']);
-        Livewire::test(ManageAssetAssignments::class)->assertActionHidden(TestAction::make('bast_view')->table($b))->assertActionHidden(TestAction::make('bast')->table($b));
+        Livewire::test(ManageAssetAssignments::class)->assertActionVisible(TestAction::make('bast_view')->table($b))->assertActionVisible(TestAction::make('bast')->table($b));
     }
 
     public function test_asset_history_has_lihat_and_unduh_links_for_each_bast(): void

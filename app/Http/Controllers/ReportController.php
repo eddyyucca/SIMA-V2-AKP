@@ -30,8 +30,28 @@ class ReportController extends Controller
         $u = $request->user();
         $own = $u->employee && in_array($u->employee->id, [$assignment->to_employee_id, $assignment->from_employee_id]);
         abort_unless($u->can('view inventory') || $own, 403);
-        abort_unless($assignment->bast_pdf_path && Storage::disk('local')->exists($assignment->bast_pdf_path), 404);
-        return Storage::disk('local')->download($assignment->bast_pdf_path, str_replace('/', '-', $assignment->bast_number) . '.pdf');
+        $path = $this->ensureBastPdf($assignment);
+        return Storage::disk('local')->download($path, str_replace('/', '-', $assignment->bast_number) . '.pdf');
+    }
+
+    /**
+     * Serah terima hasil impor SIMA tidak membawa PDF per serah terima: dibuat dari data serah terima saat pertama dibuka.
+     * Berkas yang sudah ada tidak pernah ditimpa; hanya membuat bila belum ada / berkasnya hilang.
+     */
+    private function ensureBastPdf(AssetAssignment $assignment): string
+    {
+        $disk = Storage::disk('local');
+        if (! $assignment->bast_pdf_path || ! $disk->exists($assignment->bast_pdf_path)) {
+            try {
+                app(\App\Services\AssetService::class)->makeBast($assignment);
+            } catch (\Throwable $e) {
+                report($e);
+                abort(404, 'PDF BAST belum bisa dibuat.');
+            }
+            $assignment->refresh();
+        }
+        abort_unless($assignment->bast_pdf_path && $disk->exists($assignment->bast_pdf_path), 404);
+        return $assignment->bast_pdf_path;
     }
 
     /** Lihat BAST langsung di browser (inline), aturan akses sama dengan unduh. */
@@ -40,9 +60,9 @@ class ReportController extends Controller
         $u = $request->user();
         $own = $u->employee && in_array($u->employee->id, [$assignment->to_employee_id, $assignment->from_employee_id]);
         abort_unless($u->can('view inventory') || $own, 403);
-        abort_unless($assignment->bast_pdf_path && Storage::disk('local')->exists($assignment->bast_pdf_path), 404);
+        $path = $this->ensureBastPdf($assignment);
         $name = str_replace('/', '-', $assignment->bast_number) . '.pdf';
-        return Storage::disk('local')->response($assignment->bast_pdf_path, $name, ['Content-Type' => 'application/pdf'], 'inline');
+        return Storage::disk('local')->response($path, $name, ['Content-Type' => 'application/pdf'], 'inline');
     }
 
     /** PDF BAST bertanda tangan yang diunggah. Boleh dilihat Admin/Staff IT, pihak pada BAST terkait, atau pemegang aset saat ini. */
