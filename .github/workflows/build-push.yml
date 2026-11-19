@@ -34,10 +34,16 @@ jobs:
           php-version: '8.3'
           extensions: pdo_pgsql, pdo_mysql, intl, zip, bcmath, gmp, gd, mbstring
           ini-values: memory_limit=1G
+      - uses: actions/cache@v4
+        with:
+          path: ~/.composer/cache
+          key: composer-${{ hashFiles('composer.lock') }}
+          restore-keys: composer-
       - run: composer install --no-interaction --no-progress --prefer-dist
       - run: cp .env.example .env && php artisan key:generate
-      - name: Tes (PostgreSQL)
-        run: vendor/bin/phpunit tests/Agent tests/Qa tests/Requisition
+      - name: Tes (PostgreSQL, paralel)
+        # runner GitHub = 4 vCPU; tiap worker punya database sendiri (akp_asset_test_<n>, user CI = superuser)
+        run: php artisan test --parallel --processes=4 --testsuite=Agent,Qa,Requisition
 
   image:
     needs: test
