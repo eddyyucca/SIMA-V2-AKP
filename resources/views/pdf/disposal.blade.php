@@ -7,6 +7,7 @@
 </style></head><body>
 @include('pdf.partials.brand-header')
 <h1>BERITA ACARA PENGHAPUSAN ASET</h1>
+<div class="c" style="margin-bottom:2px"><strong>No. Dokumen: {{ $d->documentNumber() }}</strong></div>
 <div class="c">Disetujui {{ $d->approved_at?->format('d/m/Y H:i') }} WITA</div>
 <table>
  <tr><th>Kode Aset</th><td>{{ $d->asset->asset_tag }}</td></tr>

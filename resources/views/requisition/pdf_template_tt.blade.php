@@ -174,7 +174,7 @@
         <tr>
             <td>NO. TT</td>
             <td>:</td>
-            <td><strong>{{ $itRequest->ticket_number }}</strong></td>
+            <td><strong>{{ $itRequest->ticket_number ?: 'Menunggu Approval' }}</strong></td>
         </tr>
     </table>
 
