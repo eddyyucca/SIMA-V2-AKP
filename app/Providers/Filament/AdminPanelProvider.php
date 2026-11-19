@@ -67,8 +67,12 @@ class AdminPanelProvider extends PanelProvider
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
             ])
-            ->userMenuItems([\Filament\Navigation\MenuItem::make()->label('Ganti Password')->icon('heroicon-o-key')->url(fn () => \App\Filament\Pages\ChangePassword::getUrl())])
+            ->userMenuItems(array_filter([
+                \Filament\Navigation\MenuItem::make()->label('Ganti Password')->icon('heroicon-o-key')->url(fn () => \App\Filament\Pages\ChangePassword::getUrl())->visible(fn () => ! config('sso.enabled') || session('sso.local')),
+                // SSO aktif: keluar = akhiri sesi aplikasi lalu kembali ke Portal
+                'logout' => config('sso.enabled') ? \Filament\Actions\Action::make('logout')->label('Keluar')->icon('heroicon-o-arrow-left-on-rectangle')->url(fn () => route('portal.logout'))->postToUrl() : null,
+            ]))
             ->renderHook(PanelsRenderHook::AUTH_LOGIN_FORM_AFTER, fn (): string => '<p class="text-center text-sm" style="margin-top:.75rem;opacity:.75">Lupa password? Hubungi tim IT.</p>')
-            ->authMiddleware([Authenticate::class, \App\Http\Middleware\ForcePasswordChange::class]);
+            ->authMiddleware([Authenticate::class, \App\Http\Middleware\EnforcePortalSession::class, \App\Http\Middleware\ForcePasswordChange::class]);
     }
 }

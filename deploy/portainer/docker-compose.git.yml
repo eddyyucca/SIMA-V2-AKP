@@ -1,0 +1,105 @@
+# Stack Portainer "IT Asset & ITERA" (pengganti SIMA) untuk metode "Repository" (Git). TANPA rahasia: nilai ${...} diisi di Portainer > Environment variables.
+# Buat isiannya dengan: powershell -ExecutionPolicy Bypass -File deploy\portainer\buat-isian-asset.ps1
+# WAJIB diisi: DB_PASSWORD, APP_KEY, PORTAL_SSO_SECRET (dari Portal > Modul > asset > Integrasi), HRIS_API_TOKEN, SIMA_API_TOKEN.
+x-asset-env: &asset-env
+  APP_NAME: "IT Asset & Inventory Management"
+  APP_ENV: production
+  APP_DEBUG: "false"
+  APP_KEY: ${APP_KEY}
+  APP_URL: ${ASSET_URL:-https://asset.lameruru.web.id}
+  APP_TIMEZONE: Asia/Makassar
+  APP_LOCALE: id
+  LOG_CHANNEL: stderr
+  LOG_LEVEL: warning
+  TRUSTED_PROXIES: ${TRUSTED_PROXIES:-*}
+  DB_CONNECTION: pgsql
+  DB_HOST: db
+  DB_PORT: "5432"
+  DB_DATABASE: akp_asset
+  DB_USERNAME: akp_asset
+  DB_PASSWORD: ${DB_PASSWORD}
+  SESSION_DRIVER: database
+  SESSION_COOKIE: akp_asset_session
+  SESSION_SECURE_COOKIE: ${SESSION_SECURE_COOKIE:-true}
+  QUEUE_CONNECTION: database
+  CACHE_STORE: database
+  FILESYSTEM_DISK: local
+  # Login terpusat (Portal AKPSatu)
+  SSO_ENABLED: ${SSO_ENABLED:-true}
+  SSO_ALLOW_LOCAL_LOGIN: ${SSO_ALLOW_LOCAL_LOGIN:-true}    # akun darurat NIK+password lewat /admin/login?lokal=1; set false setelah serah-terima
+  PORTAL_URL: ${PORTAL_URL:-https://portal.lameruru.web.id}
+  PORTAL_APP_CODE: ${PORTAL_APP_CODE:-asset}              # harus sama dengan KODE modul di Portal
+  PORTAL_SSO_SECRET: ${PORTAL_SSO_SECRET}
+  # HRIS (sumber karyawan, REST baca-saja) dan token yang dipakai HRIS membaca aset karyawan
+  HRIS_API_URL: ${HRIS_API_URL:-https://hris.lameruru.web.id}
+  HRIS_API_TOKEN: ${HRIS_API_TOKEN}
+  SIMA_API_TOKEN: ${SIMA_API_TOKEN}
+  # Notifikasi
+  VAPID_SUBJECT: ${VAPID_SUBJECT:-mailto:noreply@akp.co.id}
+  VAPID_PUBLIC_KEY: ${VAPID_PUBLIC_KEY:-}
+  VAPID_PRIVATE_KEY: ${VAPID_PRIVATE_KEY:-}
+
+services:
+  db:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${DB_HOST_PORT:-5446}:5432"      # untuk DBeaver lewat SSH tunnel (hanya localhost server)
+    environment:
+      POSTGRES_DB: akp_asset
+      POSTGRES_USER: akp_asset
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - pgdata:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U akp_asset -d akp_asset"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  asset:
+    image: ghcr.io/eddyyucca/akp-asset:${ASSET_TAG:-latest}
+    pull_policy: always                 # selalu tarik image terbaru dari ghcr
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "${ASSET_PORT:-8116}:80"
+    environment:
+      <<: *asset-env
+      AUTO_MIGRATE: "true"
+    volumes:
+      - asset_storage:/var/www/html/storage
+
+  queue:
+    image: ghcr.io/eddyyucca/akp-asset:${ASSET_TAG:-latest}
+    pull_policy: always
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    command: ["php", "artisan", "queue:work", "--sleep=3", "--tries=3", "--max-time=3600"]
+    environment:
+      <<: *asset-env
+    volumes:
+      - asset_storage:/var/www/html/storage
+
+  scheduler:
+    image: ghcr.io/eddyyucca/akp-asset:${ASSET_TAG:-latest}
+    pull_policy: always
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    command: ["php", "artisan", "schedule:work"]
+    environment:
+      <<: *asset-env
+    volumes:
+      - asset_storage:/var/www/html/storage
+
+volumes:
+  pgdata:
+    name: akp_asset_pgdata
+  asset_storage:
+    name: akp_asset_storage

@@ -28,6 +28,17 @@
         <env name="DB_CONNECTION" value="pgsql"/>
         <env name="DB_DATABASE" value="akp_asset_test"/>
         <env name="DB_URL" value=""/>
+        <env name="APP_NAME" value="IT Asset &amp; Inventory Management"/>
+        <env name="SSO_ENABLED" value="false"/>
+        <!-- kunci VAPID & Telegram khusus tes (dibuat sekali, tidak dipakai di mana pun) -->
+        <env name="VAPID_PUBLIC_KEY" value="BDdYH6bQrxVfvSxlPFFoKig-yoUgFlB1usMwQc8c7MrQ3Kd7mTnW-tjBizhuDeo5Kqu4FBBPfFwdkZQrWEEfiCg"/>
+        <env name="VAPID_PRIVATE_KEY" value="SkIjaSj12NmzLsGEuMpjnPBK9zN4ZpDkz1SVJimHS2g"/>
+        <env name="VAPID_SUBJECT" value="mailto:test@akp.test"/>
+        <env name="TELEGRAM_BOT_TOKEN" value="000000:test"/>
+        <env name="TELEGRAM_ADMIN_CHAT_ID" value="-100"/>
+        <env name="HRIS_API_URL" value=""/>
+        <env name="HRIS_API_TOKEN" value=""/>
+        <env name="SIMA_API_TOKEN" value=""/>
         <env name="DB_HOST" value="127.0.0.1"/>
         <env name="DB_USERNAME" value="akp_asset"/>
         <env name="DB_PASSWORD" value="akp_asset_dev"/>

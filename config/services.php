@@ -42,4 +42,14 @@ return [
         'chat_id' => env('TELEGRAM_ADMIN_CHAT_ID'),
     ],
 
+
+    // HRIS (sumber data karyawan, REST baca-saja) dan token layanan untuk aplikasi lain yang membaca aplikasi ini.
+    'hris' => [
+        'url' => env('HRIS_API_URL'),
+        'token' => env('HRIS_API_TOKEN'),
+        'cache_ttl' => (int) env('HRIS_CACHE_TTL', 300),
+    ],
+    // Token yang dipakai HRIS untuk membaca aset karyawan (sama dengan SIMA_API_TOKEN di .env HRIS). Kosong = API integrasi mati.
+    'integration_token' => env('SIMA_API_TOKEN'),
+
 ];

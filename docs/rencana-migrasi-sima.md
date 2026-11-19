@@ -1,6 +1,15 @@
 # Rencana Migrasi SIMA-AKP → Asset Management (ITERA) + Integrasi HRIS & Portal SSO
 
-Status: **RENCANA (belum ada yang dieksekusi)**. Tanggal: 2026-11-19.
+Status (2026-11-19): **Fase 1 SELESAI dan teruji** (SSO Portal, sinkron HRIS, API aset untuk HRIS, paket deploy). Fase 0, 2, 3, 4 menunggu dump database SIMA.
+
+### Status Fase 1 (sudah dikerjakan)
+- Paket `akp/portal-sso` dipasang (`packages/portal-sso`, batas versi dilonggarkan ke Laravel 13). Modul `asset` didaftarkan di Portal lokal; "Tes koneksi" dan "Deteksi level" (admin / staff / user) lulus; alur token end-to-end terbukti.
+- **Koreksi rencana:** HRIS dibaca lewat **REST** (`GET {HRIS}/api/integrations/employees`, token layanan) seperti Portal, **bukan** koneksi database `hris`. Env: `HRIS_API_URL`, `HRIS_API_TOKEN`.
+- `SSO_ENABLED` (bawaan `false`) menyalakan login Portal; login NIK lokal tetap ada sebagai akun darurat (`/admin/login?lokal=1`, `SSO_ALLOW_LOCAL_LOGIN`) sampai serah-terima selesai. Sesi lokal ikut umur sesi Portal (480 menit).
+- `php artisan hris:sync-employees [--apply]` (terjadwal 02:00 bila HRIS dikonfigurasi): tambah / perbarui / tandai resign; cocokkan NIK alias; tidak pernah menghapus; melaporkan karyawan aktif yang tak ada di HRIS dan resign yang masih memegang aset.
+- `GET /api/integrations/employees/{nik}/assets` (bearer `SIMA_API_TOKEN`): kontrak sama dengan SIMA lama, jadi HRIS cukup mengganti `SIMA_URL`.
+- Deploy: `Dockerfile`, `docker/`, `.github/workflows/build-push.yml` (tes PostgreSQL, image ke ghcr.io, webhook Portainer), `deploy/portainer/docker-compose.git.yml` (web + queue + scheduler + PostgreSQL). Lihat `deploy/portainer/README.md`.
+
 
 ## 0. Ringkasan keputusan
 

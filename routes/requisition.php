@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Route;
 | Peran SR diturunkan dari peran IT Asset (lihat App\Models\User::getRoleAttribute):
 |   Admin -> super_admin, Staff IT -> admin, Manajemen/User -> user.
 */
-Route::middleware([Authenticate::class, \App\Http\Middleware\ForcePasswordChange::class])->prefix('requisition')->group(function () {
+Route::middleware([Authenticate::class, \App\Http\Middleware\EnforcePortalSession::class, \App\Http\Middleware\ForcePasswordChange::class])->prefix('requisition')->group(function () {
     Route::get('/', [RequestController::class, 'index'])->name('dashboard');
     Route::get('/requests/list-all-form', [RequestController::class, 'listAllForm'])->name('requests.list-all-form');
     Route::get('/requests/pending-approvals', [RequestController::class, 'pendingApprovalsJson'])->name('requests.pending-approvals');

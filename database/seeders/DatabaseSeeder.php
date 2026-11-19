@@ -24,12 +24,7 @@ class DatabaseSeeder extends Seeder
     {
         app(PermissionRegistrar::class)->forgetCachedPermissions();
 
-        $perms = ['manage master', 'manage inventory', 'view inventory', 'view reports', 'delete data', 'approve disposal', 'self service'];
-        foreach ($perms as $p) Permission::findOrCreate($p);
-
-        Role::findOrCreate('Admin')->syncPermissions($perms);
-        Role::findOrCreate('Staff IT')->syncPermissions(['manage inventory', 'view inventory', 'view reports', 'self service']);
-        Role::findOrCreate('User')->syncPermissions(['self service']);
+        $this->call(RolesSeeder::class);
 
         // Password awal: ganti segera setelah login pertama.
         $pw = env('SEED_PASSWORD', 'Inventaris#2026');
