@@ -11,7 +11,7 @@ abstract class TestCase extends BaseTestCase
     {
         parent::setUp();
         $db = (string) config('database.connections.' . config('database.default') . '.database');
-        if (! str_ends_with($db, '_test')) {
+        if (! preg_match('/_test(_\w+)?$/', $db)) {   // *_test, atau *_test_<token> milik worker paralel
             throw new \RuntimeException("Tes menolak jalan di database '$db' (nama harus berakhiran _test).");
         }
         $this->guardRealStorage();
@@ -31,10 +31,17 @@ abstract class TestCase extends BaseTestCase
      * Berkas yang dibuat tes (PDF BAST, dokumen, foto) tidak boleh pernah mendarat di penyimpanan asli: nomor BAST di database tes mulai dari 1,
      * jadi tes pernah menimpa PDF BAST asli bernomor sama. Disk 'local' & 'public' dipaksa ke folder tes, dan tes ditolak bila masih menunjuk ke penyimpanan asli.
      */
+    /** Tiap worker paralel punya folder berkas sendiri (kalau tidak, deleteDirectory satu worker menghapus berkas worker lain). */
+    public static function workerSuffix(): string
+    {
+        $t = getenv('TEST_TOKEN') ?: ($_SERVER['TEST_TOKEN'] ?? '');
+        return $t === '' ? '' : '-w' . $t;
+    }
+
     private function guardRealStorage(): void
     {
         foreach (['local' => storage_path('app/private'), 'public' => storage_path('app/public')] as $disk => $real) {
-            config(["filesystems.disks.$disk.root" => storage_path("framework/testing/demo-$disk")]);
+            config(["filesystems.disks.$disk.root" => storage_path('framework/testing/demo-' . $disk . self::workerSuffix())]);
             \Illuminate\Support\Facades\Storage::forgetDisk($disk);                 // disk yang sudah terlanjur dibuat dengan root asli dibuang
             $root = rtrim(\Illuminate\Support\Facades\Storage::disk($disk)->path(''), '/');
             if ($root === rtrim($real, '/') || str_starts_with($root . '/', rtrim($real, '/') . '/')) {

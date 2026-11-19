@@ -19,10 +19,10 @@ trait UsesDemoData
     protected function refreshTestDatabase(): void
     {
         foreach (['local', 'public'] as $d) {
-            config(["filesystems.disks.$d.root" => storage_path("framework/testing/demo-$d")]);
+            config(["filesystems.disks.$d.root" => storage_path("framework/testing/demo-$d" . TestCase::workerSuffix())]);
         }
         if (! DemoState::$seeded) {
-            foreach (['local', 'public'] as $d) (new Filesystem)->deleteDirectory(storage_path("framework/testing/demo-$d"));
+            foreach (['local', 'public'] as $d) (new Filesystem)->deleteDirectory(storage_path("framework/testing/demo-$d" . TestCase::workerSuffix()));
             $this->migrateDatabasesWithoutEvents();
             $this->app[\Illuminate\Contracts\Console\Kernel::class]->setArtisan(null);
             $this->updateLocalCacheOfInMemoryDatabases();
