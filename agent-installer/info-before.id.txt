@@ -1,0 +1,115 @@
+﻿SIMA Asset Monitoring Agent
+============================
+
+Program ini adalah software RESMI milik PT Adhi Kartiko Pratama Tbk (AKP)
+untuk memantau status aset IT (laptop/PC) perusahaan. Dipasang, dikelola,
+dan diaudit oleh tim IT AKP.
+
+Installer ini memasang DUA program. SIMA Asset Agent terpasang otomatis;
+Net Monitor for Employees Pro bersifat PILIHAN dan baru berjalan kalau
+Anda mencentangnya sendiri di halaman terakhir (lihat bagian kedua di
+bawah).
+
+====================================================
+BAGIAN 1 — SIMA Asset Agent (terpasang otomatis)
+====================================================
+
+Apa yang dilakukan agent ini?
+------------------------------
+Setiap 5 menit, agent mengirim laporan singkat ke server SIMA
+(Sistem Informasi Manajemen Aset) milik perusahaan, lalu berhenti sampai
+siklus berikutnya. Tidak ada proses yang berjalan diam-diam tanpa jejak:
+seluruh aktivitas tercatat di berkas log (agent.log) yang bisa dibuka
+kapan saja oleh siapa pun yang punya akses ke komputer ini, dan agent ini
+terdaftar dengan nama jelas "SIMA Asset Agent" di Task Scheduler Windows,
+bukan nama samaran.
+
+Data yang DIKIRIM ke server SIMA:
+------------------------------
+  - Nama komputer (hostname) dan alamat IP lokal
+  - Versi, build, dan arsitektur sistem operasi Windows
+  - Domain/workgroup, dan waktu komputer terakhir dinyalakan ulang
+  - Merek, model, dan nomor seri perangkat (dibaca dari BIOS)
+  - Prosesor (CPU): model, jumlah core/thread, clock, cache, beban sesaat
+  - RAM: kapasitas, sisa, jumlah slot, dan tiap modul (tipe, kecepatan, produsen)
+  - Semua drive (kapasitas dan sisa) serta kesehatan disk fisik
+  - Jaringan: jenis koneksi, nama Wi-Fi (SSID), MAC address, IP dan gateway
+  - Baterai: persen, status daya, dan kesehatan baterai
+  - Status BitLocker (apakah disk terenkripsi)
+  - Status Windows Defender dan tanggal pembaruan definisi virus
+  - Update Windows terpasang terakhir dan update yang menunggu dipasang
+  - Daftar software terpasang (nama, versi, penerbit), dikirim sehari sekali
+  - Hasil uji kecepatan baca/tulis RAM dan disk, sehari sekali (memakai berkas
+    sementara 256 MB yang langsung dihapus)
+
+Server SIMA juga mencatat RIWAYAT PERUBAHAN spesifikasi perangkat (misalnya RAM
+ditambah, software dipasang atau dihapus) dengan membandingkan laporan agent.
+
+Permintaan dari tim IT (daftar tetap)
+------------------------------
+Tim IT dapat meminta agent menjalankan beberapa tindakan dari DAFTAR TETAP
+saja: mengirim laporan lengkap sekarang, mengumpulkan diagnostik atau log agent,
+dan menampilkan pesan singkat di layar Anda. Agent TIDAK bisa disuruh menjalankan
+perintah, skrip, atau program lain, dan tidak bisa mengubah atau menghapus file
+Anda. Setiap permintaan tercatat di agent.log pada komputer ini dan di riwayat
+di SIMA (siapa yang meminta, kapan, dan hasilnya).
+
+Program pembantu "SIMA Agent Helper" (ikon di baris tray)
+------------------------------
+Program kecil ini berjalan di akun Anda (tanpa hak administrator) dan hanya
+melakukan dua hal: menampilkan PENGUMUMAN dari IT sebagai kartu di layar, dan
+membuka jendela CHAT bila IT memulai percakapan dengan Anda.
+  - Chat selalu dimulai dan diakhiri oleh IT. Anda dapat membalas dan
+    meminimalkan jendelanya, tetapi tidak dapat mengakhiri percakapan.
+    Percakapan ditutup otomatis setelah 30 menit tanpa aktivitas.
+  - Isi chat disimpan di SIMA bersama nama pengirim dan waktunya.
+  - Program ini tidak membaca file, layar, papan klip, atau ketikan Anda
+    (hanya teks yang Anda kirim lewat jendela chat).
+  - Aktivitasnya tercatat di %LOCALAPPDATA%\SIMA\helper.log.
+
+Data yang TIDAK PERNAH dikirim oleh SIMA Asset Agent:
+------------------------------
+  - Tidak ada rekaman ketikan keyboard (keylogging)
+  - Tidak ada screenshot atau rekaman layar
+  - Tidak ada riwayat/isi penjelajahan browser
+  - Tidak ada isi file atau dokumen pribadi
+  - Tidak ada lokasi presisi (GPS), hanya IP jaringan kantor
+  - Tidak ada akses kamera, mikrofon, atau clipboard
+
+====================================================
+BAGIAN 2 — Net Monitor for Employees Pro (PILIHAN, tidak otomatis)
+====================================================
+
+Ini program TERPISAH dari EduIQ.com, bukan buatan AKP. Berbeda jauh dari
+SIMA Asset Agent — kalau Anda memilih memasangnya (lewat kotak centang di
+halaman terakhir instalasi), program ini BISA:
+
+  - Melihat layar komputer ini secara real-time dari komputer admin
+  - Mengambil screenshot dan merekam layar
+  - Mencatat ketikan keyboard (keylogging)
+  - Mengambil alih mouse dan keyboard dari jarak jauh
+  - Memblokir aplikasi atau website tertentu
+  - Mengunci port USB
+  - Mematikan atau me-restart komputer ini dari jarak jauh
+
+Ini adalah kemampuan pemantauan yang jauh lebih luas daripada SIMA Asset
+Agent. Pemasangannya TIDAK berjalan otomatis bersama SIMA Asset Agent —
+installer-nya baru dijalankan kalau Anda secara sadar mencentang kotak
+"Pasang juga Net Monitor for Employees Pro" di halaman terakhir, dan
+setelah itu Anda akan melihat wizard instalasi program itu sendiri
+secara terpisah (bukan tersembunyi).
+
+Sebelum memasang Net Monitor for Employees Pro di komputer karyawan,
+pastikan pemasangannya sudah disetujui lewat kebijakan perusahaan dan
+karyawan sudah diberi tahu — pemantauan keystroke dan layar diatur oleh
+hukum ketenagakerjaan/privasi di banyak yurisdiksi.
+
+====================================================
+
+Instalasi ini WAJIB dijalankan sebagai Administrator, karena SIMA Asset
+Agent didaftarkan sebagai Scheduled Task yang berjalan di tingkat sistem
+(bukan per-pengguna), supaya tetap melapor walau tidak ada yang login.
+
+Pertanyaan atau ingin melepas salah satu program ini? Hubungi tim IT AKP.
+
+Klik Berikutnya untuk melanjutkan.

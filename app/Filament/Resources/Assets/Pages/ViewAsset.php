@@ -58,6 +58,8 @@ class ViewAsset extends ViewRecord
     {
         /** @var Asset $r */
         return [
+            ActionGroup::make(\App\Filament\Support\AgentActions::make(fn () => $this->record))->label('Agent')->icon(Heroicon::OutlinedComputerDesktop)->button()->color('gray')
+                ->visible(fn () => $this->can()),
             Action::make('checkout')->label('Checkout')->icon(Heroicon::OutlinedArrowUpTray)->color('primary')
                 ->visible(fn () => $this->can() && $this->record->status === 'available')
                 ->schema(fn () => $this->handoverFields(true))

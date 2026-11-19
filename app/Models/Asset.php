@@ -10,7 +10,7 @@ class Asset extends Model
 {
     use SoftDeletes, Audited, Concerns\HasUniqueSerial;
     protected $guarded = [];
-    protected $casts = ['purchase_date' => 'date', 'warranty_until' => 'date', 'documents' => 'array', 'spec_data' => 'array', 'purchase_price' => 'decimal:2',
+    protected $casts = ['agent_last_seen' => 'datetime', 'purchase_date' => 'date', 'warranty_until' => 'date', 'documents' => 'array', 'spec_data' => 'array', 'purchase_price' => 'decimal:2',
         'rental_start' => 'date', 'rental_end' => 'date', 'returned_at' => 'date', 'retired_at' => 'date', 'rental_monthly_cost' => 'decimal:2', 'rental_deposit' => 'decimal:2'];
 
     public const STATUSES = [
@@ -207,6 +207,14 @@ class Asset extends Model
 
     /** Pencadangan aktif untuk rencana kedatangan karyawan (satu aset hanya bisa dicadangkan sekali). */
     public function reservationItem() { return $this->hasOne(ArrivalPlanItem::class)->whereIn('status', ['planned', 'prepared', 'ready']); }
+
+    // ---- SIMA Asset Agent (dipindah dari SIMA): token, laporan terkini, perintah, chat, riwayat spesifikasi ----
+    public function agentTokens() { return $this->hasMany(AssetAgentToken::class); }
+    /** Laporan TERKINI (satu baris per aset, bukan log). */
+    public function agentHeartbeat() { return $this->hasOne(AssetHeartbeat::class); }
+    public function chatSessions() { return $this->hasMany(AgentChatSession::class)->orderByDesc('id'); }
+    public function agentCommands() { return $this->hasMany(AssetAgentCommand::class)->orderByDesc('id'); }
+    public function specChanges() { return $this->hasMany(AssetSpecChange::class)->orderByDesc('changed_at')->orderByDesc('id'); }
 
     public function category() { return $this->belongsTo(Category::class); }
     public function vendor() { return $this->belongsTo(Vendor::class); }

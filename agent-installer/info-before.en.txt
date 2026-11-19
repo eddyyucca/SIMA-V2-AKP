@@ -1,0 +1,113 @@
+﻿SIMA Asset Monitoring Agent
+============================
+
+This program is OFFICIAL software of PT Adhi Kartiko Pratama Tbk (AKP) for
+monitoring the status of the company's IT assets (laptops/PCs). It is
+installed, managed and audited by the AKP IT team.
+
+This installer sets up TWO programs. SIMA Asset Agent is installed
+automatically; Net Monitor for Employees Pro is OPTIONAL and only runs if
+you tick its box yourself on the last page (see the second part below).
+
+====================================================
+PART 1 — SIMA Asset Agent (installed automatically)
+====================================================
+
+What does this agent do?
+------------------------------
+Every 5 minutes the agent sends a short report to the company's SIMA server
+(Asset Information Management System) and then stops until the next cycle.
+Nothing runs silently without a trace: all activity is written to a log file
+(agent.log) that anyone with access to this computer can open at any time,
+and the agent is registered under a clear name, "SIMA Asset Agent", in the
+Windows Task Scheduler, not under a disguised name.
+
+Data that IS SENT to the SIMA server:
+------------------------------
+  - Computer name (hostname) and local IP address
+  - Windows version, build and architecture
+  - Domain/workgroup, and when the computer was last restarted
+  - Make, model and serial number of the device (read from the BIOS)
+  - Processor (CPU): model, core/thread count, clock, cache, momentary load
+  - RAM: capacity, free amount, number of slots, and each module (type, speed, maker)
+  - All drives (capacity and free space) and the health of physical disks
+  - Network: connection type, Wi-Fi name (SSID), MAC address, IP and gateway
+  - Battery: percentage, power status and battery health
+  - BitLocker status (whether the disk is encrypted)
+  - Windows Defender status and the date of the latest virus definition update
+  - The latest installed Windows update and updates waiting to be installed
+  - List of installed software (name, version, publisher), sent once a day
+  - RAM and disk read/write speed test results, once a day (uses a 256 MB
+    temporary file that is deleted immediately)
+
+The SIMA server also keeps a CHANGE HISTORY of the device's specifications
+(for example RAM added, software installed or removed) by comparing the
+agent's reports.
+
+Requests from the IT team (fixed list)
+------------------------------
+The IT team can ask the agent to perform a few actions from a FIXED LIST only:
+send a full report now, collect diagnostics or the agent log, and show a
+short message on your screen. The agent can NOT be told to run any other
+command, script or program, and it cannot change or delete your files.
+Every request is recorded in agent.log on this computer and in the history
+in SIMA (who asked, when, and the result).
+
+The "SIMA Agent Helper" program (icon in the tray)
+------------------------------
+This small program runs in your own account (without administrator rights)
+and does only two things: shows ANNOUNCEMENTS from IT as a card on your
+screen, and opens a CHAT window when IT starts a conversation with you.
+  - A chat is always started and ended by IT. You can reply and minimise the
+    window, but you cannot end the conversation. A conversation closes
+    automatically after 30 minutes without activity.
+  - The chat content is stored in SIMA together with the sender's name and time.
+  - The program does not read your files, screen, clipboard or keystrokes
+    (only the text you send through the chat window).
+  - Its activity is logged in %LOCALAPPDATA%\SIMA\helper.log.
+
+Data that is NEVER sent by SIMA Asset Agent:
+------------------------------
+  - No keystroke recording (keylogging)
+  - No screenshots or screen recordings
+  - No browsing history or browser content
+  - No contents of your files or personal documents
+  - No precise location (GPS), only the office network IP
+  - No access to the camera, microphone or clipboard
+
+====================================================
+PART 2 — Net Monitor for Employees Pro (OPTIONAL, not automatic)
+====================================================
+
+This is a SEPARATE program from EduIQ.com, not made by AKP. It is very
+different from SIMA Asset Agent — if you choose to install it (using the
+checkbox on the last installer page), it CAN:
+
+  - View this computer's screen in real time from an admin computer
+  - Take screenshots and record the screen
+  - Record keyboard input (keylogging)
+  - Take over the mouse and keyboard remotely
+  - Block specific applications or websites
+  - Lock USB ports
+  - Shut down or restart this computer remotely
+
+This is a much broader monitoring capability than SIMA Asset Agent. It is
+NOT installed together with SIMA Asset Agent — its installer only runs if
+you consciously tick "Also install Net Monitor for Employees Pro" on the
+last page, and you will then see that program's own installation wizard
+separately (not hidden).
+
+Before installing Net Monitor for Employees Pro on an employee's computer,
+make sure the installation has been approved under company policy and that
+the employee has been informed — keystroke and screen monitoring is
+regulated by labour/privacy law in many jurisdictions.
+
+====================================================
+
+This installation MUST be run as Administrator, because SIMA Asset Agent is
+registered as a Scheduled Task that runs at system level (not per user), so
+it keeps reporting even when nobody is signed in.
+
+Questions, or want to remove one of these programs? Contact the AKP IT team.
+
+Click Next to continue.

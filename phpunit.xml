@@ -11,6 +11,7 @@
         <testsuite name="Feature">
             <directory>tests/Feature</directory>
         </testsuite>
+        <testsuite name="Agent"><directory>tests/Agent</directory></testsuite>
         <testsuite name="Qa"><directory>tests/Qa</directory></testsuite>
         <testsuite name="Requisition"><directory>tests/Requisition</directory></testsuite>
     </testsuites>

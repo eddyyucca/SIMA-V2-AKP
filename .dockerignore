@@ -38,3 +38,5 @@ caption-*.txt
 .phpunit.result.cache
 docs
 packages/*/vendor
+agent-client
+agent-installer

@@ -18,6 +18,10 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        // Batas laju API agent (sama dengan SIMA): per token, per token helper, dan per IP
+        \Illuminate\Support\Facades\RateLimiter::for('agent', fn (\Illuminate\Http\Request $r) => \Illuminate\Cache\RateLimiting\Limit::perMinute(20)->by('agent:' . sha1((string) $r->bearerToken())));
+        \Illuminate\Support\Facades\RateLimiter::for('agent-helper', fn (\Illuminate\Http\Request $r) => \Illuminate\Cache\RateLimiting\Limit::perMinute(90)->by('agent-helper:' . sha1((string) $r->bearerToken())));
+        \Illuminate\Support\Facades\RateLimiter::for('agent-ip', fn (\Illuminate\Http\Request $r) => \Illuminate\Cache\RateLimiting\Limit::perMinute(3000)->by('agent-ip:' . $r->ip()));
         foreach ([
             \App\Models\Category::class, \App\Models\Department::class, \App\Models\Location::class, \App\Models\Vendor::class,
             \App\Models\Employee::class, \App\Models\Asset::class, \App\Models\Accessory::class, \App\Models\Consumable::class,

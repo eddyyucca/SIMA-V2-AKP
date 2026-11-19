@@ -182,4 +182,44 @@
             </ul>
         </div>
     </div>
+    @php
+        $hb = $a->agentHeartbeat; $tokenActive = $a->agentTokens()->whereNull('revoked_at')->exists();
+    @endphp
+    @if ($hb || $tokenActive)
+        @php
+            $alerts = app(\App\Services\AgentAlertRules::class)->evaluate($a, $hb, app(\App\Services\AgentUpdateManifest::class)->latestVersion());
+            $gb = fn ($b) => $b ? number_format($b / 1073741824, 1, ',', '.') . ' GB' : '-';
+            $stLabel = ['online' => 'Online', 'offline' => 'Offline', 'never_reported' => 'Belum pernah lapor'][$a->agent_status] ?? $a->agent_status;
+        @endphp
+        <div style="{{ $card }}">
+            <h3 style="font-weight:700;font-size:1.1rem;margin-bottom:8px">Perangkat (Agent) - <span style="color:{{ $a->agent_status === 'online' ? '#16a34a' : '#d64545' }}">{{ $stLabel }}</span></h3>
+            <table style="width:100%;font-size:14px">
+                <tr><td style="color:#888;width:30%">Laporan terakhir</td><td>{{ $a->agent_last_seen?->format('d/m/Y H:i') ?? '-' }} {{ $a->agent_last_seen ? '(' . $a->agent_last_seen->diffForHumans() . ')' : '' }}</td></tr>
+                @if ($hb)
+                    <tr><td style="color:#888">Hostname / IP</td><td>{{ $hb->hostname ?: '-' }} / {{ $hb->ip_address ?: '-' }}</td></tr>
+                    <tr><td style="color:#888">OS</td><td>{{ $hb->os_version ?: '-' }} {{ $hb->os_build }}</td></tr>
+                    <tr><td style="color:#888">CPU / RAM</td><td>{{ $hb->cpu ?: '-' }} / {{ $gb($hb->ram_total_bytes) }}</td></tr>
+                    <tr><td style="color:#888">Disk bebas / total</td><td>{{ $gb($hb->disk_free_bytes) }} / {{ $gb($hb->disk_total_bytes) }}</td></tr>
+                    <tr><td style="color:#888">BitLocker / Defender</td><td>{{ $hb->bitlocker_status ?: '-' }} / {{ $hb->defender_enabled === null ? '-' : ($hb->defender_enabled ? 'aktif' : 'nonaktif') }}</td></tr>
+                    <tr><td style="color:#888">Versi agent</td><td>{{ $hb->agent_version ?: '-' }}</td></tr>
+                @endif
+                <tr><td style="color:#888">Token agent</td><td>{{ $tokenActive ? 'Aktif' : 'Tidak ada' }}</td></tr>
+            </table>
+            @if ($alerts)
+                <div style="margin-top:8px;font-size:13px">
+                    @foreach ($alerts as $al)
+                        <div style="color:{{ $al['severity'] === 'critical' ? '#d64545' : ($al['severity'] === 'warning' ? '#d9a02b' : '#888') }}">&bull; {{ trans('agent.alert_' . $al['code'], $al['params']) }}</div>
+                    @endforeach
+                </div>
+            @endif
+            @php $cmds = $a->agentCommands()->limit(5)->get(); @endphp
+            @if ($cmds->isNotEmpty())
+                <div style="margin-top:10px;font-size:13px"><b>Perintah terakhir</b>
+                    @foreach ($cmds as $c)
+                        <div>{{ $c->requested_at?->format('d/m H:i') }} - {{ str($c->type)->replace('_', ' ') }}: <b>{{ $c->status }}</b>{{ $c->result ? ' - ' . \Illuminate\Support\Str::limit($c->result, 80) : '' }}</div>
+                    @endforeach
+                </div>
+            @endif
+        </div>
+    @endif
 </x-filament-panels::page>

@@ -14,3 +14,5 @@ Schedule::command('peminjaman:remind')->everyThirtyMinutes();
 if (filled(config('services.hris.url')) && filled(config('services.hris.token'))) {
     Schedule::command('hris:sync-employees --apply')->dailyAt('02:00')->withoutOverlapping();
 }
+
+Schedule::command("agent:mark-stale-offline")->everyFiveMinutes();   // agent yang berhenti lapor -> offline
