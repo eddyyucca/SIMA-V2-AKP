@@ -31,7 +31,7 @@ x-asset-env: &asset-env
   PORTAL_APP_CODE: ${PORTAL_APP_CODE:-asset}              # harus sama dengan KODE modul di Portal
   PORTAL_SSO_SECRET: ${PORTAL_SSO_SECRET}
   # HRIS (sumber karyawan, REST baca-saja) dan token yang dipakai HRIS membaca aset karyawan
-  HRIS_API_URL: ${HRIS_API_URL:-https://hris.lameruru.web.id}
+  HRIS_API_URL: ${HRIS_API_URL:-http://host.docker.internal:8101}   # HRIS di server yang sama (sama dengan stack lain)
   HRIS_API_TOKEN: ${HRIS_API_TOKEN}
   SIMA_API_TOKEN: ${SIMA_API_TOKEN}
   # Impor SIMA (hanya saat migrasi; kosongkan sesudahnya)
@@ -42,6 +42,8 @@ x-asset-env: &asset-env
   LEGACY_DB_PASSWORD: ${LEGACY_DB_PASSWORD:-}
   SIMA_FILES_PATH: ${SIMA_FILES_PATH:-}
   # Notifikasi
+  TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
+  TELEGRAM_ADMIN_CHAT_ID: ${TELEGRAM_ADMIN_CHAT_ID:-}
   VAPID_SUBJECT: ${VAPID_SUBJECT:-mailto:noreply@akp.co.id}
   VAPID_PUBLIC_KEY: ${VAPID_PUBLIC_KEY:-}
   VAPID_PRIVATE_KEY: ${VAPID_PRIVATE_KEY:-}

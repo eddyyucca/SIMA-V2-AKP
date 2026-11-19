@@ -6,7 +6,7 @@ Pola sama dengan aplikasi AKP lain (PTW, Lapor GA, ...): GitHub Actions membangu
 
 1. **Portal** > Admin > Modul > *Tambah modul*: kode `asset`, nama "IT Asset & ITERA", URL `https://asset.lameruru.web.id`. Salin **rahasia SSO** dari halaman Integrasi, lalu *Deteksi level* (admin / staff / user) setelah aplikasi berjalan, dan beri akses ke pengguna.
 2. **HRIS**: pastikan token layanan HRIS tersedia (`HRIS_API_TOKEN`). Buat token acak untuk `SIMA_API_TOKEN`; di `.env` HRIS isi `SIMA_URL=https://asset.lameruru.web.id` dan `SIMA_API_TOKEN` yang sama (panel aset di offboarding HRIS langsung memakai aplikasi ini).
-3. **Portainer** > Add stack > *Repository*: `https://github.com/eddyyucca/SIMA-V2-AKP`, compose path `deploy/portainer/docker-compose.git.yml`. Isi Environment variables:
+3. **Portainer** (isian siap pakai: `sh deploy/portainer/buat-isian-asset.sh` -> `~/akp-asset-isian.txt`) > Add stack > *Repository*: `https://github.com/eddyyucca/SIMA-V2-AKP`, compose path `deploy/portainer/docker-compose.git.yml`. Isi Environment variables:
 
 | Variabel | Isi |
 |---|---|
