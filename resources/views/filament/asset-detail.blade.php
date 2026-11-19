@@ -33,7 +33,7 @@
         <div style="{{ $card }};text-align:center">
             {!! SimpleSoftwareIO\QrCode\Facades\QrCode::size(160)->margin(1)->generate($a->asset_tag) !!}
             <div style="font-weight:700;margin-top:4px">{{ $a->asset_tag }}</div>
-            @if($a->photo_path)<img src="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($a->photo_path) }}" style="max-height:140px;margin:8px auto;border-radius:8px">@endif
+            @if($a->displayPhoto())<img src="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($a->displayPhoto()) }}" style="max-height:140px;margin:8px auto;border-radius:8px">@endif
             @foreach(($a->documents ?? []) as $doc)
                 <div><a href="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($doc) }}" target="_blank" style="color:#1f78b0;font-size:13px"><svg class="ic" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m18.38 11.69-7.8 7.8a4.5 4.5 0 0 1-6.36-6.36l9.2-9.2a3 3 0 0 1 4.24 4.24l-9.2 9.2a1.5 1.5 0 0 1-2.12-2.12l7.8-7.8"/></svg> {{ basename($doc) }}</a></div>
             @endforeach

@@ -181,9 +181,9 @@ class AssetResource extends Resource
 
     public static function table(Table $table): Table
     {
-        return $table->modifyQueryUsing(fn ($query) => $query->where('ownership', 'owned')->with(['category', 'employee', 'location', 'reservationItem.plan']))
+        return $table->modifyQueryUsing(fn ($query) => $query->where('ownership', 'owned')->with(['category', 'employee', 'location', 'reservationItem.plan', 'modelRef']))
             ->columns([
-                ImageColumn::make('photo_path')->label('')->disk('public')->circular()->toggleable(isToggledHiddenByDefault: true),
+                ImageColumn::make('photo')->label('')->disk('public')->circular()->getStateUsing(fn ($record) => $record->displayPhoto())->toggleable(),
                 TextColumn::make('asset_tag')->label('Kode')->searchable()->sortable()->weight('bold'),
                 TextColumn::make('category.name')->label('Kategori'),
                 TextColumn::make('brand')->label('Merek / Model')->formatStateUsing(fn ($state, $record) => trim("{$record->brand} {$record->model}"))->searchable(['brand', 'model']),

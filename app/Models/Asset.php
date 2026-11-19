@@ -91,6 +91,8 @@ class Asset extends Model
     }
 
     public function brandRef() { return $this->belongsTo(Brand::class, 'brand_id')->withTrashed(); }
+    /** Foto aset; bila belum ada, foto modelnya (disk public). */
+    public function displayPhoto(): ?string { return $this->photo_path ?: $this->modelRef?->photo_path; }
     public function modelRef() { return $this->belongsTo(AssetModel::class, 'asset_model_id')->withTrashed(); }
 
     /** Status akhir: tidak lagi dihitung sebagai aset aktif. */

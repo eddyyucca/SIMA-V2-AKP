@@ -585,6 +585,16 @@ class SimaImporter
             DB::table('assets')->where('id', $id)->update(['photo_path' => $dest]);
             $this->stat('files_photos');
         }
+        // foto model aset (laptop, monitor, ...)
+        foreach ($this->L->table('models')->whereNotNull('image')->where('image', '<>', '')->get(['id', 'image']) as $m) {
+            $id = $this->map->get('model', $m->id); if (! $id || DB::table('asset_models')->where('id', $id)->whereNotNull('photo_path')->exists()) continue;
+            $src = $find('models/' . $m->image);
+            if (! $src) { $this->stat('files_missing'); continue; }
+            $dest = 'models/legacy-' . $id . '-' . basename($src);
+            Storage::disk('public')->put($dest, file_get_contents($src));
+            DB::table('asset_models')->where('id', $id)->update(['photo_path' => $dest]);
+            $this->stat('files_model_photos');
+        }
         // foto aksesori
         foreach ($this->L->table('accessories')->whereNotNull('image')->where('image', '<>', '')->get(['id', 'image']) as $a) {
             $id = $this->map->get('accessory', $a->id); if (! $id || DB::table('accessories')->where('id', $id)->whereNotNull('photo_path')->exists()) continue;

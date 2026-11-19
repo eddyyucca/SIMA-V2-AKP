@@ -12,6 +12,7 @@ use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\RestoreAction;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -50,6 +51,8 @@ class AssetModelResource extends Resource
             TextInput::make('name')->label('Nama model')->required()->maxLength(150)
                 ->unique(ignoreRecord: true, modifyRuleUsing: fn (Unique $rule, Get $get) => $rule->where('brand_id', $get('brand_id')))
                 ->validationMessages(['unique' => 'Model ini sudah ada pada merek tersebut.']),
+            FileUpload::make('photo_path')->label('Foto model')->image()->maxSize(5120)->disk('public')->visibility('public')->directory('models')
+                ->helperText('Tampil pada semua aset bermodel ini yang belum punya foto sendiri.'),
             Textarea::make('default_specs')->label('Spesifikasi bawaan')->helperText('Terisi otomatis ke spesifikasi aset baru yang memakai model ini.'),
         ]);
     }
@@ -57,6 +60,7 @@ class AssetModelResource extends Resource
     public static function table(Table $table): Table
     {
         return $table->modifyQueryUsing(fn ($query) => $query->with(['brand', 'category'])->withCount('assets'))->columns([
+            \Filament\Tables\Columns\ImageColumn::make('photo_path')->label('')->disk('public')->circular(),
             TextColumn::make('brand.name')->label('Merek')->searchable()->sortable(),
             TextColumn::make('name')->label('Model')->searchable()->sortable()->weight('bold'),
             TextColumn::make('category.name')->label('Kategori'),
