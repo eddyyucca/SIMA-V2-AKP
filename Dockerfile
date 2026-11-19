@@ -45,9 +45,13 @@ COPY --from=assets /app/public/build /var/www/html/public/build
 # Unduhan paket kadang terputus: ulangi sampai 4 kali; paket yang sudah terunduh dipakai ulang.
 RUN ok=0; for i in 1 2 3 4; do composer install --no-dev --no-interaction --no-progress --prefer-dist --optimize-autoloader --no-scripts && ok=1 && break; echo "composer install gagal (percobaan $i dari 4), mengulang..." >&2; sleep 5; done; [ "$ok" = 1 ] \
     && php artisan package:discover --ansi \
+    && php artisan filament:assets --ansi \
     && rm -rf /root/.composer /root/.cache \
     && mkdir -p storage/framework/cache storage/framework/sessions storage/framework/views storage/logs bootstrap/cache storage/app/private storage/app/public \
     && chown -R www-data:www-data storage bootstrap/cache
+
+# Pengaman: build GAGAL bila aset panel tidak ada (tanpanya halaman tampil tanpa CSS/JS).
+RUN test -f public/css/filament/filament/app.css && test -f public/js/filament/filament/app.js && test -f public/build/manifest.json
 
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN sed -i 's/[[:cntrl:]]$//' /usr/local/bin/entrypoint.sh && chmod +x /usr/local/bin/entrypoint.sh
