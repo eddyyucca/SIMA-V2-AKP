@@ -100,7 +100,7 @@ class ViewAsset extends ViewRecord
                 Action::make('bast_print')->label('Cetak')->icon(Heroicon::OutlinedPrinter)
                     ->visible(fn () => $this->can())
                     ->modalHeading('Cetak formulir BAST')
-                    ->modalDescription('Formulir berisi data aset ini, siap dicetak dan ditandatangani. Tidak mengubah status atau pemegang aset.')
+                    ->modalDescription('Formulir berisi data aset ini dan nomor dokumen otomatis, siap dicetak dan ditandatangani. Nomor yang sama dipakai saat serah terima dicatat. Tidak mengubah status atau pemegang aset.')
                     ->modalSubmitActionLabel('Buat PDF')
                     ->fillForm(fn () => ['type' => $this->record->employee_id ? 'transfer' : 'checkout'])
                     ->schema([

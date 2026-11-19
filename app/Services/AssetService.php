@@ -64,6 +64,7 @@ class AssetService
             $a = Asset::query()->lockForUpdate()->findOrFail($asset->id);
             $p = $plan($a);
 
+            $reservation = \App\Models\BastNumberReservation::where('asset_id', $a->id)->where('type', $type)->whereNull('used_at')->lockForUpdate()->orderBy('id')->first();
             $row = AssetAssignment::create([
                 'asset_id' => $a->id,
                 'type' => $type,
@@ -73,11 +74,13 @@ class AssetService
                 'condition' => $d['condition'] ?? $a->condition,
                 'signature_receiver_path' => $this->saveSignature($d['signature_receiver'] ?? null, 'recv'),
                 'signature_it_path' => $this->saveSignature($d['signature_it'] ?? null, 'it'),
-                'bast_number' => $this->nextBastNumber($type),
+                'bast_number' => $reservation?->bast_number ?? $this->nextBastNumber($type),   // nomor yang sudah tercetak di formulir dipakai persis
                 'notes' => $d['notes'] ?? null,
                 'assigned_at' => $d['assigned_at'] ?? now(),
                 'created_by' => $d['created_by'] ?? auth()->id(),
             ]);
+
+            $reservation?->update(['asset_assignment_id' => $row->id, 'used_at' => now()]);
 
             $a->employee_id = $p['to'];
             $a->status = $p['status'];
@@ -245,13 +248,30 @@ class AssetService
         });
     }
 
+    /**
+     * Nomor untuk formulir BAST yang dicetak: dicadangkan otomatis dan dipakai persis saat serah terima dicatat.
+     * Mencetak ulang formulir yang sama (aset + jenis) memakai nomor cadangan yang belum terpakai, jadi nomor tidak habis percuma.
+     */
+    public function reserveBastNumber(Asset $asset, string $type): string
+    {
+        return DB::transaction(function () use ($asset, $type) {
+            $open = \App\Models\BastNumberReservation::where('asset_id', $asset->id)->where('type', $type)->whereNull('used_at')->lockForUpdate()->orderBy('id')->first();
+            if ($open) return $open->bast_number;
+            return \App\Models\BastNumberReservation::create([
+                'bast_number' => $this->nextBastNumber($type), 'asset_id' => $asset->id, 'type' => $type, 'reserved_by' => auth()->id(),
+            ])->bast_number;
+        });
+    }
+
     private function nextBastNumber(string $type): string
     {
         $ym = now()->format('Y/m') . '/';
         $prefix = AssetAssignment::NUMBER_PREFIX . $ym;
         // urutan per bulan; nomor berformat lama (BAST/2026/11/0053, belum dikonversi) tetap dihitung agar tidak ada nomor ganda
         $last = AssetAssignment::where(fn ($q) => $q->where('bast_number', 'like', $prefix . '%')->orWhere('bast_number', 'like', AssetAssignment::LEGACY_NUMBER_PREFIX . $ym . '%'))
-            ->lockForUpdate()->pluck('bast_number')->map(fn ($n) => (int) substr($n, -4))->max();
+            ->lockForUpdate()->pluck('bast_number')
+            ->merge(\App\Models\BastNumberReservation::where('bast_number', 'like', $prefix . '%')->lockForUpdate()->pluck('bast_number'))   // nomor yang sudah tercetak tidak dipakai ulang
+            ->map(fn ($n) => (int) substr($n, -4))->max();
         return $prefix . str_pad((string) (($last ?? 0) + 1), 4, '0', STR_PAD_LEFT);
     }
 
@@ -283,7 +303,7 @@ class AssetService
         ]);
     }
 
-    /** Formulir BAST kosong (untuk dicetak dan ditandatangani) dari data aset saat ini. Tidak membuat catatan serah terima. */
+    /** Formulir BAST (untuk dicetak dan ditandatangani) dari data aset saat ini, dengan nomor dokumen otomatis (dicadangkan). Tidak membuat catatan serah terima. */
     public function bastFormPdf(Asset $asset, string $type, ?Employee $emp = null): string
     {
         if (! isset(AssetAssignment::TYPES[$type])) throw new \InvalidArgumentException('Jenis BAST tidak dikenal.');
@@ -293,7 +313,7 @@ class AssetService
 
         $a = new AssetAssignment([
             'asset_id' => $asset->id, 'type' => $type, 'condition' => $asset->condition, 'location_id' => $asset->location_id,
-            'assigned_at' => now(), 'bast_number' => '........................................',
+            'assigned_at' => now(), 'bast_number' => $this->reserveBastNumber($asset, $type),
         ]);
         $a->setRelation('asset', $asset->loadMissing('category'));
         $a->setRelation('from', $from?->loadMissing('department'));
