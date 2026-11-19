@@ -141,6 +141,23 @@ class Qa61_SimaImportTest extends QaTestCase
         $this->get('/hardware/999999')->assertRedirect('/admin');                          // tak dikenal: tidak 404 membingungkan
     }
 
+    public function test_activated_flag_is_login_ability_not_employment_and_old_wrong_status_is_repaired(): void
+    {
+        $L = DB::connection('legacy');
+        $L->table('users')->where('username', '3260002')->update(['activated' => 0]);   // seperti 99% pengguna SIMA1
+        $this->import();
+        $id = DB::table('employees')->where('nik', '3260002')->value('id');
+        $this->assertSame('active', DB::table('employees')->where('id', $id)->value('status'));
+
+        // data hasil impor versi lama (salah): resigned padahal aktif -> dipulihkan; yang sudah dikelola HRIS tidak disentuh
+        DB::table('employees')->where('id', $id)->update(['status' => 'resigned']);
+        $other = DB::table('employees')->where('nik', '3260001')->value('id');
+        DB::table('employees')->where('id', $other)->update(['status' => 'resigned', 'hris_synced_at' => now()]);
+        $this->import();
+        $this->assertSame('active', DB::table('employees')->where('id', $id)->value('status'));
+        $this->assertSame('resigned', DB::table('employees')->where('id', $other)->value('status'));
+    }
+
     public function test_holders_history_and_balancing_rows(): void
     {
         $this->import();

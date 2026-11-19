@@ -182,9 +182,13 @@ class SimaImporter
             if (! $nik && ! isset($ref[$u->id])) { $this->stat('users_skipped_no_nik_unreferenced'); continue; }
 
             $name = $this->s($u->display_name) ?: ($this->s(trim($u->first_name . ' ' . $u->last_name)) ?: (string) $u->username);
-            $active = (bool) $u->activated && ! $u->deleted_at && (! $u->end_date || Carbon::parse($u->end_date)->isFuture());
+            // 'activated' di Snipe-IT = boleh login (bukan status karyawan): 99% pengguna SIMA1 bernilai 0. Aktif = tidak dihapus dan belum lewat tanggal berakhir.
+            $active = ! $u->deleted_at && (! $u->end_date || Carbon::parse($u->end_date)->isFuture());
             if ($mapped = $this->map->get('employee', $u->id)) {   // impor ulang: jangan buat dobel (terutama yang tanpa NIK); hanya status resign yang diikuti
-                if (! $active) DB::table('employees')->where('id', $mapped)->where('status', 'active')->update(['status' => 'resigned', 'updated_at' => now()]);
+                // Karyawan yang sudah dikelola HRIS (hris_synced_at) tidak disentuh: HRIS yang menentukan status.
+                if (! $active) DB::table('employees')->where('id', $mapped)->where('status', 'active')->whereNull('hris_synced_at')->update(['status' => 'resigned', 'updated_at' => now()]);
+                // pemulihan: impor versi lama salah menandai pengguna aktif sebagai resigned (activated=0)
+                else DB::table('employees')->where('id', $mapped)->where('status', 'resigned')->whereNull('hris_synced_at')->update(['status' => 'active', 'updated_at' => now()]);
                 $this->stat('employees_already_imported');
                 if (! $nik) $this->unmatched[] = ['sima_user_id' => $u->id, 'username' => $u->username, 'name' => $name, 'email' => $u->email, 'reason' => 'Masih tanpa NIK (lengkapi di Karyawan).'];
                 continue;
