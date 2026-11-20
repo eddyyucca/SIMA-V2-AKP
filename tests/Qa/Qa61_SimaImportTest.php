@@ -261,4 +261,91 @@ class Qa61_SimaImportTest extends QaTestCase
         $this->assertSame($before, DB::table('assets')->count());
         $this->assertSame(0, DB::table('legacy_map')->count());
     }
+
+    public function test_consumable_usage_history_is_imported_and_the_balance_stays_equal_to_sima(): void
+    {
+        $L = Schema::connection('legacy');
+        $L->create('consumable_transactions', fn ($t) => [$t->integer('id'), $t->text('document_number')->nullable(), $t->text('type')->nullable(), $t->text('transaction_date')->nullable(), $t->integer('supplier_id')->nullable(),
+            $t->text('reference')->nullable(), $t->text('target_type')->nullable(), $t->integer('target_id')->nullable(), $t->text('notes')->nullable(), $t->integer('created_by')->nullable(), $t->text('created_at')->nullable(), $t->text('updated_at')->nullable()]);
+        $L->create('consumable_transaction_items', fn ($t) => [$t->integer('id'), $t->integer('consumable_transaction_id'), $t->integer('consumable_id'), $t->integer('qty'), $t->double('unit_cost')->nullable(), $t->text('notes')->nullable(), $t->text('created_at')->nullable(), $t->text('updated_at')->nullable()]);
+        $L->create('consumables_users', fn ($t) => [$t->integer('id'), $t->integer('created_by')->nullable(), $t->integer('consumable_id')->nullable(), $t->integer('assigned_to')->nullable(), $t->text('created_at')->nullable(), $t->text('updated_at')->nullable(), $t->text('note')->nullable()]);
+        $user = DB::connection('legacy')->table('assets')->whereNotNull('assigned_to')->orderBy('id')->value('assigned_to');   // pengguna yang pasti diimpor sebagai karyawan
+        $D = DB::connection('legacy');
+        $D->table('consumable_transactions')->insert([
+            ['id' => 1, 'document_number' => '002/IT/BPB/HO/AKP/X/2026', 'type' => 'out', 'transaction_date' => '2026-10-06', 'reference' => null, 'target_type' => 'user', 'target_id' => $user, 'notes' => 'Untuk survey', 'created_at' => '2026-10-06 14:00:00'],
+            ['id' => 2, 'document_number' => '003/IT/BPM/HO/AKP/X/2026', 'type' => 'in', 'transaction_date' => '2026-10-08', 'reference' => 'PO-77', 'target_type' => null, 'target_id' => null, 'notes' => null, 'created_at' => '2026-10-08 10:00:00'],
+        ]);
+        $D->table('consumable_transaction_items')->insert([['id' => 1, 'consumable_transaction_id' => 1, 'consumable_id' => 1, 'qty' => 2, 'notes' => null], ['id' => 2, 'consumable_transaction_id' => 2, 'consumable_id' => 1, 'qty' => 1, 'notes' => null]]);
+        $D->table('consumables_users')->insert([   // 3 baris: 2 sudah dicakup transaksi keluar, 1 pengeluaran langsung
+            ['id' => 1, 'consumable_id' => 1, 'assigned_to' => $user, 'created_at' => '2026-10-06 14:00:00', 'note' => null],
+            ['id' => 2, 'consumable_id' => 1, 'assigned_to' => $user, 'created_at' => '2026-10-06 14:00:00', 'note' => null],
+            ['id' => 3, 'consumable_id' => 1, 'assigned_to' => $user, 'created_at' => '2026-11-01 09:00:00', 'note' => 'ambil langsung'],
+        ]);
+
+        $imp = $this->import();
+        $cid = (int) DB::table('legacy_map')->where('entity', 'consumable')->where('legacy_id', 1)->value('new_id');
+        $mv = fn () => DB::table('stock_movements')->where('stockable_type', \App\Models\Consumable::class)->where('stockable_id', $cid);
+
+        $this->assertSame(3, $imp->stats['consumable_history']);
+        $out = (clone $mv())->where('type', 'out')->orderBy('id')->get();
+        $this->assertCount(2, $out);                                               // keluar transaksi (2) + keluar langsung (1) = 2 baris
+        $this->assertSame([2, 1], $out->pluck('qty')->map(fn ($q) => (int) $q)->all());
+        $this->assertStringContainsString('002/IT/BPB/HO/AKP/X/2026', $out[0]->reason);
+        $this->assertNotNull($out[0]->employee_id);
+        $this->assertSame('ambil langsung', $out[1]->notes);
+        $this->assertSame(1, (int) (clone $mv())->where('type', 'in')->where('reason', 'like', 'Masuk 003%')->value('qty'));
+
+        // saldo: jumlah seluruh pergerakan = saldo SIMA (5)
+        $sum = (clone $mv())->get()->sum(fn ($m) => $m->type === 'out' ? -$m->qty : $m->qty);
+        $this->assertSame(5, (int) $sum);
+        $this->assertSame(5, (int) DB::table('consumables')->where('id', $cid)->value('qty'));
+
+        // impor ulang tidak menggandakan apa pun
+        $before = DB::table('stock_movements')->count();
+        $again = $this->import();
+        $this->assertSame($before, DB::table('stock_movements')->count());
+        $this->assertArrayNotHasKey('consumable_history', $again->stats);
+    }
+
+    public function test_consumable_history_that_exceeds_the_sima_balance_is_recorded_as_an_adjustment(): void
+    {
+        $L = Schema::connection('legacy');
+        $L->create('consumable_transactions', fn ($t) => [$t->integer('id'), $t->text('document_number')->nullable(), $t->text('type')->nullable(), $t->text('transaction_date')->nullable(), $t->integer('supplier_id')->nullable(),
+            $t->text('reference')->nullable(), $t->text('target_type')->nullable(), $t->integer('target_id')->nullable(), $t->text('notes')->nullable(), $t->integer('created_by')->nullable(), $t->text('created_at')->nullable(), $t->text('updated_at')->nullable()]);
+        $L->create('consumable_transaction_items', fn ($t) => [$t->integer('id'), $t->integer('consumable_transaction_id'), $t->integer('consumable_id'), $t->integer('qty'), $t->double('unit_cost')->nullable(), $t->text('notes')->nullable(), $t->text('created_at')->nullable(), $t->text('updated_at')->nullable()]);
+        DB::connection('legacy')->table('consumable_transactions')->insert([['id' => 1, 'document_number' => 'IN-1', 'type' => 'in', 'transaction_date' => '2026-10-08', 'reference' => null, 'target_type' => null, 'target_id' => null, 'notes' => null, 'created_at' => '2026-10-08 10:00:00']]);
+        DB::connection('legacy')->table('consumable_transaction_items')->insert([['id' => 1, 'consumable_transaction_id' => 1, 'consumable_id' => 1, 'qty' => 9, 'notes' => null]]);   // masuk 9, saldo SIMA hanya 5
+
+        $imp = $this->import();
+        $cid = (int) DB::table('legacy_map')->where('entity', 'consumable')->where('legacy_id', 1)->value('new_id');
+        $sum = DB::table('stock_movements')->where('stockable_type', \App\Models\Consumable::class)->where('stockable_id', $cid)->get()->sum(fn ($m) => $m->type === 'out' ? -$m->qty : $m->qty);
+        $this->assertSame(5, (int) $sum, 'jumlah pergerakan tetap sama dengan saldo SIMA');
+        $this->assertTrue(DB::table('stock_movements')->where('stockable_id', $cid)->where('type', 'adjust')->where('qty', -4)->exists());
+        $this->assertNotEmpty(array_filter($imp->warnings, fn ($w) => str_contains($w, 'melebihi saldo')));
+    }
+
+    public function test_component_bpk_transactions_enrich_existing_install_movements_without_adding_rows(): void
+    {
+        $L = Schema::connection('legacy');
+        $L->create('component_transactions', fn ($t) => [$t->integer('id'), $t->text('document_number')->nullable(), $t->text('type')->nullable(), $t->text('transaction_date')->nullable(), $t->integer('supplier_id')->nullable(),
+            $t->text('reference')->nullable(), $t->text('target_type')->nullable(), $t->integer('target_id')->nullable(), $t->text('notes')->nullable(), $t->integer('created_by')->nullable(), $t->text('created_at')->nullable(), $t->text('updated_at')->nullable()]);
+        $L->create('component_transaction_items', fn ($t) => [$t->integer('id'), $t->integer('component_transaction_id'), $t->integer('component_id'), $t->integer('qty'), $t->double('unit_cost')->nullable(), $t->text('notes')->nullable(), $t->text('created_at')->nullable(), $t->text('updated_at')->nullable()]);
+        $ci = DB::connection('legacy')->table('components_assets')->orderBy('id')->first();
+        $this->assertNotNull($ci, 'fixture harus punya komponen terpasang');
+        DB::connection('legacy')->table('component_transactions')->insert([['id' => 1, 'document_number' => '001/IT/BPK/HO/AKP/X/2026', 'type' => 'out', 'transaction_date' => '2026-10-20', 'supplier_id' => null,
+            'reference' => 'AKP-ITR2610016', 'target_type' => 'asset', 'target_id' => $ci->asset_id, 'notes' => 'tombol rusak', 'created_by' => null, 'created_at' => '2026-10-20 15:01:21', 'updated_at' => null]]);
+        DB::connection('legacy')->table('component_transaction_items')->insert([['id' => 1, 'component_transaction_id' => 1, 'component_id' => $ci->component_id, 'qty' => 1, 'unit_cost' => null, 'notes' => 'SN-123', 'created_at' => null, 'updated_at' => null]]);
+
+        $imp = $this->import();
+        $this->assertSame(1, $imp->stats['component_history_enriched']);
+        $mv = DB::table('stock_movements')->where('reason', 'like', 'Terpasang 001/IT/BPK/HO/AKP/X/2026%')->first();
+        $this->assertNotNull($mv);
+        $this->assertSame('install', $mv->type);
+        $this->assertStringContainsString('AKP-ITR2610016', $mv->notes);
+        $this->assertStringStartsWith('2026-10-20', (string) $mv->moved_at);
+
+        $installs = DB::table('stock_movements')->where('type', 'install')->count();
+        $this->import();
+        $this->assertSame($installs, DB::table('stock_movements')->where('type', 'install')->count(), 'tidak menambah baris pasang');
+    }
 }

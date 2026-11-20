@@ -418,6 +418,7 @@ class SimaImporter
             if ($qty > 0) $this->movement('in', \App\Models\Consumable::class, $id, $qty, ['reason' => 'Saldo awal (impor SIMA)']);
             $this->stat('consumables');
         }
+        $this->importConsumableHistory();
         // components + yang terpasang di aset
         $inst = $this->L->table('components_assets')->get()->groupBy('component_id');
         foreach ($this->L->table('components')->orderBy('id')->get() as $r) {
@@ -442,6 +443,116 @@ class SimaImporter
                 if ($assetId = $this->map->get('asset', $ci->asset_id)) $this->movement('install', \App\Models\Component::class, $id, (int) $ci->assigned_qty, ['asset_id' => $assetId, 'reason' => 'Terpasang di aset (impor SIMA)', 'moved_at' => $this->dt($ci->created_at) ?: now()]);
             }
             $this->stat('components');
+        }
+        $this->enrichComponentInstalls();
+    }
+
+    /**
+     * Transaksi BPK komponen SIMA (nomor dokumen, tanggal, tiket, catatan): dilekatkan pada pergerakan "pasang" yang SUDAH ada
+     * (dari components_assets) supaya jumlah komponen terpasang tidak berubah. Pergerakan yang tak ketemu pasangannya dilaporkan.
+     */
+    private function enrichComponentInstalls(): void
+    {
+        $L = \Illuminate\Support\Facades\Schema::connection('legacy');
+        if (! $L->hasTable('component_transactions') || ! $L->hasTable('component_transaction_items')) return;
+        $tx = $this->L->table('component_transactions')->orderBy('id')->get()->keyBy('id');
+        foreach ($this->L->table('component_transaction_items')->orderBy('id')->get() as $it) {
+            $t = $tx[$it->component_transaction_id] ?? null;
+            if (! $t || $t->type !== 'out' || $this->map->get('component_tx_item', $it->id)) continue;
+            $cid = $this->map->get('component', $it->component_id);
+            $aid = in_array($t->target_type, ['asset', self::ASSET], true) && $t->target_id ? $this->map->get('asset', $t->target_id) : null;
+            if (! $cid || ! $aid) continue;
+            $mv = DB::table('stock_movements')->where('stockable_type', \App\Models\Component::class)->where('stockable_id', $cid)->where('asset_id', $aid)
+                ->where('type', 'install')->where('reason', 'Terpasang di aset (impor SIMA)')->orderBy('id')->first();
+            if (! $mv) { $this->warn("Transaksi komponen {$t->document_number}: tidak ada pergerakan pasang yang cocok; dilewati."); continue; }
+            $doc = $this->s($t->document_number);
+            $notes = collect([$this->s($it->notes), $this->s($t->notes) && $this->s($t->notes) !== '-' ? $this->s($t->notes) : null, $this->s($t->reference)])->filter()->unique()->implode(' · ') ?: null;
+            DB::table('stock_movements')->where('id', $mv->id)->update([
+                'reason' => 'Terpasang' . ($doc ? " {$doc}" : '') . ' (impor SIMA)', 'notes' => $notes ?? $mv->notes,
+                'moved_at' => $this->dt($t->transaction_date ?: $t->created_at) ?: $mv->moved_at, 'updated_at' => now(),
+            ]);
+            $this->map->put('component_tx_item', $it->id, (int) $mv->id);
+            $this->stat('component_history_enriched');
+        }
+    }
+
+    /**
+     * Riwayat pemakaian consumable SIMA: transaksi BPB (consumable_transactions + items, keluar/masuk) dan pengeluaran langsung
+     * (consumables_users) yang tidak lewat transaksi. Dicatat sebagai pergerakan stok (keluar ke karyawan / masuk); saldo awal
+     * disesuaikan supaya saldo akhir tetap sama dengan SIMA. Idempoten lewat legacy_map; tidak ada yang dihapus.
+     */
+    private function importConsumableHistory(): void
+    {
+        $L = \Illuminate\Support\Facades\Schema::connection('legacy');
+        if (! $L->hasTable('consumable_transactions') || ! $L->hasTable('consumable_transaction_items')) return;
+        $model = \App\Models\Consumable::class;
+        $tx = $this->L->table('consumable_transactions')->orderBy('id')->get()->keyBy('id');
+        $delta = [];      // consumable baru => (keluar - masuk) yang baru dicatat, untuk menyesuaikan saldo awal
+        $earliest = [];
+        $outViaTx = [];   // consumable SIMA => jumlah keluar lewat transaksi (untuk menghitung pengeluaran langsung)
+
+        $insert = function (int $cid, string $type, int $qty, ?int $emp, string $reason, ?string $notes, string $at) use ($model, &$delta, &$earliest): int {
+            $id = DB::table('stock_movements')->insertGetId([
+                'stockable_type' => $model, 'stockable_id' => $cid, 'type' => $type, 'qty' => $qty, 'employee_id' => $emp, 'reason' => $reason, 'notes' => $notes,
+                'moved_at' => $at, 'created_at' => $at, 'updated_at' => now(),
+            ]);
+            $delta[$cid] = ($delta[$cid] ?? 0) + ($type === 'out' ? $qty : -$qty);
+            $earliest[$cid] = isset($earliest[$cid]) ? min($earliest[$cid], $at) : $at;
+            return $id;
+        };
+
+        foreach ($this->L->table('consumable_transaction_items')->orderBy('id')->get() as $it) {
+            $t = $tx[$it->consumable_transaction_id] ?? null;
+            if (! $t) continue;
+            $out = $t->type === 'out';
+            if ($out) $outViaTx[$it->consumable_id] = ($outViaTx[$it->consumable_id] ?? 0) + (int) $it->qty;
+            if ($this->map->get('consumable_tx_item', $it->id)) continue;
+            $cid = $this->map->get('consumable', $it->consumable_id);
+            $qty = (int) $it->qty;
+            if (! $cid || $qty <= 0) continue;
+            // di data SIMA, target_type bernilai 'user' (bukan nama kelas)
+            $emp = ($out && in_array($t->target_type, [self::USER, 'user'], true) && $t->target_id) ? $this->map->get('employee', $t->target_id) : null;
+            $at = $this->dt($t->transaction_date ?: $t->created_at) ?: now()->toDateTimeString();
+            $doc = $this->s($t->document_number);
+            $notes = collect([$this->s($it->notes), $this->s($t->notes), $this->s($t->reference)])->filter()->unique()->implode(' · ') ?: null;
+            $mid = $insert($cid, $out ? 'out' : 'in', $qty, $emp, ($out ? 'Keluar' : 'Masuk') . ($doc ? " {$doc}" : '') . ' (impor SIMA)', $notes, $at);
+            $this->map->put('consumable_tx_item', $it->id, $mid);
+            $this->stat('consumable_history');
+        }
+
+        // pengeluaran langsung (checkout di SIMA tanpa transaksi): jumlah baris consumables_users melebihi jumlah keluar lewat transaksi
+        if ($L->hasTable('consumables_users')) {
+            foreach ($this->L->table('consumables_users')->orderBy('id')->get()->groupBy('consumable_id') as $legacyCid => $rows) {
+                $surplus = $rows->count() - (int) ($outViaTx[$legacyCid] ?? 0);
+                $cid = $this->map->get('consumable', $legacyCid);
+                if ($surplus <= 0 || ! $cid) continue;
+                foreach ($rows->sortByDesc('id')->take($surplus) as $r) {
+                    if ($this->map->get('consumable_user', $r->id)) continue;
+                    $emp = $r->assigned_to ? $this->map->get('employee', $r->assigned_to) : null;
+                    $mid = $insert($cid, 'out', 1, $emp, 'Keluar langsung (impor SIMA)', $this->s($r->note), $this->dt($r->created_at) ?: now()->toDateTimeString());
+                    $this->map->put('consumable_user', $r->id, $mid);
+                    $this->stat('consumable_history');
+                }
+            }
+        }
+
+        // saldo awal = saldo SIMA sekarang + keluar - masuk, supaya jumlah seluruh pergerakan sama dengan saldo akhir
+        foreach ($delta as $cid => $d) {
+            $saldo = DB::table('stock_movements')->where('stockable_type', $model)->where('stockable_id', $cid)->where('reason', 'Saldo awal (impor SIMA)')->orderBy('id')->first();
+            $first = $earliest[$cid] ?? null;
+            if ($saldo) {
+                $new = (int) $saldo->qty + $d;
+                if ($new < 0) {
+                    // SIMA mencatat masuk melebihi saldo: saldo awal 0 + satu penyesuaian negatif, supaya jumlah pergerakan tetap = saldo SIMA
+                    $this->warn("Consumable #{$cid}: riwayat masuk SIMA melebihi saldo (selisih " . abs($new) . "); dicatat sebagai penyesuaian.");
+                    $this->movement('adjust', $model, $cid, $new, ['reason' => 'Penyesuaian selisih riwayat SIMA (impor SIMA)', 'moved_at' => $first ? Carbon::parse($first)->subSeconds(30)->toDateTimeString() : now()]);
+                    $new = 0;
+                }
+                $before = $first ? Carbon::parse($first)->subMinute()->toDateTimeString() : null;     // saldo awal tercatat sebelum pergerakan pertama
+                DB::table('stock_movements')->where('id', $saldo->id)->update(['qty' => $new] + ($before && $before < (string) $saldo->moved_at ? ['moved_at' => $before] : []));
+            } elseif ($d > 0) {
+                $this->movement('in', $model, $cid, $d, ['reason' => 'Saldo awal (impor SIMA)', 'moved_at' => $first ?? now()]);
+            }
         }
     }
 
