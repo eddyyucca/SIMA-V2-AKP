@@ -65,9 +65,9 @@ class AgentAnnouncementResource extends Resource
             ])->latest('id'))
             ->columns([
                 TextColumn::make('title')->label('Judul')->searchable(),
-                TextColumn::make('severity')->label('Tingkat')->badge()->color(fn ($s) => ['urgent' => 'danger', 'important' => 'warning'][$s] ?? 'gray'),
+                TextColumn::make('severity')->label('Tingkat')->badge()->color(fn ($state) => ['urgent' => 'danger', 'important' => 'warning'][$state] ?? 'gray'),
                 TextColumn::make('state')->label('Status')->state(fn (AgentAnnouncement $a) => $a->state())->badge(),
-                TextColumn::make('target_mode')->label('Sasaran')->formatStateUsing(fn ($s, $r) => $s === 'all' ? 'Semua' : $r->targets_count . ' perangkat'),
+                TextColumn::make('target_mode')->label('Sasaran')->formatStateUsing(fn ($state, $record) => $state === 'all' ? 'Semua' : $record->targets_count . ' perangkat'),
                 TextColumn::make('shown_count')->label('Tampil'),
                 TextColumn::make('acked_count')->label('Konfirmasi'),
                 TextColumn::make('created_at')->label('Dibuat')->dateTime('d/m/Y H:i')->sortable(),
@@ -75,9 +75,15 @@ class AgentAnnouncementResource extends Resource
             ->recordActions([
                 Action::make('stop')->label('Hentikan')->icon(Heroicon::OutlinedStopCircle)->requiresConfirmation()
                     ->visible(fn (AgentAnnouncement $a) => in_array($a->state(), ['live', 'scheduled'], true))
-                    ->action(fn (AgentAnnouncement $a) => app(AgentAdminService::class)->stopAnnouncement($a)),
+                    ->action(function (AgentAnnouncement $a) {
+                        app(AgentAdminService::class)->stopAnnouncement($a);
+                        Notification::make()->title(trans('agent.ann_stopped'))->success()->send();
+                    }),
                 Action::make('hapus')->label('Hapus')->icon(Heroicon::OutlinedTrash)->color('danger')->requiresConfirmation()
-                    ->action(fn (AgentAnnouncement $a) => app(AgentAdminService::class)->deleteAnnouncement($a)),
+                    ->action(function (AgentAnnouncement $a) {
+                        app(AgentAdminService::class)->deleteAnnouncement($a);
+                        Notification::make()->title(trans('agent.ann_deleted'))->success()->send();
+                    }),
             ]);
     }
 

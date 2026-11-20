@@ -54,6 +54,9 @@ class AdminPanelProvider extends PanelProvider
             ->renderHook(PanelsRenderHook::HEAD_END, fn (): string => '<link rel="stylesheet" href="' . asset('css/akp-theme.css') . '?v=' . @filemtime(public_path('css/akp-theme.css')) . '">')
             ->renderHook(PanelsRenderHook::HEAD_END, fn (): string => '<script src="' . asset('vendor/html5-qrcode.min.js') . '"></script>')
             // menu teks ITERA di samping logo/nama aplikasi pada topbar (menuju System Requisition IT)
+            // tombol "Kembali" di awal tiap halaman (kecuali Dashboard) dan bilah loading global
+            ->renderHook(PanelsRenderHook::PAGE_START, fn (): string => view('filament.back-button')->render())
+            ->renderHook(PanelsRenderHook::BODY_END, fn (): string => view('filament.loading-bar')->render())
             ->renderHook(PanelsRenderHook::TOPBAR_LOGO_AFTER, fn (): string => view('filament.requisition-button')->render())
             // salinan ITERA untuk layar kecil (logo topbar disembunyikan Filament di bawah lg)
             ->renderHook(PanelsRenderHook::GLOBAL_SEARCH_BEFORE, fn (): string => view('filament.requisition-button', ['mobile' => true])->render())

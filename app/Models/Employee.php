@@ -49,6 +49,26 @@ class Employee extends Model
             ->values();
     }
 
+    /**
+     * Karyawan resign yang MASIH memegang barang (aset, accessories bersih > 0, seat lisensi aktif), dihitung dengan beberapa query
+     * sekaligus. Hasilnya sama dengan menyaring tiap karyawan lewat holdsItems(), yang di Dashboard berarti ratusan query.
+     */
+    public static function resignedHolding(): \Illuminate\Support\Collection
+    {
+        $resigned = static::where('status', 'resigned')->get();
+        if ($resigned->isEmpty()) return $resigned;
+        $ids = $resigned->pluck('id');
+
+        $withAssets = Asset::whereIn('employee_id', $ids)->distinct()->pluck('employee_id')->flip();
+        $withSeats = LicenseSeat::whereIn('employee_id', $ids)->whereNull('revoked_at')->distinct()->pluck('employee_id')->flip();
+        $withAccessories = StockMovement::where('stockable_type', Accessory::class)->whereIn('employee_id', $ids)->whereIn('type', ['out', 'return'])
+            ->get(['employee_id', 'stockable_id', 'type', 'qty'])->groupBy('employee_id')
+            ->filter(fn ($rows) => $rows->groupBy('stockable_id')->contains(fn ($r) => $r->sum(fn ($m) => $m->type === 'out' ? $m->qty : -$m->qty) > 0))
+            ->keys()->flip();
+
+        return $resigned->filter(fn ($e) => isset($withAssets[$e->id]) || isset($withSeats[$e->id]) || isset($withAccessories[$e->id]))->values();
+    }
+
     public function holdsItems(): bool
     {
         return $this->assets()->exists() || $this->heldAccessories()->isNotEmpty() || $this->licenseSeats()->exists();

@@ -79,7 +79,8 @@ class InventoryAudit extends Command
     {
         foreach ([Accessory::class, Consumable::class, Component::class] as $cls) {
             foreach ($cls::withTrashed()->get() as $i) {
-                foreach ($i->movements()->where('type', 'in')->get() as $m) {
+                // saldo awal / riwayat hasil impor SIMA bukan pembelian di sistem ini: tidak punya catatan pembelian
+                foreach ($i->movements()->where('type', 'in')->where(fn ($q) => $q->whereNull('reason')->orWhere('reason', 'not like', '%(impor SIMA)'))->get() as $m) {
                     $r = \App\Models\StockReceipt::where('stock_movement_id', $m->id)->get();
                     $this->check($r->count() === 1, "{$i->name}: pergerakan masuk #{$m->id} tidak punya tepat satu catatan pembelian");
                     if ($r->count() === 1) {

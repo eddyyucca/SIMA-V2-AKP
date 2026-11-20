@@ -24,6 +24,8 @@ chown -R www-data:www-data storage bootstrap/cache 2>/dev/null || true
 # Konfigurasi dikunci dari environment kontainer ini. Route tidak di-cache karena ada route berbentuk closure.
 runuser -u www-data -- php artisan config:cache
 runuser -u www-data -- php artisan view:cache || echo "peringatan: view:cache dilewati" >&2
+# cache komponen & ikon Filament (tanpa ini dipindai ulang pada setiap permintaan)
+runuser -u www-data -- php artisan filament:optimize || echo "peringatan: filament:optimize dilewati" >&2
 
 # Hanya satu kontainer (web) yang boleh memigrasi, supaya tidak berebut.
 if [ "$AUTO_MIGRATE" = "true" ] && [ "$1" = "apache2-foreground" ]; then

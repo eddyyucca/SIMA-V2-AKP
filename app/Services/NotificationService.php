@@ -38,6 +38,14 @@ class NotificationService
         }
     }
 
+    /** Pengumuman agent diterbitkan: kabar ke lonceng Admin & Staff IT (siapa pun di tim bisa melihat apa yang sedang tayang di laptop). */
+    public function announcementPublished(\App\Models\AgentAnnouncement $a, int $targets, ?\App\Models\User $by = null): void
+    {
+        $this->notify(['Admin', 'Staff IT'], 'Pengumuman agent diterbitkan: ' . str($a->title)->limit(60),
+            trans_choice('{1} Sasaran: 1 perangkat.|[2,*] Sasaran: :count perangkat.', $targets, ['count' => $targets])
+            . ($a->require_ack ? ' Wajib dikonfirmasi pengguna.' : '') . ($by ? ' Oleh ' . $by->name . '.' : ''), 'info');
+    }
+
     public function newDamageReport(Repair $r): void
     {
         $r->loadMissing('asset');

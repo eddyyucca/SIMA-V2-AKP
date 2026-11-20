@@ -22,7 +22,7 @@ class ManageAgentAnnouncements extends ManageRecords
                     Notification::make()->title($e->getMessage())->danger()->send();
                     $this->halt();
                 }
-            })->successNotificationTitle('Pengumuman dibuat'),
+            })->successNotificationTitle(trans('agent.ann_created')),
         ];
     }
 }

@@ -171,7 +171,7 @@ class Dashboard extends BaseDashboard
             'licenses' => License::whereNotNull('expires_at')->where('expires_at', '<=', now()->addDays(30)->toDateString())->orderBy('expires_at')->get(),
             'warranty' => Asset::whereBetween('warranty_until', [now()->toDateString(), now()->addDays(30)->toDateString()])->orderBy('warranty_until')->get(),
             'lateRepairs' => Repair::with('asset')->where('status', '!=', 'done')->where('reported_at', '<', now()->subDays(14))->get(),
-            'resignedHolding' => Employee::where('status', 'resigned')->get()->filter->holdsItems(),
+            'resignedHolding' => Employee::resignedHolding(),
             'overSeats' => License::get()->filter(fn ($l) => $l->seats_used > $l->seats),
             'arrivals' => \App\Models\ArrivalPlan::active()->with(['items', 'location'])->whereDate('arrival_date', '<=', now()->addDays(14)->toDateString())->orderBy('arrival_date')->get(),
             'arrivalsAtRisk' => \App\Models\ArrivalPlan::whereIn('status', ['planned', 'prepared'])->with('items')->whereDate('arrival_date', '<=', now()->addDays(7)->toDateString())->orderBy('arrival_date')->get(),

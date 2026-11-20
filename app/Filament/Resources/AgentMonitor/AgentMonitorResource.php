@@ -52,8 +52,8 @@ class AgentMonitorResource extends Resource
                 TextColumn::make('agentHeartbeat.ip_address')->label('IP'),
                 TextColumn::make('agentHeartbeat.os_version')->label('OS')->toggleable(),
                 TextColumn::make('agent_status')->label('Status')->badge()->sortable()
-                    ->formatStateUsing(fn ($s) => ['online' => 'Online', 'offline' => 'Offline', 'never_reported' => 'Belum lapor'][$s] ?? $s)
-                    ->color(fn ($s) => ['online' => 'success', 'offline' => 'danger'][$s] ?? 'gray'),
+                    ->formatStateUsing(fn ($state) => ['online' => 'Online', 'offline' => 'Offline', 'never_reported' => 'Belum lapor'][$state] ?? $state)
+                    ->color(fn ($state) => ['online' => 'success', 'offline' => 'danger'][$state] ?? 'gray'),
                 TextColumn::make('agent_last_seen')->label('Laporan terakhir')->since()->sortable(),
                 TextColumn::make('ram')->label('RAM')->state(function (Asset $a) {
                     $hb = $a->agentHeartbeat;
@@ -91,7 +91,7 @@ class AgentMonitorResource extends Resource
                     $al = app(AgentAlertRules::class)->evaluate($a, $a->agentHeartbeat, $latest);
                     $n = count(array_filter($al, fn ($x) => $x['severity'] !== 'info'));
                     return $n ? $n . ' perlu ditinjau' : 'OK';
-                })->badge()->color(fn ($s) => $s === 'OK' ? 'success' : 'warning'),
+                })->badge()->color(fn ($state) => $state === 'OK' ? 'success' : 'warning'),
             ])
             ->filters([
                 SelectFilter::make('agent_status')->label('Status')->options(['online' => 'Online', 'offline' => 'Offline', 'never_reported' => 'Belum lapor']),

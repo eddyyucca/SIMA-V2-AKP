@@ -152,7 +152,7 @@ class AgentAdminService
             if ($ids === []) throw new InvalidArgumentException('Pilih minimal satu perangkat yang memakai agent.');
         }
 
-        return DB::transaction(function () use ($d, $ids, $by) {
+        $announcement = DB::transaction(function () use ($d, $ids, $by) {
             $a = AgentAnnouncement::create([
                 'title' => trim($d['title']), 'body' => trim($d['body']), 'severity' => $d['severity'],
                 'require_ack' => (bool) ($d['require_ack'] ?? false), 'target_mode' => $d['target_mode'],
@@ -163,6 +163,10 @@ class AgentAdminService
             if ($ids !== []) $a->targets()->createMany(array_map(fn ($id) => ['asset_id' => $id], $ids));
             return $a;
         });
+        $count = $d['target_mode'] === 'selected' ? count($ids) : $this->agentDevices()->count();
+        try { app(NotificationService::class)->announcementPublished($announcement, $count, $by); } catch (\Throwable $e) { report($e); }
+
+        return $announcement;
     }
 
     public function stopAnnouncement(AgentAnnouncement $a): void

@@ -34,6 +34,8 @@ RUN sed -ri "s!/var/www/html!${APACHE_DOCUMENT_ROOT}!g" /etc/apache2/sites-avail
     && { echo 'ServerName localhost'; echo 'ServerTokens Prod'; echo 'ServerSignature Off'; } > /etc/apache2/conf-available/akp.conf \
     && a2enconf akp
 
+COPY docker/akp-cache.conf /etc/apache2/conf-available/akp-cache.conf
+RUN a2enconf akp-cache
 COPY docker/php.ini /usr/local/etc/php/conf.d/zz-akp.ini
 
 WORKDIR /var/www/html

@@ -60,6 +60,8 @@ class AgentUiPagesTest extends AgentTestCase
     {
         $t = Livewire::test(ListAgentMonitor::class)->assertSuccessful()
             ->assertCanSeeTableRecords([$this->good, $this->bad, $this->tokenOnly])->assertCanNotSeeTableRecords([$this->missing]);
+        // label status terbaca (bug lama: closure ber-parameter $s tidak mendapat state dari Filament sehingga label kosong dan warna selalu abu-abu)
+        $t->assertTableColumnFormattedStateSet('agent_status', 'Online', $this->good)->assertTableColumnFormattedStateSet('agent_status', 'Offline', $this->bad);
         $t->set('activeTab', 'offline')->assertCanSeeTableRecords([$this->bad])->assertCanNotSeeTableRecords([$this->good]);
         $t->set('activeTab', 'online')->assertCanSeeTableRecords([$this->good])->assertCanNotSeeTableRecords([$this->bad]);
         $t->set('activeTab', 'belum')->assertCanSeeTableRecords([$this->tokenOnly])->assertCanNotSeeTableRecords([$this->good]);
