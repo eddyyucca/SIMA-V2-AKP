@@ -1,9 +1,9 @@
 {
-    "version":  9,
-    "file":  "agent-9.zip",
-    "sha256":  "be2e2f18391caf26a4c14ac2256a03b29053f52988220e853004069a6151116c",
-    "size":  20137,
-    "signature":  "CuOOqKRI+rRlsirMpzfoIXKGHMPrxrRiJrkw65kbhgUMiRpycp3FB6Q4PWzAIe4y4f3SuFyxgtN2QzrFuHpP+lbqEwECfF7Ny3damNAW0S/ciCJYMTUuZQ1GTNEWzmwMZkmElf4iNBzQdSCLPOFSn3mvXKo8eXvI5U0ADY/KWj1ci3MqEJNE14hfc6EiT6zHH7xxGJJR6exXl09IOVXNoMYOjZCeRs3H6IeLEaNmvwxiuqChMTGvx0V1q7FRtrjsdRaSazzsshQGydDCEjGRJnCnXCmMtcJdk5dGcxQCThw2wAKWXW5dt7Hw+Kq8S1chmCZpoSXIUXKPbNSth8HIzaq+HPOllCrOWSgYYec1rCCNMt5bKzR3lRjGfGNhnUi/ad4NqezGXmem7F1Aa2ByYj2LtHshIQk9/EbS4unU9JJvxA0kQfdkpmHTdr3O5hgnEdNdYyxl4ZwL74MKBn9T5Yrhi2eEh8CVBFY9JN9Nfes0efK6c9yHa9Gn9qk9L40N",
-    "notes":  "Kepatuhan (admin lokal, USB, edisi) dan aksi jarak jauh baru: diagnostik jaringan, kesalahan sistem, program startup, antivirus, restart terjadwal",
-    "published_at":  "2026-10-25T17:29:50.7310571Z"
+    "version": 10,
+    "file": "agent-10.zip",
+    "sha256": "97b293a7658a554db6568d49fc4a9c8432ade26a3e7e2bf5b5715055dace2d10",
+    "size": 21228,
+    "signature": "VaC2gfSPufIGMEa6aKaCUDhbpCQt0HksWh8ajLjih9I5KI/OH0OoEr3eq6Q9I921V6S0LINCOh8wi5SeQveS4oMjDL0AOfpaYoiZnJ+UPCNyv8GrigEUENMODXISoq3MNgiGXNtDmCZp21bMvCQV8aCBk/INTk4QK+us7laPzNwgRI12cWn45e1naQmDUuUUEfvEu8NwWhiuMk555Xj9qeafrYAoekeb0O+ALgetAw12Q/bXAWxHkiw9E5yMME0ZD27ZwNSLwhGD3TpxKrxQqJ8xDfBPXXqe3RpQgT9E7lVMLhtZ8XX39TdT9GaGlaQ4ulXOMaDxaiPWPmlyv8F7xt6OetDoobP6T/6NKJQS4AtKK4ps7wQ5fLI2O6zhm3V2+7O/gdysuzUL0JwjOmz1AKd71wrCZ/sVuM7TwqVWiU+EBwbCSZDWMDcEbd6/IxWjQeFYcyeOa8ACMdC0Gfl4UFsphOoB//Ew5X40PSTLyTwH8T464aSBdPlz1PmWv89L",
+    "notes": "Agent v10: data kartu grafis (VGA): nama, jenis (diskrit/terintegrasi), memori video, driver, resolusi; adaptor virtual disaring. Tidak ada perubahan perilaku lain.",
+    "published_at": "2026-11-20T02:12:41.0390850Z"
 }
