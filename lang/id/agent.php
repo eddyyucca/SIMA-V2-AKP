@@ -18,7 +18,7 @@ return [
 
     // Tab
     'tab_summary' => 'Ringkasan',
-    'tab_cpu_ram' => 'Prosesor & Memori',
+    'tab_cpu_ram' => 'Prosesor, Memori & VGA',
     'tab_storage' => 'Penyimpanan',
     'tab_network' => 'Jaringan & Baterai',
     'tab_security' => 'Keamanan & Update',
@@ -68,6 +68,22 @@ return [
     'form_factor' => 'Bentuk',
     'vendor' => 'Produsen',
     'part_number' => 'Part number',
+
+    // Kartu grafis (VGA)
+    'section_gpu' => 'Kartu grafis (VGA)',
+    'gpu_name' => 'Kartu grafis',
+    'gpu_kind' => 'Jenis',
+    'gpu_kind_integrated' => 'Terintegrasi',
+    'gpu_kind_discrete' => 'Diskrit',
+    'gpu_kind_unknown' => 'Tidak diketahui',
+    'gpu_vram' => 'Memori video',
+    'gpu_driver' => 'Driver',
+    'gpu_resolution' => 'Layar',
+    'gpu_status' => 'Status',
+    'gpu_none' => 'Belum ada data kartu grafis. Data ini dikirim agent v10 ke atas.',
+    'gpu_vram_note' => 'Kartu terintegrasi memakai sebagian RAM sistem; angka memori video bisa kecil.',
+    'dist_gpu' => 'Kartu grafis',
+    'col_gpu' => 'VGA',
 
     // Penyimpanan
     'section_drives' => 'Drive',
@@ -125,6 +141,8 @@ return [
     'field_cpu_logical' => 'Jumlah thread',
     'field_ram_total_bytes' => 'Total RAM',
     'field_ram_modules' => 'Modul RAM',
+    'field_gpu' => 'Kartu grafis (VGA)',
+    'field_gpu_driver' => 'Driver VGA',
     'field_disk_total_bytes' => 'Kapasitas drive C:',
     'field_physical_disks' => 'Disk fisik',
     'field_os_version' => 'Versi Windows',

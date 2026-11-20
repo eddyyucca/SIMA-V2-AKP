@@ -172,6 +172,61 @@ function Get-MemoryInfo {
 
 # --- Kepatuhan (HANYA BACA, tidak mengubah apa pun): anggota grup Administrators lokal, akun Administrator bawaan, kebijakan USB ---
 # Mengembalikan $null bila tidak terbaca, supaya server menampilkan "tidak diketahui" dan bukan angka palsu.
+# --- Kartu grafis (VGA): Win32_VideoController. Adaptor virtual (Remote Desktop, driver layar semu, monitor virtual) dilewati. ---
+# AdapterRAM bertipe uint32 (maksimum 4 GB), jadi memori video 64-bit diambil dari registry kelas display bila tersedia.
+function Get-GpuInfo {
+    $virtualPattern = 'Remote|Basic Render|Basic Display|Mirror|Virtual|Parsec|Citrix|VNC|DisplayLink|Hyper-V|Indirect|Splashtop|TeamViewer|AnyDesk'
+    $controllers = @(Get-Safely { Get-CimInstance Win32_VideoController -ErrorAction Stop })
+    if ($controllers.Count -eq 0) { return @() }
+
+    $vramByName = @{}
+    $classKey = 'HKLM:\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}'
+    $subKeys = @(Get-Safely { Get-ChildItem -LiteralPath $classKey -ErrorAction Stop | Where-Object { $_.PSChildName -match '^\d{4}$' } })
+    foreach ($k in $subKeys) {
+        $p = Get-Safely { Get-ItemProperty -LiteralPath $k.PSPath -ErrorAction Stop }
+        if ($p -and $p.DriverDesc -and $p.'HardwareInformation.qwMemorySize') {
+            # tergantung driver, nilainya REG_QWORD (angka) atau REG_BINARY (byte array 8 byte)
+            $raw = $p.'HardwareInformation.qwMemorySize'
+            $bytes = $null
+            try { if ($raw -is [byte[]]) { $bytes = [BitConverter]::ToInt64($raw, 0) } else { $bytes = [int64]$raw } } catch { $bytes = $null }
+            if ($bytes -and $bytes -gt 0) { $vramByName[[string]$p.DriverDesc] = $bytes }
+        }
+    }
+
+    $result = @()
+    foreach ($c in $controllers) {
+        $name = [string]$c.Name
+        if ([string]::IsNullOrWhiteSpace($name) -or $name -match $virtualPattern) { continue }
+
+        $vram = $null
+        if ($vramByName.ContainsKey($name)) { $vram = $vramByName[$name] }
+        elseif ($c.AdapterRAM -and $c.AdapterRAM -gt 0) { $vram = [int64]$c.AdapterRAM }
+
+        # Diskrit = kartu terpisah; sisanya (Intel UHD/Iris, Radeon Graphics, Vega) memakai RAM sistem.
+        $kind = 'unknown'
+        if ($name -match 'NVIDIA|GeForce|Quadro|RTX|GTX|Radeon RX|Radeon Pro|Tesla|Arc.{0,6}A\d{3}') { $kind = 'discrete' }
+        elseif ($name -match 'Intel|UHD|Iris|Radeon|Vega|Adreno') { $kind = 'integrated' }
+
+        $driverDate = $null
+        if ($c.DriverDate) { $driverDate = ([datetime]$c.DriverDate).ToString('yyyy-MM-dd') }
+        $resolution = $null
+        if ($c.CurrentHorizontalResolution -and $c.CurrentVerticalResolution) { $resolution = "$($c.CurrentHorizontalResolution)x$($c.CurrentVerticalResolution)" }
+
+        $result += @{
+            name           = Limit-Text $name 191
+            kind           = $kind
+            vram_bytes     = $vram
+            driver_version = Limit-Text ([string]$c.DriverVersion) 64
+            driver_date    = $driverDate
+            processor      = Limit-Text ([string]$c.VideoProcessor) 191
+            resolution     = $resolution
+            refresh_hz     = $(if ($c.CurrentRefreshRate) { [int]$c.CurrentRefreshRate } else { $null })
+            status         = Limit-Text ([string]$c.Status) 32
+        }
+    }
+    return $result
+}
+
 function Get-LocalAdminInfo {
     $out = New-Object Collections.Generic.List[object]
     $list = Get-Safely { Get-LocalGroupMember -SID 'S-1-5-32-544' -ErrorAction Stop }
@@ -759,6 +814,7 @@ try {
     $diskInfo = Get-DiskInfo
     $cpuInfo = Get-CpuInfo
     $mem = Get-MemoryInfo
+    $gpus = @(Get-Safely { Get-GpuInfo } | Where-Object { $_ })   # gagal baca VGA tidak boleh menggagalkan laporan
     $localAdmins = Get-LocalAdminInfo
     $builtinAdmin = Get-BuiltinAdminEnabled
     $usbState = Get-UsbStorageState
@@ -846,6 +902,7 @@ try {
         ram_max_bytes           = $mem.max
         ram_modules             = $mem.modules
     }
+    if ($gpus.Count -gt 0) { $body.gpus = @($gpus) }
     if ($null -ne $localAdmins) { $body.local_admins = $localAdmins }
     if ($null -ne $builtinAdmin) { $body.builtin_admin_enabled = $builtinAdmin }
     if ($usbState) { $body.usb_storage = $usbState }

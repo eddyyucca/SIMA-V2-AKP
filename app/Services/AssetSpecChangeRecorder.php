@@ -85,6 +85,16 @@ class AssetSpecChangeRecorder
             }
         }
 
+        if (! empty($incoming['gpus']) && ! empty($previous->gpus)) {
+            [$oldGpu, $oldDrv] = [$this->gpuSummary($previous->gpus), $this->gpuDrivers($previous->gpus)];
+            [$newGpu, $newDrv] = [$this->gpuSummary($incoming['gpus']), $this->gpuDrivers($incoming['gpus'])];
+            if ($oldGpu !== $newGpu) {
+                $add('hardware', 'gpu', $oldGpu, $newGpu);
+            } elseif ($oldDrv !== $newDrv) {
+                $add('hardware', 'gpu_driver', $oldDrv, $newDrv);        // kartu sama, driver berubah
+            }
+        }
+
         if (! empty($incoming['software']) && ! empty($previous->software)) {
             $this->diffSoftware($previous->software, $incoming['software'], $add);
         }
@@ -123,6 +133,32 @@ class AssetSpecChangeRecorder
                 ! empty($m['manufacturer']) ? '('.trim($m['manufacturer']).')' : null,
                 ! empty($m['slot']) ? '@ '.trim($m['slot']) : null,
             ])));
+        }
+        sort($parts);
+
+        return implode('; ', $parts);
+    }
+
+    /** Nama + VRAM tiap kartu (tanpa driver): perubahan di sini = kartu grafis diganti/ditambah/dicopot. */
+    private function gpuSummary(array $gpus): string
+    {
+        $parts = [];
+        foreach ($gpus as $g) {
+            $parts[] = trim(implode(' ', array_filter([
+                trim((string) ($g['name'] ?? '')),
+                ! empty($g['vram_bytes']) ? number_format($g['vram_bytes'] / 1073741824, 0, '.', '') . ' GB' : null,
+            ])));
+        }
+        sort($parts);
+
+        return implode('; ', $parts);
+    }
+
+    private function gpuDrivers(array $gpus): string
+    {
+        $parts = [];
+        foreach ($gpus as $g) {
+            if (! empty($g['driver_version'])) $parts[] = trim((string) ($g['name'] ?? '')) . ' ' . trim((string) $g['driver_version']);
         }
         sort($parts);
 

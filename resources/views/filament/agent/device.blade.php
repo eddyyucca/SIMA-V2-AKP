@@ -91,6 +91,22 @@
                         </dl>
                         @if($hb->benchmark_at)<p class="am-muted" style="margin:8px 0 0">{{ trans('agent.benchmark_note', ['time' => $hb->benchmark_at->diffForHumans()]) }}</p>@endif</div>
                 </div>
+                <div class="am-card"><h4>{{ trans('agent.section_gpu') }}</h4>
+                    @if (empty($hb->gpus))
+                        <p class="am-muted" style="margin:0">{{ trans('agent.gpu_none') }}</p>
+                    @else
+                        <table class="am-table"><thead><tr><th>{{ trans('agent.gpu_name') }}</th><th>{{ trans('agent.gpu_kind') }}</th><th>{{ trans('agent.gpu_vram') }}</th><th>{{ trans('agent.gpu_driver') }}</th><th>{{ trans('agent.gpu_resolution') }}</th><th>{{ trans('agent.gpu_status') }}</th></tr></thead><tbody>
+                        @foreach ($hb->gpus as $g)
+                            @php $k = $g['kind'] ?? 'unknown'; @endphp
+                            <tr><td><strong>{{ $g['name'] }}</strong>@if(! empty($g['processor']) && $g['processor'] !== $g['name'])<div class="am-muted">{{ $g['processor'] }}</div>@endif</td>
+                                <td><span class="am-pill {{ $k === 'discrete' ? 'info' : '' }}">{{ trans('agent.gpu_kind_'.$k) }}</span></td>
+                                <td>{{ ! empty($g['vram_bytes']) ? $gb($g['vram_bytes']) : $dash }}</td>
+                                <td>{{ $g['driver_version'] ?? $dash }}@if(! empty($g['driver_date']))<div class="am-muted">{{ \Illuminate\Support\Str::limit($g['driver_date'], 10, '') }}</div>@endif</td>
+                                <td>{{ ! empty($g['resolution']) ? $g['resolution'] . (! empty($g['refresh_hz']) ? ' @ ' . $g['refresh_hz'] . ' Hz' : '') : $dash }}</td>
+                                <td>{{ $g['status'] ?? $dash }}</td></tr>
+                        @endforeach</tbody></table>
+                        <p class="am-muted" style="margin:8px 0 0">{{ trans('agent.gpu_vram_note') }}</p>
+                    @endif</div>
                 @if (! empty($hb->ram_modules))
                     <div class="am-card"><h4>{{ trans('agent.section_ram_modules') }}</h4>
                         <table class="am-table"><thead><tr><th>{{ trans('agent.slot') }}</th><th>{{ trans('agent.capacity') }}</th><th>{{ trans('agent.type') }}</th><th>{{ trans('agent.speed') }}</th><th>{{ trans('agent.form_factor') }}</th><th>{{ trans('agent.vendor') }}</th><th>{{ trans('agent.part_number') }}</th></tr></thead>

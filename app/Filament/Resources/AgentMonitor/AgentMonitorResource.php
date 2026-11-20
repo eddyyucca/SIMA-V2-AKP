@@ -68,6 +68,11 @@ class AgentMonitorResource extends Resource
                     $p = $a->agentHeartbeat ? (app(AgentAlertRules::class)->worstDiskUsage($a->agentHeartbeat)['percent'] ?? 0) : 0;
                     return $p >= 95 ? 'danger' : ($p >= 90 ? 'warning' : 'gray');
                 })->toggleable(),
+                TextColumn::make('gpu')->label('VGA')->state(function (Asset $a) {
+                    $g = collect($a->agentHeartbeat?->gpus ?? []);
+                    $main = $g->firstWhere('kind', 'discrete') ?? $g->first();   // utamakan kartu diskrit bila ada
+                    return $main['name'] ?? null;
+                })->placeholder('-')->limit(34)->tooltip(fn (Asset $a) => collect($a->agentHeartbeat?->gpus ?? [])->pluck('name')->implode(' · ') ?: null)->toggleable(),
                 TextColumn::make('battery')->label('Baterai')->state(function (Asset $a) {
                     $hb = $a->agentHeartbeat;
                     return $hb && $hb->battery_present && $hb->battery_health_percent !== null ? $hb->battery_health_percent . '%' : null;

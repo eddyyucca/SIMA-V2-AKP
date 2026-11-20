@@ -35,6 +35,8 @@ class AssetHeartbeat extends Model
         'ram_read_mbps', 'ram_write_mbps', 'disk_read_mbps', 'disk_write_mbps', 'benchmark_at',
         // Agent v9: kepatuhan (hanya-baca)
         'local_admins', 'builtin_admin_enabled', 'usb_storage',
+        // Agent v10: kartu grafis (VGA)
+        'gpus',
     ];
 
     protected $casts = [
@@ -53,6 +55,7 @@ class AssetHeartbeat extends Model
         'software' => 'array',
         'software_reported_at' => 'datetime',
         'ram_modules' => 'array',
+        'gpus' => 'array',
         'benchmark_at' => 'datetime',
         'local_admins' => 'array',
         'builtin_admin_enabled' => 'boolean',

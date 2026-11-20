@@ -21,7 +21,7 @@
 #>
 
 # Versi skrip ini. WAJIB dinaikkan tiap rilis (publish-agent-update.ps1 memeriksa kecocokannya dengan nomor rilis).
-$AgentVersion = 9
+$AgentVersion = 10
 # Kunci PUBLIK penanda tangan rilis (pasangan kunci privat disimpan offline oleh IT AKP, lihat agent-installer/tools).
 $script:UpdatePublicKeyXml = '<RSAKeyValue><Modulus>0gPkrMEA0nqg4Rel3lXuKUkWytaaFYJnFm5kSxo9eu9OhPDimoqqVOk0yJ6/AP6y1q+LxRhmgJUXcWdIX4OGS6pWXDTdxqU3zRZ51c0HdhKmwazgDjQRHGKfIWIC7LgTAgPTuYXOtW4xKFiudQo1fswkQNXLS4dzJSlMzWdlm64WFjZUbbXWB7Xi3wzynjbFudplvNBuyEQjTOe6y+HcehL/C8kVlrChuIumdNLVu0BSZRdK3TQm122bizCwQVHdsBPkSJy6wDwb5bVWUiimm0C2cUamA2wx9jAFCH2fMeV8/Fs43FaPGzoV86k/33gptvVEssjW1a0NRae/EKOeIi5VFQnJ6OmKZWp+wZBQSaG3m5ftkPgue+MqpHrjRR3+pugCuCGooMm1kadJk3H92XkYU+n+0JSSXt/1+B/VOpkjZmuRhSY5YKD7dweIltXunTOpEKS6juvH+zW9rHYeNwoBIsVP5DHTQhPPXu2FP9Ww1RFzeYzoM4mOt1oalHEZ</Modulus><Exponent>AQAB</Exponent></RSAKeyValue>'
 

@@ -20,8 +20,8 @@
 
         <details class="am-card" style="padding:10px 18px">
             <summary style="cursor:pointer;font-weight:600">{{ trans('agent.tab_distribution') }}</summary>
-            <div class="am-grid2" style="grid-template-columns: repeat(4, minmax(0,1fr)); margin-top:12px">
-                @foreach (['edition' => 'dist_edition', 'os' => 'dist_os', 'agent' => 'dist_agent', 'ram' => 'dist_ram'] as $key => $title)
+            <div class="am-grid2" style="grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); margin-top:12px">
+                @foreach (['edition' => 'dist_edition', 'os' => 'dist_os', 'agent' => 'dist_agent', 'ram' => 'dist_ram', 'gpu' => 'dist_gpu'] as $key => $title)
                     @php $rows = $dist[$key] ?? []; $max = max(1, ...array_values($rows ?: [1])); @endphp
                     <div>
                         <h4 style="margin-bottom:8px">{{ trans('agent.'.$title) }}</h4>

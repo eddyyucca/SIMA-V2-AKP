@@ -124,6 +124,17 @@ class AssetAgentController extends Controller
             'ram_write_mbps' => ['nullable', 'integer', 'between:0,2000000'],
             'disk_read_mbps' => ['nullable', 'integer', 'between:0,2000000'],
             'disk_write_mbps' => ['nullable', 'integer', 'between:0,2000000'],
+            // Kartu grafis / VGA (agent v10): adaptor virtual (Remote Desktop, dsb.) sudah disaring di agent
+            'gpus' => ['nullable', 'array', 'max:8'],
+            'gpus.*.name' => ['required', 'string', 'max:191'],
+            'gpus.*.kind' => ['nullable', 'string', 'in:integrated,discrete,unknown'],
+            'gpus.*.vram_bytes' => ['nullable', 'integer', 'min:0'],
+            'gpus.*.driver_version' => ['nullable', 'string', 'max:64'],
+            'gpus.*.driver_date' => ['nullable', 'string', 'max:32'],
+            'gpus.*.processor' => ['nullable', 'string', 'max:191'],
+            'gpus.*.resolution' => ['nullable', 'string', 'max:24'],
+            'gpus.*.refresh_hz' => ['nullable', 'integer', 'between:0,1000'],
+            'gpus.*.status' => ['nullable', 'string', 'max:32'],
             // Software terpasang (inventaris harian)
             'software' => ['nullable', 'array', 'max:1500'],
             'software.*.name' => ['required', 'string', 'max:191'],

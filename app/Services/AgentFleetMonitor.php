@@ -107,6 +107,7 @@ class AgentFleetMonitor
         $edition = [];
         $agent = [];
         $ram = ['< 8 GB' => 0, '8 - 15 GB' => 0, '16 - 31 GB' => 0, '32 GB +' => 0];
+        $gpu = [];
 
         foreach ($devices as $d) {
             $hb = $d['hb'];
@@ -121,6 +122,14 @@ class AgentFleetMonitor
             $agentKey = $hb->agent_version ? 'v' . $hb->agent_version : '-';
             $agent[$agentKey] = ($agent[$agentKey] ?? 0) + 1;
 
+            // satu hitungan per perangkat: kartu diskrit bila ada (itu yang menentukan kemampuan grafis), kalau tidak kartu pertama
+            $gpus = collect($hb->gpus ?? []);
+            if ($gpus->isNotEmpty()) {
+                $main = $gpus->firstWhere('kind', 'discrete') ?? $gpus->first();
+                $gpuName = trim(preg_replace('/\((R|TM)\)/i', '', (string) ($main['name'] ?? '-')));
+                $gpu[$gpuName] = ($gpu[$gpuName] ?? 0) + 1;
+            }
+
             if ($hb->ram_total_bytes) {
                 $gb = $hb->ram_total_bytes / 1073741824;
                 $ram[$gb < 7.5 ? '< 8 GB' : ($gb < 15 ? '8 - 15 GB' : ($gb < 30 ? '16 - 31 GB' : '32 GB +'))]++;
@@ -130,8 +139,9 @@ class AgentFleetMonitor
         arsort($os);
         arsort($edition);
         arsort($agent);
+        arsort($gpu);
 
-        return ['os' => $os, 'edition' => $edition, 'agent' => $agent, 'ram' => array_filter($ram)];
+        return ['os' => $os, 'edition' => $edition, 'agent' => $agent, 'ram' => array_filter($ram), 'gpu' => array_slice($gpu, 0, 12, true)];
     }
 
     /** 'Home' | 'Pro' | 'Enterprise' | 'Education' | 'Server' | '-' dari teks seperti "Microsoft Windows 11 Home Single Language". */

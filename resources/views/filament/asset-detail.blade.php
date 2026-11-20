@@ -199,6 +199,7 @@
                     <tr><td style="color:#888">Hostname / IP</td><td>{{ $hb->hostname ?: '-' }} / {{ $hb->ip_address ?: '-' }}</td></tr>
                     <tr><td style="color:#888">OS</td><td>{{ $hb->os_version ?: '-' }} {{ $hb->os_build }}</td></tr>
                     <tr><td style="color:#888">CPU / RAM</td><td>{{ $hb->cpu ?: '-' }} / {{ $gb($hb->ram_total_bytes) }}</td></tr>
+                    <tr><td style="color:#888">VGA</td><td>{{ collect($hb->gpus ?? [])->map(fn ($g) => $g['name'] . (! empty($g['vram_bytes']) ? ' (' . $gb($g['vram_bytes']) . ')' : ''))->implode(', ') ?: '-' }}</td></tr>
                     <tr><td style="color:#888">Disk bebas / total</td><td>{{ $gb($hb->disk_free_bytes) }} / {{ $gb($hb->disk_total_bytes) }}</td></tr>
                     <tr><td style="color:#888">BitLocker / Defender</td><td>{{ $hb->bitlocker_status ?: '-' }} / {{ $hb->defender_enabled === null ? '-' : ($hb->defender_enabled ? 'aktif' : 'nonaktif') }}</td></tr>
                     <tr><td style="color:#888">Versi agent</td><td>{{ $hb->agent_version ?: '-' }}</td></tr>
