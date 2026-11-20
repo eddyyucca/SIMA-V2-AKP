@@ -89,6 +89,11 @@ services:
       db:
         condition: service_healthy
     command: ["php", "artisan", "queue:work", "--sleep=3", "--tries=3", "--max-time=3600"]
+    healthcheck:   # image memeriksa http://localhost/up (Apache); container pekerja tidak menjalankan Apache -> cek prosesnya saja
+      test: ["CMD-SHELL", "pgrep -f 'artisan queue:work' > /dev/null"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
     environment:
       <<: *asset-env
     volumes:
@@ -102,6 +107,11 @@ services:
       db:
         condition: service_healthy
     command: ["php", "artisan", "schedule:work"]
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -f 'artisan schedule:work' > /dev/null"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
     environment:
       <<: *asset-env
     volumes:
