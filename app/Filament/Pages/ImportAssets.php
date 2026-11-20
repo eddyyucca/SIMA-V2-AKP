@@ -74,7 +74,7 @@ class ImportAssets extends Page
         DB::transaction(function () use ($rows, &$errors, &$ok, &$seen) {
             foreach ($rows as $i => $r) {
                 $n = $i + 2; // baris di file (1 = header)
-                $cat = Category::where('type', 'asset')->where('name', trim((string) ($r['kategori'] ?? '')))->first();
+                $cat = Category::where('type', 'asset')->whereCi('name', trim((string) ($r['kategori'] ?? '')))->first();
                 if (! $cat) { $errors[] = "Baris {$n}: kategori '" . ($r['kategori'] ?? '') . "' tidak dikenal."; continue; }
                 $sn = \App\Support\SerialNumber::clean($r['serial_number'] ?? null);
                 if ($sn && isset($seen[mb_strtolower($sn)])) {
@@ -98,8 +98,8 @@ class ImportAssets extends Page
                         'brand' => $r['merek'] ?? null, 'model' => $r['model'] ?? null, 'serial_number' => $sn,
                         'purchase_date' => $parse($r['tanggal_beli'] ?? null), 'purchase_price' => (float) ($r['harga'] ?? 0),
                         'warranty_until' => $parse($r['garansi_sampai'] ?? null),
-                        'location_id' => Location::where('name', trim((string) ($r['lokasi'] ?? '')))->value('id'),
-                        'vendor_id' => Vendor::where('name', trim((string) ($r['vendor'] ?? '')))->value('id'),
+                        'location_id' => Location::whereCi('name', trim((string) ($r['lokasi'] ?? '')))->value('id'),
+                        'vendor_id' => Vendor::whereCi('name', trim((string) ($r['vendor'] ?? '')))->value('id'),
                         'status' => 'available', 'condition' => 'good',
                         'ownership' => $own,
                         'rental_contract_no' => $own === 'rental' ? ($r['no_kontrak'] ?? null) : null,

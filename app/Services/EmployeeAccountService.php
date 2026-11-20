@@ -59,7 +59,7 @@ class EmployeeAccountService
             $user = DB::transaction(function () use ($e, $role, $actor, &$out) {
                 $user = $e->user;
                 if (! $user) {
-                    $user = User::where('email', $e->email)->first();
+                    $user = User::whereCi('email', $e->email)->first();
                     if ($user && Employee::where('user_id', $user->id)->where('id', '!=', $e->id)->exists()) {
                         throw new InvalidArgumentException('Email ini sudah dipakai akun yang tertaut ke karyawan lain.');
                     }
@@ -76,7 +76,7 @@ class EmployeeAccountService
                     throw new InvalidArgumentException('Akun ini berperan khusus. Hanya Admin yang boleh mengubah akses loginnya.');
                 }
                 $user->forceFill(['is_active' => true, 'name' => $e->name])->save();
-                if ($user->email !== $e->email && ! User::where('email', $e->email)->where('id', '!=', $user->id)->exists()) $user->forceFill(['email' => $e->email])->save();
+                if ($user->email !== $e->email && ! User::whereCi('email', $e->email)->where('id', '!=', $user->id)->exists()) $user->forceFill(['email' => $e->email])->save();
                 if (! $user->hasRole($role) || $user->roles->count() !== 1) $user->syncRoles([$role]);
                 return $user;
             });

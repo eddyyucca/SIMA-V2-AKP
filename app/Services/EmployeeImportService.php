@@ -50,8 +50,8 @@ class EmployeeImportService
             if ($r['nik'] && isset($seenNik[mb_strtolower($r['nik'])])) { $out['errors'][] = "Baris {$n}: NIK '{$r['nik']}' sama dengan baris {$seenNik[mb_strtolower($r['nik'])]} di file ini."; continue; }
 
             // cocokkan dengan data yang ada: NIK dulu, kalau tidak ada baru email
-            $target = $r['nik'] ? Employee::withTrashed()->where('nik', $r['nik'])->first() : null;
-            $byEmail = Employee::withTrashed()->where('email', $email)->first();
+            $target = $r['nik'] ? Employee::withTrashed()->whereCi('nik', $r['nik'])->first() : null;
+            $byEmail = Employee::withTrashed()->whereCi('email', $email)->first();
             $target ??= $byEmail;
 
             if ($target && $byEmail && $byEmail->id !== $target->id) {

@@ -32,7 +32,7 @@ class PortalUserSync
 
             $user = $employee?->user
                 ?? User::where('portal_user_id', $p->id)->first()
-                ?? ($p->email ? User::where('email', $p->email)->first() : null);
+                ?? ($p->email ? User::whereCi('email', $p->email)->first() : null);
 
             if ($user && ! $user->is_active) throw new LoginDenied('Akun dinonaktifkan di aplikasi ini. Hubungi Tim IT.');
 
@@ -56,14 +56,14 @@ class PortalUserSync
         $nik = trim((string) $p->employee_no);
         if ($nik === '') return null;
 
-        if ($e = Employee::withTrashed()->where('nik', $nik)->first()) return $e;
+        if ($e = Employee::withTrashed()->whereCi('nik', $nik)->first()) return $e;
 
         // belum ada di aplikasi ini: ambil dari HRIS (termasuk NIK alias); HRIS mati -> buat dari data token
         if ($h = $this->hris->find($nik)) return $this->sync->upsert($h)['employee'];
 
         return Employee::create([
             'nik' => $nik, 'name' => $p->name, 'status' => 'active', 'hris_missing_at' => \App\Support\Hris::managed() ? now() : null,
-            'email' => $p->email && ! Employee::withTrashed()->where('email', $p->email)->exists() ? $p->email : 'nik' . Str::slug($nik) . '@akp.test',
+            'email' => $p->email && ! Employee::withTrashed()->whereCi('email', $p->email)->exists() ? $p->email : 'nik' . Str::slug($nik) . '@akp.test',
         ]);
     }
 

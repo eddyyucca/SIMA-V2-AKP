@@ -40,13 +40,13 @@ class ArrivalPlanService
         if (Carbon::parse($d['arrival_date'])->startOfDay()->lt(now()->startOfDay())) throw new InvalidArgumentException('Tanggal tiba tidak boleh di masa lalu.');
         $email = ! empty($d['email']) ? strtolower(trim($d['email'])) : null;
         if ($email) {
-            if (! \App\Support\Hris::managed() && Employee::withTrashed()->where('email', $email)->exists()) throw new InvalidArgumentException('Email sudah dipakai karyawan yang terdaftar.');
-            if (ArrivalPlan::active()->where('email', $email)->exists()) throw new InvalidArgumentException('Email sudah ada pada rencana kedatangan lain.');
+            if (! \App\Support\Hris::managed() && Employee::withTrashed()->whereCi('email', $email)->exists()) throw new InvalidArgumentException('Email sudah dipakai karyawan yang terdaftar.');
+            if (ArrivalPlan::active()->whereCi('email', $email)->exists()) throw new InvalidArgumentException('Email sudah ada pada rencana kedatangan lain.');
         }
 
         $nik = isset($d['nik']) && trim((string) $d['nik']) !== '' ? trim((string) $d['nik']) : null;
         // HRIS terhubung: karyawan baru memang sudah ada di HRIS (dan tersinkron), jadi NIK terdaftar justru yang diharapkan.
-        if (! \App\Support\Hris::managed() && $nik && Employee::withTrashed()->where('nik', $nik)->exists()) throw new InvalidArgumentException('NIK sudah dipakai karyawan yang terdaftar.');
+        if (! \App\Support\Hris::managed() && $nik && Employee::withTrashed()->whereCi('nik', $nik)->exists()) throw new InvalidArgumentException('NIK sudah dipakai karyawan yang terdaftar.');
 
         return DB::transaction(fn () => ArrivalPlan::create([
             'plan_no' => $this->nextNo(), 'nik' => $nik, 'name' => trim($d['name']), 'email' => $email, 'phone' => $d['phone'] ?? null,
@@ -187,7 +187,7 @@ class ArrivalPlanService
                 // HRIS terhubung: karyawan TIDAK dibuat manual. Harus sudah terdaftar di HRIS (dicari lewat NIK, lalu ditarik dari HRIS bila belum ada di sini).
                 $nik = trim((string) $p->nik);
                 if ($nik === '') throw new InvalidArgumentException('NIK wajib diisi: karyawan harus sudah terdaftar di HRIS.');
-                $emp = Employee::withTrashed()->where('nik', $nik)->first();
+                $emp = Employee::withTrashed()->whereCi('nik', $nik)->first();
                 if (! $emp && ($h = app(\App\Services\Hris\EmployeeDirectory::class)->find($nik))) $emp = app(\App\Services\Hris\EmployeeSync::class)->upsert($h)['employee'];
                 if (! $emp) throw new InvalidArgumentException("NIK {$nik} belum terdaftar di HRIS. Minta HR mendaftarkannya di HRIS, lalu coba lagi.");
                 if ($emp->status !== 'active') throw new InvalidArgumentException("Karyawan {$emp->name} tidak aktif di HRIS.");
@@ -196,10 +196,10 @@ class ArrivalPlanService
                 $email = strtolower(trim((string) (($d['email'] ?? null) ?: $p->email)));
                 if ($email === '') throw new InvalidArgumentException('Email karyawan wajib diisi untuk membuat data karyawan.');
                 if (! filter_var($email, FILTER_VALIDATE_EMAIL)) throw new InvalidArgumentException('Format email tidak valid.');
-                if (Employee::withTrashed()->where('email', $email)->exists()) throw new InvalidArgumentException('Email sudah terdaftar pada karyawan lain.');
+                if (Employee::withTrashed()->whereCi('email', $email)->exists()) throw new InvalidArgumentException('Email sudah terdaftar pada karyawan lain.');
 
                 $nik = trim((string) $p->nik) !== '' ? trim((string) $p->nik) : null;
-                if ($nik && Employee::withTrashed()->where('nik', $nik)->exists()) throw new InvalidArgumentException('NIK sudah terdaftar pada karyawan lain. Ubah NIK pada rencana dulu.');
+                if ($nik && Employee::withTrashed()->whereCi('nik', $nik)->exists()) throw new InvalidArgumentException('NIK sudah terdaftar pada karyawan lain. Ubah NIK pada rencana dulu.');
 
                 $emp = Employee::create([
                     'nik' => $nik, 'name' => $p->name, 'email' => $email, 'phone' => $p->phone, 'department_id' => $p->department_id,

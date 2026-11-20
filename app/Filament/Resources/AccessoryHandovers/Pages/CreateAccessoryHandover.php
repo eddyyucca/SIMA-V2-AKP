@@ -38,7 +38,7 @@ class CreateAccessoryHandover extends CreateRecord
         foreach ($lines ? [] : (array) $req->items as $item) {
             $name = trim((string) ($item['name'] ?? ''));
             if ($name === '') continue;
-            $acc = Accessory::where('name', $name)->first()
+            $acc = Accessory::whereCi('name', $name)->first()
                 ?? Accessory::where('name', 'like', '%' . $name . '%')->orderByDesc('qty_available')->first()
                 ?? Accessory::whereRaw('lower(?) like CONCAT(\'%\', lower(name), \'%\')', [$name])->orderByDesc('qty_available')->first();
             $found = $acc ? 'accessory:' . $acc->id

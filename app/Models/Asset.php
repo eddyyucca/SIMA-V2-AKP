@@ -250,8 +250,12 @@ class Asset extends Model
     {
         $code = static::extractCode($scan);
         if ($code === '') return null;
+        // persis dulu; lalu tanpa membedakan huruf (PostgreSQL membedakan huruf pada "=", SIMA/MariaDB tidak: scan 'akp-it-nb-0001' harus tetap ketemu)
+        $lc = mb_strtolower($code);
         return static::where('asset_tag', $code)->orWhere('serial_number', $code)->first()
-            ?? static::whereIn('id', AssetTagAlias::where('tag', $code)->pluck('asset_id'))->first();
+            ?? static::whereIn('id', AssetTagAlias::where('tag', $code)->pluck('asset_id'))->first()
+            ?? static::whereRaw('lower(asset_tag) = ?', [$lc])->orWhereRaw('lower(serial_number) = ?', [$lc])->first()
+            ?? static::whereIn('id', AssetTagAlias::whereRaw('lower(tag) = ?', [$lc])->pluck('asset_id'))->first();
     }
 
     /** Ambil kode dari teks scan: alamat (path terakhir atau parameter kode) atau teks biasa. */

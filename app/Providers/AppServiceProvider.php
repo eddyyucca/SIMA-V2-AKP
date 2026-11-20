@@ -12,6 +12,12 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         // PostgreSQL: LIKE harus tidak peka huruf besar/kecil seperti di MariaDB (pencarian nama, NIK, dll.)
+        // PostgreSQL membedakan huruf pada "=", SIMA/MariaDB tidak. whereCi() = pencocokan persis tanpa membedakan huruf untuk input pengguna (email, nama, kode).
+        \Illuminate\Database\Eloquent\Builder::macro('whereCi', function (string $column, $value) {
+            /** @var \Illuminate\Database\Eloquent\Builder $this */
+            $wrapped = $this->getQuery()->getGrammar()->wrap($this->getModel()->qualifyColumn($column));
+            return $this->whereRaw("lower({$wrapped}::text) = ?", [mb_strtolower(trim((string) $value))]);
+        });
         \Illuminate\Database\Connection::resolverFor('pgsql', fn ($pdo, $database, $prefix, $config) => new \App\Support\Database\CaseInsensitivePostgresConnection($pdo, $database, $prefix, $config));
         $this->app->bind(\Filament\Auth\Http\Responses\Contracts\LoginResponse::class, \App\Http\Responses\LoginResponse::class);
     }
