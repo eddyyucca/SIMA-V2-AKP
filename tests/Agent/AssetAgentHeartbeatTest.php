@@ -192,4 +192,11 @@ class AssetAgentHeartbeatTest extends AgentTestCase
 
         $this->assertFalse($asset->agentHeartbeat()->first()->serialMismatchesAsset());
     }
+
+    public function test_health_endpoint_used_by_the_agent_status_app_answers_without_a_token(): void
+    {
+        // Tombol "Tes koneksi" di SIMA Agent Status memanggil GET /health (SIMA1 melayaninya); 404 membuat laptop melapor "server bermasalah".
+        $this->getJson('/health')->assertOk()->assertJson(['status' => 'ok']);
+        $this->get('/health')->assertOk();
+    }
 }

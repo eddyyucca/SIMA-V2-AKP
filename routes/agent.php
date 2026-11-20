@@ -29,3 +29,16 @@ Route::middleware(['throttle:agent-ip', AssetHelperTokenAuth::class, 'throttle:a
 
 // Publik (tanpa token): agen cek apakah ada versi skrip baru.
 Route::get('api/agent/v1/version', [AssetAgentController::class, 'version'])->middleware('throttle:agent-ip');
+
+// Cek kesehatan untuk aplikasi "SIMA Agent Status" di laptop (tombol "Tes koneksi" memanggil GET /health; SIMA1 melayaninya, jadi alamat yang sama
+// harus tetap ada setelah alamat lama diarahkan ke aplikasi ini). Tanpa sesi/cookie; hanya memastikan aplikasi dan database menjawab.
+Route::get('/health', function () {
+    try {
+        \Illuminate\Support\Facades\DB::select('select 1');
+    } catch (\Throwable) {
+        return response()->json(['status' => 'error'], 503);
+    }
+
+    return response()->json(['status' => 'ok']);
+})->middleware('throttle:agent-ip')->name('health');
+

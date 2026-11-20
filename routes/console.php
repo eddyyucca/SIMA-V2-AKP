@@ -16,3 +16,4 @@ if (filled(config('services.hris.url')) && filled(config('services.hris.token'))
 }
 
 Schedule::command("agent:mark-stale-offline")->everyFiveMinutes();   // agent yang berhenti lapor -> offline
+Schedule::command("agent:rollout-snapshot")->dailyAt("23:55");           // foto harian pencapaian rollout (grafik tren)
