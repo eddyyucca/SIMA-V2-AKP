@@ -102,7 +102,13 @@ class Qa16_BastViewTest extends QaTestCase
         $this->assertStringContainsString('href="' . route('bast.download', $row) . '"', $html);                  // Unduh
         $this->assertStringContainsString('>Lihat</a>', $html);
         $this->assertStringContainsString('>Unduh</a>', $html);
-        $this->assertGreaterThanOrEqual($a->assignments()->whereNotNull('bast_pdf_path')->count(), substr_count($html, '>Lihat</a>'));
+        $this->assertGreaterThanOrEqual($a->assignments()->count(), substr_count($html, '>Lihat</a>'));          // semua baris, termasuk yang PDF-nya belum dibuat (data impor SIMA)
+
+        // baris tanpa PDF (hasil impor) juga punya tautan, dan PDF dibuat saat dibuka
+        $bare = AssetAssignment::create(['asset_id' => $a->id, 'type' => 'checkin', 'bast_number' => 'BAST/SIMA-TEST-1', 'assigned_at' => now()->addDays(2), 'condition' => 'good']);
+        $html = $this->get(\App\Filament\Resources\Assets\AssetResource::getUrl('view', ['record' => $a]))->assertOk()->getContent();
+        $this->assertStringContainsString('href="' . route('bast.view', $bare) . '" target="_blank"', $html);
+        $this->get(route('bast.view', $bare))->assertOk()->assertHeader('content-type', 'application/pdf');
     }
 
     public function test_disposal_report_can_also_be_viewed_inline(): void

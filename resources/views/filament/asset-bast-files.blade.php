@@ -1,6 +1,6 @@
 @php
     $link = 'color:#1f78b0;font-weight:600';
-    $generated = $asset->assignments()->whereNotNull('bast_pdf_path')->get();
+    $generated = $asset->assignments()->get();   // semua serah terima/pengembalian/mutasi; PDF dibuat saat dibuka bila belum ada (data impor SIMA)
     $files = $asset->bastFiles()->with(['assignment', 'uploader'])->latest('id')->get();
 @endphp
 <div style="font-size:13px">

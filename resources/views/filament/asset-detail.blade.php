@@ -142,7 +142,7 @@
                     <td>{{ $as->from?->name ?? 'Gudang IT' }}</td>
                     <td>{{ $as->to?->name ?? 'Gudang IT' }}</td>
                     <td>{{ $cd[$as->condition] ?? $as->condition }}</td>
-                    <td style="white-space:nowrap">{{ $as->bast_number }}@if($as->bast_pdf_path) · <a href="{{ route('bast.view', $as) }}" target="_blank" style="color:#1f78b0">Lihat</a> · <a href="{{ route('bast.download', $as) }}" style="color:#1f78b0">Unduh</a>@endif@foreach($as->bastFiles as $bf) · <a href="{{ route('bast.file', $bf) }}" target="_blank" style="color:#1f78b0">Scan TTD{{ $as->bastFiles->count() > 1 ? ' ' . $loop->iteration : '' }}</a>@endforeach</td>
+                    <td style="white-space:nowrap">{{ $as->bast_number }} · <a href="{{ route('bast.view', $as) }}" target="_blank" style="color:#1f78b0">Lihat</a> · <a href="{{ route('bast.download', $as) }}" style="color:#1f78b0">Unduh</a>@foreach($as->bastFiles as $bf) · <a href="{{ route('bast.file', $bf) }}" target="_blank" style="color:#1f78b0">Scan TTD{{ $as->bastFiles->count() > 1 ? ' ' . $loop->iteration : '' }}</a>@endforeach</td>
                 </tr>
             @empty<tr><td colspan="6" style="color:#888">Belum ada riwayat</td></tr>@endforelse
             </tbody>

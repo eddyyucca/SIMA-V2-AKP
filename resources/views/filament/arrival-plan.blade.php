@@ -50,7 +50,7 @@
                     <td>
                         @if($it->status === 'handed_over' && $it->assignment)
                             {{ $it->assignment->bast_number }}
-                            @if($it->assignment->bast_pdf_path) · <a href="{{ route('bast.view', $it->assignment) }}" target="_blank" style="color:#1f78b0">Lihat</a> · <a href="{{ route('bast.download', $it->assignment) }}" style="color:#1f78b0">Unduh</a>@endif
+                            @if($it->assignment) · <a href="{{ route('bast.view', $it->assignment) }}" target="_blank" style="color:#1f78b0">Lihat</a> · <a href="{{ route('bast.download', $it->assignment) }}" style="color:#1f78b0">Unduh</a>@endif
                         @else {{ $it->note }} @endif
                     </td>
                     <td style="text-align:right;white-space:nowrap">
