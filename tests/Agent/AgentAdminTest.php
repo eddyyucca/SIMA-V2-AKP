@@ -142,9 +142,9 @@ class AgentAdminTest extends AgentTestCase
 
     public function test_announcements_page_is_admin_only(): void
     {
-        $this->actingAs($this->staff())->get('/admin/pengumuman-agent')->assertForbidden();
+        $this->actingAs($this->staff())->get(\App\Filament\Resources\AgentAnnouncements\AgentAnnouncementResource::getUrl())->assertForbidden();
         auth()->forgetGuards(); $this->flushSession();
-        $this->actingAs($this->admin())->get('/admin/pengumuman-agent')->assertOk();
+        $this->actingAs($this->admin())->get(\App\Filament\Resources\AgentAnnouncements\AgentAnnouncementResource::getUrl())->assertOk();
         Livewire::actingAs($this->admin())->test(ManageAgentAnnouncements::class)->assertOk();
     }
 }

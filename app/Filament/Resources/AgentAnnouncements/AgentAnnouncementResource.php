@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\AgentAnnouncements;
 
+use App\Filament\Clusters\Agent;
 use App\Filament\Resources\AgentAnnouncements\Pages\ManageAgentAnnouncements;
 use App\Models\AgentAnnouncement;
 use App\Services\AgentAdminService;
@@ -19,18 +20,17 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use UnitEnum;
 
 /** Pengumuman yang ditampilkan agent di laptop pengguna. Hanya Admin. */
 class AgentAnnouncementResource extends Resource
 {
     protected static ?string $model = AgentAnnouncement::class;
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedMegaphone;
-    protected static string|UnitEnum|null $navigationGroup = 'Inventaris';
-    protected static ?int $navigationSort = 9;
+    protected static ?string $cluster = Agent::class;
+    protected static ?int $navigationSort = 5;
     protected static ?string $modelLabel = 'Pengumuman Agent';
     protected static ?string $pluralModelLabel = 'Pengumuman Agent';
-    protected static ?string $navigationLabel = 'Pengumuman Agent';
+    protected static ?string $navigationLabel = 'Pengumuman';
     protected static ?string $slug = 'pengumuman-agent';
 
     public static function canAccess(): bool { return (bool) auth()->user()?->hasRole('Admin'); }

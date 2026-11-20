@@ -22,7 +22,20 @@ Route::get('/hardware/{id}', function (string $id) {
     return $newId ? redirect(\App\Filament\Resources\Assets\AssetResource::getUrl('view', ['record' => $newId])) : redirect('/admin');
 })->whereNumber('id');
 
+// Alamat lama SIMA (Snipe-IT) untuk halaman agent: penanda halaman & tautan lama tetap sampai ke halaman yang setara.
+Route::get('/agent-monitor', fn () => redirect(\App\Filament\Resources\AgentMonitor\AgentMonitorResource::getUrl()));
+Route::get('/agent-monitor/rollout', fn () => redirect(\App\Filament\Clusters\Agent\Pages\AgentRollout::getUrl()));
+Route::get('/agent-monitor/compliance', fn () => redirect(\App\Filament\Clusters\Agent\Pages\AgentCompliance::getUrl()));
+Route::get('/agent-monitor/reports', fn () => redirect(\App\Filament\Clusters\Agent\Pages\AgentAlerts::getUrl()));
+Route::get('/agent-announcements', fn () => redirect(\App\Filament\Resources\AgentAnnouncements\AgentAnnouncementResource::getUrl()));
+Route::get('/hardware/{id}/agent', function (string $id) {
+    $newId = \Illuminate\Support\Facades\DB::table('legacy_map')->where('entity', 'asset')->where('legacy_id', $id)->value('new_id');
+    return $newId ? redirect(\App\Filament\Resources\AgentMonitor\AgentMonitorResource::getUrl('view', ['record' => $newId])) : redirect('/admin');
+})->whereNumber('id');
+
 Route::middleware([Authenticate::class])->group(function () {
+    Route::get('/agent/ekspor/rollout.csv', [\App\Http\Controllers\AgentExportController::class, 'rollout'])->name('agent.export.rollout');
+    Route::get('/agent/ekspor/peringatan.csv', [\App\Http\Controllers\AgentExportController::class, 'alerts'])->name('agent.export.alerts');
     Route::get('/bast/{assignment}', [ReportController::class, 'bast'])->name('bast.download');
     Route::get('/bast/{assignment}/lihat', [ReportController::class, 'bastView'])->name('bast.view');
     Route::get('/bast-file/{file}', [ReportController::class, 'bastFile'])->name('bast.file');
