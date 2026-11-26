@@ -57,6 +57,22 @@ class Dashboard extends BaseDashboard
 
     public function getHeading(): string|Htmlable { return ''; }
 
+    /**
+     * Tautan ke daftar Aset dengan filter terpasang (Filament membaca ?filters[nama][value]=...). Dipakai kartu Dashboard supaya
+     * angka di kartu = jumlah baris di daftar yang dibuka.
+     *
+     * @param array<string, string|int|bool> $filters nama filter => nilai ('aktif' => true untuk sakelar)
+     */
+    public function assetsUrl(array $filters = []): string
+    {
+        $q = [];
+        foreach ($filters as $name => $value) {
+            $q[$name] = $name === 'aktif' ? ['isActive' => '1'] : ['value' => (string) $value];
+        }
+
+        return AssetResource::getUrl() . ($q ? '?' . http_build_query(['filters' => $q]) : '');
+    }
+
     public function getMaxContentWidth(): Width|string|null { return Width::Full; }
 
     public function getWidgets(): array { return []; }
@@ -166,7 +182,9 @@ class Dashboard extends BaseDashboard
             'labels' => $months->map(fn ($m) => $m->translatedFormat('M'))->all(),
             'added' => $added, 'repairCost' => $repairCost, 'moves' => $moves,
             'byCategory' => (clone $live)->with('category')->get()->groupBy(fn ($a) => $a->category?->name ?? 'Lainnya')->map->count()->sortDesc(),
+            'byCategoryId' => Category::where('type', 'asset')->pluck('id', 'name')->all(),
             'byLocation' => (clone $live)->with('location')->get()->groupBy(fn ($a) => $a->location?->name ?? 'Tanpa lokasi')->map->count()->sortDesc(),
+            'byLocationId' => \App\Models\Location::pluck('id', 'name')->all(),
             'lowStock' => $lowStock,
             'licenses' => License::whereNotNull('expires_at')->where('expires_at', '<=', now()->addDays(30)->toDateString())->orderBy('expires_at')->get(),
             'warranty' => Asset::whereBetween('warranty_until', [now()->toDateString(), now()->addDays(30)->toDateString()])->orderBy('warranty_until')->get(),

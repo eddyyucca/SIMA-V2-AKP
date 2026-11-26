@@ -31,6 +31,10 @@
     $svg = fn ($k) => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="' . $icons[$k] . '"/></svg>';
     $actIcon = ['checkout' => ['out', '#1f6fb5'], 'checkin' => ['check', '#2fa99b'], 'transfer' => ['user', '#29aae1'], 'stock' => ['box', '#10264a']];
 
+    $lowUrl = fn (string $res) => $res::getUrl() . '?' . http_build_query(['filters' => ['low' => ['isActive' => '1']]]);
+    $lowByKind = $d['lowStock']->groupBy('kind')->map->count();
+    $lowMain = $lowByKind->has('Accessory') || $lowByKind->isEmpty() ? $lowUrl(\App\Filament\Resources\Accessories\AccessoryResource::class)
+        : ($lowByKind->has('Consumable') ? $lowUrl(\App\Filament\Resources\Consumables\ConsumableResource::class) : $lowUrl(\App\Filament\Resources\Components\ComponentResource::class));
     $catTotal = max($d['byCategory']->sum(), 1);
     $locMax = max($d['byLocation']->max() ?? 1, 1);
     $alertCount = $d['lowStock']->count() + $d['licenses']->count() + $d['warranty']->count() + $d['lateRepairs']->count() + $d['resignedHolding']->count() + $d['overSeats']->count() + $d['rentalExpiring']->count() + $d['arrivalsAtRisk']->count();
@@ -59,6 +63,10 @@
     @media(max-width:640px){.pd-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.pd-kpi .pd-val{font-size:1.5rem}}
     .pd-card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px;box-shadow:var(--shadow);position:relative;overflow:hidden;transition:.2s}
     .pd-card.hover:hover{transform:translateY(-3px);box-shadow:0 18px 36px -14px rgba(15,23,42,.25)}
+    .pd a.pd-link{display:block;color:inherit;text-decoration:none;cursor:pointer}.pd a.pd-link:hover .pd-val{text-decoration:underline;text-underline-offset:4px}
+    .pd a.pd-lk{display:contents;color:inherit;text-decoration:none;cursor:pointer}.pd a.pd-lk:hover>*{text-decoration:underline;text-underline-offset:3px}
+    .pd .pd-stretch{position:relative}.pd .pd-stretch a.pd-main{color:inherit;text-decoration:none}.pd .pd-stretch a.pd-main::after{content:"";position:absolute;inset:0;z-index:1;border-radius:inherit}
+    .pd .pd-stretch a.pd-over{position:relative;z-index:2;color:inherit;text-decoration:underline;text-underline-offset:3px}.pd .pd-stretch:hover .pd-val{text-decoration:underline;text-underline-offset:4px}
     .pd-kpi{padding:20px 22px}.pd-kpi .top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}.pd-kpi .pd-label{min-width:0;line-height:1.35}
     .pd-ico{flex:none;width:44px;height:44px;border-radius:12px;display:grid;place-items:center;color:#fff;box-shadow:0 6px 14px -6px rgba(31,111,181,.6)}
     .pd-ico svg{width:22px;height:22px}
@@ -209,14 +217,14 @@
     <section class="pd-grid pd-kpis">
         @php
             $kpis = [
-                ['Total aset', $d['total'], 'aset aktif', 'box', 'linear-gradient(135deg,#1f6fb5,#29aae1)', '#29aae1', $d['added'], 'ditambah / bln'],
-                ['Dipakai', $d['deployed'], $d['util'] . '% utilisasi', 'user', 'linear-gradient(135deg,#1f6fb5,#29aae1)', '#1f6fb5', $d['moves'], 'stok keluar / bln'],
-                ['Tersedia', $d['available'], 'siap diserahkan', 'check', 'linear-gradient(135deg,#1f6fb5,#29aae1)', '#2fa99b', $d['added'], null],
-                ['Dalam perbaikan', $d['repair'], $d['openRepairs'] . ' tiket terbuka', 'wrench', 'linear-gradient(135deg,#1f6fb5,#29aae1)', '#d99a2b', $d['repairCost'], 'biaya / bln'],
+                ['Total aset', $d['total'], 'aset aktif', 'box', 'linear-gradient(135deg,#1f6fb5,#29aae1)', '#29aae1', $d['added'], 'ditambah / bln', $this->assetsUrl(['aktif' => true])],
+                ['Dipakai', $d['deployed'], $d['util'] . '% utilisasi', 'user', 'linear-gradient(135deg,#1f6fb5,#29aae1)', '#1f6fb5', $d['moves'], 'stok keluar / bln', $this->assetsUrl(['status' => 'deployed'])],
+                ['Tersedia', $d['available'], 'siap diserahkan', 'check', 'linear-gradient(135deg,#1f6fb5,#29aae1)', '#2fa99b', $d['added'], null, $this->assetsUrl(['status' => 'available'])],
+                ['Dalam perbaikan', $d['repair'], $d['openRepairs'] . ' tiket terbuka', 'wrench', 'linear-gradient(135deg,#1f6fb5,#29aae1)', '#d99a2b', $d['repairCost'], 'biaya / bln', $this->assetsUrl(['status' => 'repair'])],
             ];
         @endphp
-        @foreach($kpis as [$label, $val, $sub, $ic, $grad, $col, $series, $note])
-            <div class="pd-card hover pd-kpi">
+        @foreach($kpis as [$label, $val, $sub, $ic, $grad, $col, $series, $note, $href])
+            <a class="pd-card hover pd-kpi pd-link" href="{{ $href }}" title="Lihat daftar asetnya">
                 <div class="top">
                     <div><div class="pd-label">{{ $label }}</div></div>
                     <div class="pd-ico" style="background:{{ $grad }}">{!! $svg($ic) !!}</div>
@@ -224,28 +232,34 @@
                 <div class="pd-val">{{ number_format($val) }}</div>
                 <div class="pd-sub">{{ $sub }}</div>
                 {!! $spark($series, $col) !!}
-            </div>
+            </a>
         @endforeach
-        <div class="pd-card hover pd-kpi">
+        <div class="pd-card hover pd-kpi pd-stretch">
             <div class="top">
                 <div class="pd-label">Stok ≤ minimum</div>
                 <div class="pd-ico" style="background:{{ $d['lowStock']->count() ? 'linear-gradient(135deg,#d64545,#e25555)' : 'linear-gradient(135deg,#1f6fb5,#29aae1)' }}">{!! $svg('alert') !!}</div>
             </div>
-            <div class="pd-val">{{ $d['lowStock']->count() }}<small>item</small></div>
-            <div class="pd-sub">{{ $d['lowStock']->count() ? 'perlu dibeli segera' : 'stok aman' }}</div>
+            <div class="pd-val"><a class="pd-main" href="{{ $lowMain }}">{{ $d['lowStock']->count() }}<small>item</small></a></div>
+            <div class="pd-sub">{{ $d['lowStock']->count() ? 'perlu dibeli segera' : 'stok aman' }}
+                @if($lowByKind->isNotEmpty())
+                    <br>@foreach(['Accessory' => \App\Filament\Resources\Accessories\AccessoryResource::class, 'Consumable' => \App\Filament\Resources\Consumables\ConsumableResource::class, 'Komponen' => \App\Filament\Resources\Components\ComponentResource::class] as $kind => $res)
+                        @if($lowByKind->has($kind))<a class="pd-over" href="{{ $lowUrl($res) }}">{{ $kind }} {{ $lowByKind[$kind] }}</a>{{ ! $loop->last ? ' · ' : '' }}@endif
+                    @endforeach
+                @endif
+            </div>
             <div style="margin-top:12px">
                 <span class="pd-badge" style="background:{{ $d['lowStock']->count() ? 'rgba(214,69,69,.10);color:#b13a3a' : 'rgba(47,169,155,.12);color:#17766b' }}">{{ $d['lowStock']->count() ? 'Perlu tindakan' : 'Terkendali' }}</span>
             </div>
         </div>
-        <div class="pd-card hover pd-kpi">
+        <div class="pd-card hover pd-kpi pd-stretch">
             <div class="top">
                 <div class="pd-label">Nilai buku aset</div>
                 <div class="pd-ico" style="background:linear-gradient(135deg,#29aae1,#29aae1)">{!! $svg('coin') !!}</div>
             </div>
-            <div class="pd-val" style="font-size:1.45rem;margin-top:14px">{{ $rpShort($d['book']) }}</div>
+            <div class="pd-val" style="font-size:1.45rem;margin-top:14px"><a class="pd-main" href="{{ \App\Filament\Pages\Reports::getUrl() }}" title="Buka laporan penyusutan & nilai aset">{{ $rpShort($d['book']) }}</a></div>
             <div class="pd-sub">perolehan {{ $rpShort($d['depCost']) }} · susut {{ now()->year }}: {{ $rpShort($d['depYear']) }}</div>
-            <div style="margin-top:12px"><span class="pd-badge" style="background:rgba(31,111,181,.10);color:#195f9d">{{ $d['lost'] }} hilang · {{ $d['borrowed'] }} dipinjam</span>
-                <span class="pd-badge" style="background:rgba(31,111,181,.10);color:#195f9d;margin-left:4px">{{ $d['rentalCount'] }} sewa · {{ $rpShort($d['rentalMonthly']) }}/bln</span></div>
+            <div style="margin-top:12px"><span class="pd-badge" style="background:rgba(31,111,181,.10);color:#195f9d"><a class="pd-over" href="{{ $this->assetsUrl(['status' => 'lost']) }}">{{ $d['lost'] }} hilang</a> · <a class="pd-over" href="{{ $this->assetsUrl(['status' => 'borrowed']) }}">{{ $d['borrowed'] }} dipinjam</a></span>
+                <span class="pd-badge" style="background:rgba(31,111,181,.10);color:#195f9d;margin-left:4px"><a class="pd-over" href="{{ \App\Filament\Resources\RentalAssets\RentalAssetResource::getUrl() }}">{{ $d['rentalCount'] }} sewa · {{ $rpShort($d['rentalMonthly']) }}/bln</a></span></div>
         </div>
     </section>
 
@@ -269,7 +283,8 @@
                 </div>
                 <div class="pd-legend">
                     @forelse($d['byCategory'] as $name => $n)
-                        <div><i style="background:{{ $palette[$loop->index % count($palette)] }}"></i>{{ $name }}<b>{{ $n }}</b></div>
+                        @php $cid = $d['byCategoryId'][$name] ?? null; @endphp
+                        <div>@if($cid)<a class="pd-lk" href="{{ $this->assetsUrl(['aktif' => true, 'category_id' => $cid]) }}">@endif<i style="background:{{ $palette[$loop->index % count($palette)] }}"></i>{{ $name }}<b>{{ $n }}</b>@if($cid)</a>@endif</div>
                     @empty <div class="pd-empty">Belum ada aset</div> @endforelse
                 </div>
             </div>
@@ -286,11 +301,11 @@
                 <div class="c"><b>{{ $d['util'] }}%</b><span style="font-size:.72rem;color:var(--mute)">terpakai</span></div>
             </div>
             @php
-                $seg = [['Dipakai', $d['deployed'], '#1f6fb5'], ['Tersedia', $d['available'], '#2fa99b'], ['Perbaikan', $d['repair'], '#d99a2b'], ['Dipinjam', $d['borrowed'], '#29aae1'], ['Hilang', $d['lost'], '#64748b']];
+                $seg = [['Dipakai', $d['deployed'], '#1f6fb5', 'deployed'], ['Tersedia', $d['available'], '#2fa99b', 'available'], ['Perbaikan', $d['repair'], '#d99a2b', 'repair'], ['Dipinjam', $d['borrowed'], '#29aae1', 'borrowed'], ['Hilang', $d['lost'], '#64748b', 'lost']];
                 $segTotal = max(array_sum(array_column($seg, 1)), 1);
             @endphp
             <div class="pd-stack">@foreach($seg as [$l, $v, $c])<span style="width:{{ $v / $segTotal * 100 }}%;background:{{ $c }}"></span>@endforeach</div>
-            <div class="pd-cols2">@foreach($seg as [$l, $v, $c])<div><i style="background:{{ $c }}"></i>{{ $l }}<b>{{ $v }}</b></div>@endforeach</div>
+            <div class="pd-cols2">@foreach($seg as [$l, $v, $c, $st])<div><a class="pd-lk" href="{{ $this->assetsUrl(['status' => $st]) }}"><i style="background:{{ $c }}"></i>{{ $l }}<b>{{ $v }}</b></a></div>@endforeach</div>
         </div>
 
         <div class="pd-card pd-c3" style="grid-column:span 3">
@@ -326,9 +341,10 @@
                     <thead><tr><th>Department</th><th class="c">Aset</th><th class="r">{{ $this->deptValue === 'book' ? 'Nilai buku' : 'Nilai perolehan' }}</th></tr></thead>
                     <tbody>
                     @forelse($dp['rows'] as $r)
+                        @php $deptHref = $this->assetsUrl(['aktif' => true, 'department' => $r['key']] + ($this->deptCategory !== '' ? ['category_id' => $this->deptCategory] : [])); @endphp
                         <tr>
-                            <td class="n" style="--dc:{{ $r['color'] }}"><i></i>{{ $r['name'] }}</td>
-                            <td class="c"><span class="pd-cnt">{{ number_format($r['count']) }}</span></td>
+                            <td class="n" style="--dc:{{ $r['color'] }}"><a class="pd-lk" href="{{ $deptHref }}"><i></i>{{ $r['name'] }}</a></td>
+                            <td class="c"><a class="pd-lk" href="{{ $deptHref }}"><span class="pd-cnt">{{ number_format($r['count']) }}</span></a></td>
                             <td class="r"><span class="pd-val2 {{ $r['tone'] }}">{{ $rp($r['value']) }}</span></td>
                         </tr>
                     @empty
@@ -446,8 +462,9 @@
         <div class="pd-card pd-c5">
             <div class="pd-h"><h3>Sebaran lokasi</h3><span>{{ $d['byLocation']->count() }} lokasi</span></div>
             @forelse($d['byLocation'] as $name => $n)
+                @php $lid = $d['byLocationId'][$name] ?? null; @endphp
                 <div class="pd-bar">
-                    <div class="r"><span>{{ $name }}</span><b>{{ $n }}</b></div>
+                    <div class="r">@if($lid)<a class="pd-lk" href="{{ $this->assetsUrl(['aktif' => true, 'location_id' => $lid]) }}">@endif<span>{{ $name }}</span><b>{{ $n }}</b>@if($lid)</a>@endif</div>
                     <div class="t"><span style="width:{{ $n / $locMax * 100 }}%"></span></div>
                 </div>
             @empty <div class="pd-empty">Belum ada data</div> @endforelse

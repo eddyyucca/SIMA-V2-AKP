@@ -208,9 +208,19 @@ class AssetResource extends Resource
                 SelectFilter::make('condition')->label('Kondisi')->options(Asset::CONDITIONS),
                 SelectFilter::make('brand_id')->label('Merek')->options(fn () => Brand::orderBy('name')->pluck('name', 'id')),
                 SelectFilter::make('location_id')->label('Lokasi')->relationship('location', 'name'),
+                // sakelar yang dipakai tautan Dashboard: sama dengan hitungan "aset aktif" di kartu (bukan disposed / dikembalikan)
+                \Filament\Tables\Filters\Filter::make('aktif')->label('Aset aktif (bukan disposed / dikembalikan)')->query(fn ($query) => $query->active()),
                 SelectFilter::make('department')->label('Department')
-                    ->options(fn () => \App\Models\Department::options())
-                    ->query(fn ($query, $data) => $data['value'] ? $query->whereHas('employee', fn ($e) => $e->where('department_id', $data['value'])) : $query),
+                    ->options(fn () => ['none' => '(Belum dipegang / stok gudang)', 'nodept' => '(Pemegang tanpa department)'] + \App\Models\Department::options())
+                    ->query(function ($query, $data) {
+                        $v = $data['value'] ?? null;
+                        return match (true) {
+                            blank($v) => $query,
+                            $v === 'none' => $query->whereNull('employee_id'),
+                            $v === 'nodept' => $query->whereHas('employee', fn ($e) => $e->whereNull('department_id')),
+                            default => $query->whereHas('employee', fn ($e) => $e->where('department_id', $v)),
+                        };
+                    }),
                 TrashedFilter::make(),
             ])
             ->recordActions([ViewAction::make(), EditAction::make()])
