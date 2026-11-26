@@ -59,7 +59,8 @@ class AgentUiPagesTest extends AgentTestCase
     public function test_overview_lists_devices_with_fleet_kpis_and_status_tabs(): void
     {
         $t = Livewire::test(ListAgentMonitor::class)->assertSuccessful()
-            ->assertCanSeeTableRecords([$this->good, $this->bad, $this->tokenOnly])->assertCanNotSeeTableRecords([$this->missing]);
+            ->set('tableRecordsPerPage', 100)
+            ->assertCanSeeTableRecords([$this->good, $this->bad, $this->tokenOnly, $this->missing]);   // laptop yang belum terpasang agent kini digabung di tabel utama
         // label status terbaca (bug lama: closure ber-parameter $s tidak mendapat state dari Filament sehingga label kosong dan warna selalu abu-abu)
         $t->assertTableColumnFormattedStateSet('agent_status', 'Online', $this->good)->assertTableColumnFormattedStateSet('agent_status', 'Offline', $this->bad);
         $t->set('activeTab', 'offline')->assertCanSeeTableRecords([$this->bad])->assertCanNotSeeTableRecords([$this->good]);
@@ -91,7 +92,7 @@ class AgentUiPagesTest extends AgentTestCase
         $this->assertContains($this->tokenOnly->id, $r['pending_all']->pluck('asset.id')->all());
         $this->assertNotContains($this->good->id, $r['pending_all']->pluck('asset.id')->all());
 
-        $this->get(AgentRollout::getUrl())->assertOk()->assertSee(trans('agent.rollout_hero'))->assertSee($this->missing->asset_tag);
+        $this->get(AgentRollout::getUrl())->assertOk()->assertSee(trans('agent.rollout_hero'))->assertSee('Buka tabel Ikhtisar');
 
         $this->artisan('agent:rollout-snapshot')->assertSuccessful();
         $this->artisan('agent:rollout-snapshot')->assertSuccessful();
@@ -143,5 +144,26 @@ class AgentUiPagesTest extends AgentTestCase
         $this->get('/agent-monitor/rollout')->assertRedirect(AgentRollout::getUrl());
         $this->get('/agent-monitor/compliance')->assertRedirect(AgentCompliance::getUrl());
         $this->get('/agent-monitor/reports')->assertRedirect(AgentAlerts::getUrl());
+    }
+
+    public function test_installer_package_can_be_downloaded_from_table_and_detail_with_a_fresh_token(): void
+    {
+        // dari tabel utama, untuk laptop yang BELUM terpasang agent
+        $t = Livewire::test(ListAgentMonitor::class)->set('tableRecordsPerPage', 100)
+            ->callTableAction('agent_download', $this->missing)->assertHasNoTableActionErrors();
+        $this->assertSame(1, $this->missing->agentTokens()->whereNull('revoked_at')->count(), 'token baru dibuat');
+
+        // paket: agent + installer + config berisi token yang valid
+        $pkg = app(\App\Services\AgentInstallerPackage::class)->build($this->tokenOnly, auth()->user());
+        $zip = new \ZipArchive();
+        $this->assertTrue($zip->open($pkg['path']));
+        foreach (['agent.ps1', 'agent-update.ps1', 'install.ps1', 'uninstall.ps1', 'config.json', 'Pasang-Agent.cmd'] as $f) $this->assertNotFalse($zip->getFromName($f), $f);
+        $cfg = json_decode($zip->getFromName('config.json'), true);
+        $zip->close(); @unlink($pkg['path']);
+        $this->assertNotEmpty($cfg['token']);
+        $this->assertNotNull(AssetAgentToken::findActiveMatching($cfg["token"]), 'token di config.json cocok dengan database');
+
+        // halaman detail punya tombolnya; staf tanpa izin tidak
+        Livewire::test(ViewAgentDevice::class, ['record' => $this->good->id])->assertActionVisible('agent_download');
     }
 }

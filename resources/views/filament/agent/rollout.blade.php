@@ -87,30 +87,8 @@
                     <h4 style="margin:0">{{ trans('agent.rollout_pending_title') }}</h4>
                     <a href="{{ route('agent.export.rollout') }}" class="am-btn">⤓ {{ trans('agent.rollout_csv') }}</a>
                 </div>
-                <div class="am-scroll">
-                    <table class="am-table">
-                        <thead><tr>
-                            <th>{{ trans('agent.col_asset') }}</th><th>{{ trans('agent.col_model') }}</th><th>{{ trans('agent.col_user') }}</th><th>{{ trans('agent.col_department') }}</th>
-                            <th>{{ trans('agent.col_section') }}</th><th>{{ trans('agent.col_asset_status') }}</th><th>{{ trans('agent.col_location') }}</th><th>{{ trans('agent.col_state') }}</th>
-                        </tr></thead>
-                        <tbody>
-                            @foreach ($pending as $r)
-                                @php $a = $r['asset']; @endphp
-                                <tr>
-                                    <td><a href="{{ \App\Filament\Resources\Assets\AssetResource::getUrl('view', ['record' => $a]) }}">{{ $a->asset_tag }}</a></td>
-                                    <td>{{ trim(($a->brand ?? '').' '.($a->model ?? '')) ?: $dash }}</td>
-                                    <td>{{ $r['user'] ?: $dash }}</td>
-                                    <td>{{ $r['department'] }}</td>
-                                    <td>{{ $r['section'] }}</td>
-                                    <td>{{ $r['status'] }}</td>
-                                    <td>{{ $r['location'] }}</td>
-                                    <td><span class="am-pill {{ $stateTone[$r['state']] ?? '' }}">{{ trans('agent.rollout_state_'.$r['state']) }}</span></td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-                <p class="am-muted" style="margin:8px 0 0">{{ trans('agent.rollout_pending_note', ['shown' => $pending->count(), 'total' => $pending_total]) }}</p>
+                <p style="margin:8px 0 0">{{ $pending_total }} laptop belum terpasang / belum lapor kini digabung di tabel utama.
+                    <a href="{{ \App\Filament\Resources\AgentMonitor\AgentMonitorResource::getUrl('index', ['tab' => 'belum']) }}" class="am-btn">Buka tabel Ikhtisar →</a></p>
             </div>
         @endif
 

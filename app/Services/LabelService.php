@@ -47,13 +47,10 @@ class LabelService
         return $kind === 'asset' ? $m->asset_tag : $m->code;
     }
 
-    /**
-     * Isi QR pada label. Bawaan: kode saja (label lama tetap sama). Dengan LABEL_QR_MODE=url: alamat pendek ke aplikasi (…/s/KODE) supaya
-     * kamera HP membuka kartu data (butuh login); APP_URL harus alamat yang bisa dibuka dari HP.
-     */
+    /** Isi QR pada label: selalu kode barang (bukan alamat/tautan), apa pun nilai LABEL_QR_MODE. */
     public static function qrPayload(string $code): string
     {
-        return config('labels.qr_mode') === 'url' ? rtrim((string) config('app.url'), '/') . '/s/' . rawurlencode($code) : $code;
+        return $code;
     }
 
     /** Cari barang dari hasil scan: kode aset (termasuk kode lama), serial number, kode ACC-/CSM-/CMP-, atau alamat dari QR. */

@@ -38,7 +38,6 @@ caption-*.txt
 .phpunit.result.cache
 docs
 packages/*/vendor
-agent-client
 agent-installer
 public/build
 public/css/filament

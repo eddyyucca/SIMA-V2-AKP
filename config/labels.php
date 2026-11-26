@@ -17,7 +17,7 @@ return [
         'company' => env('LABEL_OTHER_COMPANY', 'PT. AKP'),
     ],
     'tapes' => [6, 9, 12, 18, 24],
-    // isi QR: 'code' = kode saja (bawaan), 'url' = alamat ke aplikasi (…/s/KODE) agar kamera HP bisa menampilkan data pemegang setelah login
+    // tidak dipakai lagi: QR pada label selalu berisi kode barang (bukan tautan)
     'qr_mode' => env('LABEL_QR_MODE', 'code'),
     'company' => env('LABEL_COMPANY', 'PT. ADHI KARTIKO PRATAMA'),
 ];

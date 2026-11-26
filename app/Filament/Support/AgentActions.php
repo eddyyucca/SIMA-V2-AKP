@@ -18,6 +18,32 @@ class AgentActions
 {
     private static function svc(): AgentAdminService { return app(AgentAdminService::class); }
     private static function allowed(): bool { return (bool) auth()->user()?->can('manage inventory'); }
+    /** Unduh paket pasang agent (ZIP + token baru) supaya Support tidak perlu file server / flashdisk. */
+    public static function downloadAction(?\Closure $asset = null): Action
+    {
+        // di tabel: record dari baris ($record diisi Filament); di halaman detail: dari closure $asset
+        $resolve = fn ($record = null): Asset => $asset ? $asset() : $record;
+        return Action::make('agent_download')->label('Unduh Agent')->icon(Heroicon::OutlinedArrowDownTray)
+            ->visible(fn () => self::allowed())
+            ->modalHeading('Unduh paket pasang agent')
+            ->modalDescription(function ($record = null) use ($resolve) {
+                $a = $resolve($record);
+                return 'Paket ZIP berisi agent terbaru + token khusus untuk ' . $a->asset_tag . '. Membuat paket membuat token BARU' .
+                    ($a->agentTokens()->whereNull('revoked_at')->exists() ? ' dan MENCABUT token lama: agent yang sudah terpasang di laptop ini berhenti diterima sampai dipasang ulang dengan paket ini.' : '.') .
+                    ' Di laptop tujuan: ekstrak, lalu jalankan Pasang-Agent.cmd.';
+            })
+            ->modalSubmitActionLabel('Buat & unduh')->requiresConfirmation()
+            ->action(function ($record = null) use ($resolve) {
+                try {
+                    $pkg = app(\App\Services\AgentInstallerPackage::class)->build($resolve($record), auth()->user());
+                } catch (\RuntimeException $e) {
+                    Notification::make()->title($e->getMessage())->danger()->send();
+                    return null;
+                }
+                return response()->download($pkg['path'], $pkg['filename'], ['Content-Type' => 'application/zip'])->deleteFileAfterSend(true);
+            });
+    }
+
     /** @param \Closure():Asset $asset */
     public static function make(\Closure $asset): array
     {
@@ -25,6 +51,7 @@ class AgentActions
         $openChat = fn () => $asset()->chatSessions()->open()->first();
 
         return [
+            self::downloadAction($asset),
             Action::make('agent_token')->label('Buat Token Agent')->icon(Heroicon::OutlinedKey)
                 ->visible(fn () => self::allowed())
                 ->modalHeading('Buat token agent')

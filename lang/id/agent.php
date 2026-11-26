@@ -275,6 +275,7 @@ return [
     'rollout_pending_title' => 'Laptop yang belum terpasang agent',
     'rollout_pending_note' => 'Menampilkan :shown dari :total laptop. Ekspor CSV memuat semuanya.',
     'rollout_csv' => 'Ekspor CSV',
+    'rollout_state_installed' => 'Terpasang',
     'rollout_state_token_only' => 'Token dibuat',
     'rollout_state_missing' => 'Belum terpasang',
     'rollout_non_laptop' => ':count aset non-laptop (mis. PC desktop) juga memakai agent dan tidak dihitung di sini.',

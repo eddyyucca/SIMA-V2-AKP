@@ -158,11 +158,11 @@ class Qa50_ScanHolderCardAndTagsTest extends QaTestCase
         $this->as($this->plain())->get(ScanPage::getUrl(['kode' => $tag]))->assertForbidden(); // tanpa izin lihat inventaris: tidak boleh
     }
 
-    public function test_qr_payload_is_the_code_by_default_and_a_short_url_when_enabled(): void
+    public function test_qr_payload_is_always_the_item_code(): void
     {
         $this->assertSame('AKP-IT-NB-0001', LabelService::qrPayload('AKP-IT-NB-0001'));
         config(['labels.qr_mode' => 'url', 'app.url' => 'http://192.168.233.128:8080/']);
-        $this->assertSame('http://192.168.233.128:8080/s/AKP-IT-NB-0001', LabelService::qrPayload('AKP-IT-NB-0001'));
+        $this->assertSame('AKP-IT-NB-0001', LabelService::qrPayload('AKP-IT-NB-0001'));   // mode url diabaikan: QR tidak pernah berisi tautan
         $this->as($this->staff());
         $a = Asset::firstOrFail();
         $pdf = app(LabelService::class)->pdf('asset', collect([$a]), 24, 70);

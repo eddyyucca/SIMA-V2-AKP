@@ -23,7 +23,7 @@ class ListAgentMonitor extends ListRecords
             'online' => Tab::make(trans('general.agent_status_online') === 'general.agent_status_online' ? 'Online' : trans('general.agent_status_online'))
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('agent_status', 'online')),
             'offline' => Tab::make('Offline')->modifyQueryUsing(fn (Builder $query) => $query->where('agent_status', 'offline')),
-            'belum' => Tab::make(trans('agent.kpi_never'))->modifyQueryUsing(fn (Builder $query) => $query->where('agent_status', 'never_reported')),
+            'belum' => Tab::make('Belum terpasang / lapor')->modifyQueryUsing(fn (Builder $query) => $query->where('agent_status', 'never_reported')),
         ];
     }
 }

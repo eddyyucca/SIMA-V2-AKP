@@ -315,7 +315,7 @@ Buka `http://<IP-server>:8080/admin`. Database `inventaris` adalah data asli (`A
 | `ASSET_TAG_PREFIX`, `ASSET_TAG_DIGITS` | Awalan dan jumlah digit kode aset | `AKP-IT`, `4` |
 | `LABEL_TAPE_MM`, `LABEL_LENGTH_MM` | Ukuran label aset (harus sama dengan driver printer) | `24`, `70` |
 | `LABEL_OTHER_TAPE_MM`, `LABEL_OTHER_LENGTH_MM`, `LABEL_OTHER_COMPANY` | Label accessories/komponen | `9`, `30`, `PT. AKP` |
-| `LABEL_QR_MODE` | Isi QR: `code` (kode saja) atau `url` (alamat `/s/KODE`, bisa discan kamera HP) | `code` |
+| `LABEL_QR_MODE` | (diabaikan) QR label selalu berisi kode barang, bukan tautan | `code` |
 | `TELEGRAM_BOT_TOKEN`, `TELEGRAM_ADMIN_CHAT_ID` | Notifikasi request ke grup Telegram Tim IT | kosong |
 | `VAPID_*` | Push notification browser | kosong |
 | `MAIL_MAILER` | Email (BAST, akun baru) | `log` |

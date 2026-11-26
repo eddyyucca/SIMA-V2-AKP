@@ -137,7 +137,7 @@ class AgentAdminTest extends AgentTestCase
         $this->assertStringContainsString('10.1.1.9', $html);
         $this->assertStringNotContainsString('<b>XSS</b>', $html);   // di-escape
 
-        Livewire::actingAs($this->staff())->test(ListAgentMonitor::class)->assertCanSeeTableRecords([$asset]);
+        Livewire::actingAs($this->staff())->test(ListAgentMonitor::class)->set('tableRecordsPerPage', 100)->assertCanSeeTableRecords([$asset]);
     }
 
     public function test_announcements_page_is_admin_only(): void

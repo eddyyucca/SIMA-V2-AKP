@@ -36,7 +36,13 @@ class AgentMonitorResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        return parent::getEloquentQuery()->where(fn ($q) => $q->whereHas('agentHeartbeat')->orWhereHas('agentTokens', fn ($t) => $t->whereNull('revoked_at')))
+        // Perangkat ber-agent, ditambah semua laptop yang belum terpasang agent (dulu tabel terpisah di halaman Rollout).
+        $names = array_map('mb_strtoupper', (array) config('agent.laptop_categories', ['LAPTOP']));
+
+        return parent::getEloquentQuery()->where(fn ($q) => $q->whereHas('agentHeartbeat')
+            ->orWhereHas('agentTokens', fn ($t) => $t->whereNull('revoked_at'))
+            ->orWhere(fn ($l) => $l->where('status', '!=', 'disposed')
+                ->whereHas('category', fn ($c) => $c->whereIn(\DB::raw('upper(name)'), $names ?: ['LAPTOP']))))
             ->with(['agentHeartbeat', 'employee']);
     }
 
@@ -54,6 +60,10 @@ class AgentMonitorResource extends Resource
                 TextColumn::make('agent_status')->label('Status')->badge()->sortable()
                     ->formatStateUsing(fn ($state) => ['online' => 'Online', 'offline' => 'Offline', 'never_reported' => 'Belum lapor'][$state] ?? $state)
                     ->color(fn ($state) => ['online' => 'success', 'offline' => 'danger'][$state] ?? 'gray'),
+                TextColumn::make('agent_state')->label('Agent')->badge()
+                    ->state(fn (Asset $a) => $a->agentHeartbeat ? 'installed' : ($a->agentTokens()->whereNull('revoked_at')->exists() ? 'token_only' : 'missing'))
+                    ->formatStateUsing(fn ($state) => trans('agent.rollout_state_' . $state))
+                    ->color(fn ($state) => ['installed' => 'success', 'token_only' => 'warning'][$state] ?? 'gray')->toggleable(),
                 TextColumn::make('agent_last_seen')->label('Laporan terakhir')->since()->sortable(),
                 TextColumn::make('ram')->label('RAM')->state(function (Asset $a) {
                     $hb = $a->agentHeartbeat;
@@ -95,8 +105,16 @@ class AgentMonitorResource extends Resource
             ])
             ->filters([
                 SelectFilter::make('agent_status')->label('Status')->options(['online' => 'Online', 'offline' => 'Offline', 'never_reported' => 'Belum lapor']),
+                SelectFilter::make('agent_state')->label('Pemasangan agent')->options(['installed' => 'Terpasang', 'token_only' => 'Token dibuat, belum lapor', 'missing' => 'Belum terpasang'])
+                    ->query(fn (Builder $query, array $data) => match ($data['value'] ?? null) {
+                        'installed' => $query->whereHas('agentHeartbeat'),
+                        'token_only' => $query->whereDoesntHave('agentHeartbeat')->whereHas('agentTokens', fn ($t) => $t->whereNull('revoked_at')),
+                        'missing' => $query->whereDoesntHave('agentHeartbeat')->whereDoesntHave('agentTokens', fn ($t) => $t->whereNull('revoked_at')),
+                        default => $query,
+                    }),
             ])
             ->recordActions([
+                \App\Filament\Support\AgentActions::downloadAction(),
                 Action::make('detail_agent')->label('Detail agent')->icon(Heroicon::OutlinedComputerDesktop)->url(fn (Asset $a) => self::getUrl('view', ['record' => $a])),
                 Action::make('lihat')->label('Aset')->icon(Heroicon::OutlinedEye)->url(fn (Asset $a) => \App\Filament\Resources\Assets\AssetResource::getUrl('view', ['record' => $a])),
             ])
