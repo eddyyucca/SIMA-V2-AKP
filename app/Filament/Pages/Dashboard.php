@@ -67,7 +67,7 @@ class Dashboard extends BaseDashboard
     {
         $q = [];
         foreach ($filters as $name => $value) {
-            $q[$name] = $name === 'aktif' ? ['isActive' => '1'] : ['value' => (string) $value];
+            $q[$name] = in_array($name, ['aktif', 'tanpa_pemegang'], true) ? ['isActive' => '1'] : ['value' => (string) $value];
         }
 
         return AssetResource::getUrl() . ($q ? '?' . http_build_query(['filters' => $q]) : '');
@@ -96,6 +96,7 @@ class Dashboard extends BaseDashboard
             $key = ! $a->employee_id ? 'none' : ($a->employee?->department_id ? (string) $a->employee->department_id : 'nodept');
             $val = $this->deptValue === 'book' ? $dep->bookValue($a, now()) : (float) $a->purchase_price;
             $groups[$key]['count'] = ($groups[$key]['count'] ?? 0) + 1;
+            $groups[$key]['cats'][(int) $a->category_id] = ($groups[$key]['cats'][(int) $a->category_id] ?? 0) + 1;
             $groups[$key]['value'] = ($groups[$key]['value'] ?? 0) + $val;
         }
 
@@ -104,14 +105,56 @@ class Dashboard extends BaseDashboard
         foreach (['nodept' => 'Pemegang tanpa department', 'none' => 'Belum dipegang (stok gudang)'] as $k => $label) {
             if (isset($groups[$k])) $rows->push(['key' => $k, 'name' => $label, 'color' => '#9ca3af'] + $groups[$k]);
         }
+        // tiga kategori terbanyak (di seluruh baris) menjadi kolom rincian: mis. Laptop, Radio HT, Monitor
+        $catTotals = [];
+        foreach ($rows as $r) foreach ($r['cats'] ?? [] as $cid => $n) $catTotals[$cid] = ($catTotals[$cid] ?? 0) + $n;
+        arsort($catTotals);
+        $catNames = Category::where('type', 'asset')->pluck('name', 'id');
+        $topCats = collect(array_slice(array_keys($catTotals), 0, 3))->mapWithKeys(fn ($cid) => [$cid => $catNames[$cid] ?? 'Lainnya']);
         $max = max((float) $rows->max('value'), 0.0);
         $rows = $rows->map(function ($r) use ($max) {
             $ratio = $max > 0 ? $r['value'] / $max : 0;
             return $r + ['tone' => $ratio >= 0.25 ? 'red' : ($ratio >= 0.08 ? 'orange' : 'green')];
         });
 
-        return ['rows' => $rows, 'count' => (int) $rows->sum('count'), 'value' => (float) $rows->sum('value'),
+        return ['rows' => $rows, 'topCats' => $topCats, 'count' => (int) $rows->sum('count'), 'value' => (float) $rows->sum('value'),
             'categories' => Category::where('type', 'asset')->orderBy('name')->pluck('name', 'id')];
+    }
+
+    /**
+     * Matriks "utilitas": per kategori atau per lokasi, jumlah aset Dipakai / Perbaikan / Tersedia, serta "Dipakai tapi tanpa nama"
+     * (status Dipakai tetapi tidak ada pemegangnya: data yang perlu dibereskan). Total = semua aset aktif pada baris itu.
+     *
+     * @return array{rows: list<array<string, mixed>>, total: array<string, int>, utilisasi: int}
+     */
+    public function statusMatrix(string $by): array
+    {
+        $col = $by === 'location' ? 'location_id' : 'category_id';
+        $names = $by === 'location' ? \App\Models\Location::pluck('name', 'id') : Category::where('type', 'asset')->pluck('name', 'id');
+        $none = $by === 'location' ? 'Tanpa lokasi' : 'Tanpa kategori';
+        $blank = ['total' => 0, 'deployed' => 0, 'repair' => 0, 'available' => 0, 'deployed_nh' => 0];
+
+        $rows = [];
+        // aset milik sendiri saja: sama dengan isi daftar Aset (tujuan klik); aset sewa punya halaman sendiri dan dicatat terpisah
+        foreach (Asset::active()->where('ownership', 'owned')->selectRaw("{$col} as k, status, (employee_id is null) as nh, count(*) as n")->groupBy('k', 'status', 'nh')->get() as $r) {
+            $k = (int) ($r->k ?? 0);
+            $rows[$k] ??= ['id' => $k ?: null, 'name' => $names[$k] ?? $none] + $blank;
+            $n = (int) $r->n;
+            $rows[$k]['total'] += $n;
+            if (in_array($r->status, ['deployed', 'repair', 'available'], true)) $rows[$k][$r->status] += $n;
+            if ($r->status === 'deployed' && $r->nh) $rows[$k]['deployed_nh'] += $n;
+        }
+        $rows = collect($rows)->sortByDesc('total')->values()->all();
+        $total = $blank;
+        foreach ($rows as $r) foreach ($blank as $key => $_) $total[$key] += $r[$key];
+
+        return ['rows' => $rows, 'total' => $total, 'utilisasi' => $total['total'] ? (int) round($total['deployed'] / $total['total'] * 100) : 0];
+    }
+
+    /** Alamat daftar stok (Accessory / Consumable / Komponen) dengan filter "Stok ≤ minimum". */
+    public function lowStockUrl(string $resource): string
+    {
+        return $resource::getUrl() . '?' . http_build_query(['filters' => ['low' => ['isActive' => '1']]]);
     }
 
     /** Kartu CAPEX & OPEX: angka per bulan, rincian, dan perbandingan dengan tahun sebelumnya. */
@@ -186,6 +229,7 @@ class Dashboard extends BaseDashboard
             'byLocation' => (clone $live)->with('location')->get()->groupBy(fn ($a) => $a->location?->name ?? 'Tanpa lokasi')->map->count()->sortDesc(),
             'byLocationId' => \App\Models\Location::pluck('id', 'name')->all(),
             'lowStock' => $lowStock,
+            'openRepairList' => Repair::with('asset')->where('status', '!=', 'done')->orderBy('reported_at')->limit(8)->get(),
             'licenses' => License::whereNotNull('expires_at')->where('expires_at', '<=', now()->addDays(30)->toDateString())->orderBy('expires_at')->get(),
             'warranty' => Asset::whereBetween('warranty_until', [now()->toDateString(), now()->addDays(30)->toDateString()])->orderBy('warranty_until')->get(),
             'lateRepairs' => Repair::with('asset')->where('status', '!=', 'done')->where('reported_at', '<', now()->subDays(14))->get(),

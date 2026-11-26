@@ -209,6 +209,7 @@ class AssetResource extends Resource
                 SelectFilter::make('brand_id')->label('Merek')->options(fn () => Brand::orderBy('name')->pluck('name', 'id')),
                 SelectFilter::make('location_id')->label('Lokasi')->relationship('location', 'name'),
                 // sakelar yang dipakai tautan Dashboard: sama dengan hitungan "aset aktif" di kartu (bukan disposed / dikembalikan)
+                \Filament\Tables\Filters\Filter::make('tanpa_pemegang')->label('Tanpa pemegang')->query(fn ($query) => $query->whereNull('employee_id')),
                 \Filament\Tables\Filters\Filter::make('aktif')->label('Aset aktif (bukan disposed / dikembalikan)')->query(fn ($query) => $query->active()),
                 SelectFilter::make('department')->label('Department')
                     ->options(fn () => ['none' => '(Belum dipegang / stok gudang)', 'nodept' => '(Pemegang tanpa department)'] + \App\Models\Department::options())

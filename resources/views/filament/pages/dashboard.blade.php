@@ -177,6 +177,14 @@
     .pd-dept tr:nth-child(even) td{background:var(--soft)}
     .pd-dept tfoot td{border-top:2px solid var(--line);background:transparent!important}
     .pd-dept tfoot td.r{text-transform:none}
+    .pd-mx{width:100%;border-collapse:collapse;font-size:.95rem}
+    .pd-mx th,.pd-mx td{border:1px solid var(--line);padding:10px 12px;text-align:center}
+    .pd-mx th{background:var(--soft);color:var(--mute);font-size:.74rem;letter-spacing:.05em;text-transform:uppercase}
+    .pd-mx th.l,.pd-mx td.l{text-align:left;font-weight:700}
+    .pd-mx td.z{color:var(--mute)}.pd-mx td.t{font-weight:800;background:var(--soft)}.pd-mx td.warn{background:rgba(214,69,69,.10);color:#b13a3a;font-weight:800}
+    .pd-mx tfoot td{font-weight:800;background:var(--soft)}
+    .pd a.pd-mxl{color:inherit;text-decoration:none;font-weight:700}.pd a.pd-mxl:hover{text-decoration:underline;text-underline-offset:3px;color:#1f6fb5}
+    .pd-mx-sub{font-size:.8rem;color:var(--mute);margin-top:10px}
     .pd-cnt{display:inline-block;min-width:30px;padding:2px 9px;border-radius:99px;background:#e8f1fa;border:1px solid #cfe2f4;color:#195f9d;font-size:.78rem;font-weight:700;text-align:center}
     .pd-cnt-total{background:#1f6fb5;border-color:#1f6fb5;color:#fff;font-size:.82rem}
     .pd-val2{display:inline-block;padding:5px 12px;border-radius:8px;color:#fff;font-size:.82rem;font-weight:700;text-transform:none}
@@ -290,25 +298,7 @@
             </div>
         </div>
 
-        <div class="pd-card pd-c4">
-            <div class="pd-h"><h3>Utilisasi aset</h3><span>dipakai / total</span></div>
-            <div class="pd-ring">
-                <svg viewBox="0 0 42 42">
-                    <circle cx="21" cy="21" r="16" fill="none" stroke="var(--soft)" stroke-width="4.5"/>
-                    <circle cx="21" cy="21" r="16" fill="none" stroke="url(#ug)" stroke-width="4.5" stroke-linecap="round" stroke-dasharray="{{ $d['util'] * 1.0053 }} 100.53"/>
-                    <defs><linearGradient id="ug" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1f6fb5"/><stop offset="1" stop-color="#29aae1"/></linearGradient></defs>
-                </svg>
-                <div class="c"><b>{{ $d['util'] }}%</b><span style="font-size:.72rem;color:var(--mute)">terpakai</span></div>
-            </div>
-            @php
-                $seg = [['Dipakai', $d['deployed'], '#1f6fb5', 'deployed'], ['Tersedia', $d['available'], '#2fa99b', 'available'], ['Perbaikan', $d['repair'], '#d99a2b', 'repair'], ['Dipinjam', $d['borrowed'], '#29aae1', 'borrowed'], ['Hilang', $d['lost'], '#64748b', 'lost']];
-                $segTotal = max(array_sum(array_column($seg, 1)), 1);
-            @endphp
-            <div class="pd-stack">@foreach($seg as [$l, $v, $c])<span style="width:{{ $v / $segTotal * 100 }}%;background:{{ $c }}"></span>@endforeach</div>
-            <div class="pd-cols2">@foreach($seg as [$l, $v, $c, $st])<div><a class="pd-lk" href="{{ $this->assetsUrl(['status' => $st]) }}"><i style="background:{{ $c }}"></i>{{ $l }}<b>{{ $v }}</b></a></div>@endforeach</div>
-        </div>
-
-        <div class="pd-card pd-c3" style="grid-column:span 3">
+        <div class="pd-card pd-c7">
             <div class="pd-h"><h3>Biaya perbaikan</h3><span>6 bulan</span></div>
             @php $mx = max(max($d['repairCost']), 1); @endphp
             <div class="pd-mini">
@@ -316,6 +306,16 @@
                     <div title="{{ $rp($v) }}"><em>{{ $v ? $rpShort($v) : '' }}</em><span style="height:{{ max($v / $mx * 100, 3) }}%"></span><small>{{ $d['labels'][$i] }}</small></div>
                 @endforeach
             </div>
+        </div>
+    </section>
+
+    {{-- UTILITAS PER KATEGORI --}}
+    @php $mxCat = $this->statusMatrix('category'); @endphp
+    <section class="pd-grid">
+        <div class="pd-card">
+            <div class="pd-h"><h3>Utilitas aset per kategori</h3><span>utilisasi {{ $mxCat['utilisasi'] }}% · {{ number_format($mxCat['total']['deployed']) }} dipakai dari {{ number_format($mxCat['total']['total']) }} aset aktif milik@if($d['rentalCount'] > 0) · {{ number_format($d['rentalCount']) }} aset sewa dihitung terpisah@endif</span></div>
+            @include('filament.pages.dashboard-matrix', ['m' => $mxCat, 'by' => 'category', 'rowLabel' => 'Kategori'])
+            <div class="pd-mx-sub">Klik angka untuk membuka daftar aset dengan filter yang sama. <b>Dipakai tapi tanpa nama</b> = status Dipakai tetapi tidak ada pemegangnya (perlu dibereskan).</div>
         </div>
     </section>
 
@@ -338,22 +338,27 @@
             </div>
             <div style="overflow-x:auto;border:1px solid var(--line);border-radius:12px">
                 <table class="pd-dept">
-                    <thead><tr><th>Department</th><th class="c">Aset</th><th class="r">{{ $this->deptValue === 'book' ? 'Nilai buku' : 'Nilai perolehan' }}</th></tr></thead>
+                    <thead><tr><th>Department</th>@foreach($dp['topCats'] as $cn)<th class="c">{{ $cn }}</th>@endforeach<th class="c">Aset</th><th class="r">{{ $this->deptValue === 'book' ? 'Nilai buku' : 'Nilai perolehan' }}</th></tr></thead>
                     <tbody>
                     @forelse($dp['rows'] as $r)
                         @php $deptHref = $this->assetsUrl(['aktif' => true, 'department' => $r['key']] + ($this->deptCategory !== '' ? ['category_id' => $this->deptCategory] : [])); @endphp
                         <tr>
                             <td class="n" style="--dc:{{ $r['color'] }}"><a class="pd-lk" href="{{ $deptHref }}"><i></i>{{ $r['name'] }}</a></td>
+                            @foreach($dp['topCats'] as $cid => $cn)
+                                @php $cn2 = $r['cats'][$cid] ?? 0; @endphp
+                                <td class="c" style="font-weight:600">@if($cn2 > 0)<a class="pd-mxl" href="{{ $this->assetsUrl(['aktif' => true, 'department' => $r['key'], 'category_id' => $cid]) }}">{{ number_format($cn2) }}</a>@else<span style="color:var(--mute)">0</span>@endif</td>
+                            @endforeach
                             <td class="c"><a class="pd-lk" href="{{ $deptHref }}"><span class="pd-cnt">{{ number_format($r['count']) }}</span></a></td>
                             <td class="r"><span class="pd-val2 {{ $r['tone'] }}">{{ $rp($r['value']) }}</span></td>
                         </tr>
                     @empty
-                        <tr><td colspan="3" style="text-align:center;color:var(--mute);font-weight:500;text-transform:none;padding:22px">Tidak ada aset pada pilihan ini.</td></tr>
+                        <tr><td colspan="{{ 3 + count($dp['topCats']) }}" style="text-align:center;color:var(--mute);font-weight:500;text-transform:none;padding:22px">Tidak ada aset pada pilihan ini.</td></tr>
                     @endforelse
                     </tbody>
                     @if($dp['rows']->isNotEmpty())
                     <tfoot><tr>
                         <td>Total</td>
+                        @foreach($dp['topCats'] as $cid => $cn)<td class="c">{{ number_format($dp['rows']->sum(fn ($r) => $r['cats'][$cid] ?? 0)) }}</td>@endforeach
                         <td class="c"><span class="pd-cnt pd-cnt-total">{{ number_format($dp['count']) }}</span></td>
                         <td class="r">{{ $rp($dp['value']) }}</td>
                     </tr></tfoot>
@@ -458,19 +463,55 @@
     </section>
 
     {{-- SEBARAN LOKASI & AKTIVITAS --}}
+    {{-- RINCIAN: STOK PERLU DIBELI & PERBAIKAN TERBUKA --}}
     <section class="pd-grid pd-cols">
-        <div class="pd-card pd-c5">
-            <div class="pd-h"><h3>Sebaran lokasi</h3><span>{{ $d['byLocation']->count() }} lokasi</span></div>
-            @forelse($d['byLocation'] as $name => $n)
-                @php $lid = $d['byLocationId'][$name] ?? null; @endphp
-                <div class="pd-bar">
-                    <div class="r">@if($lid)<a class="pd-lk" href="{{ $this->assetsUrl(['aktif' => true, 'location_id' => $lid]) }}">@endif<span>{{ $name }}</span><b>{{ $n }}</b>@if($lid)</a>@endif</div>
-                    <div class="t"><span style="width:{{ $n / $locMax * 100 }}%"></span></div>
-                </div>
-            @empty <div class="pd-empty">Belum ada data</div> @endforelse
+        <div class="pd-card pd-c6">
+            <div class="pd-h"><h3>Stok perlu dibeli</h3><span>{{ $d['lowStock']->count() }} item</span></div>
+            @if($d['lowStock']->isEmpty())
+                <div class="pd-empty">Semua stok di atas minimum.</div>
+            @else
+                <div style="overflow-x:auto;border:1px solid var(--line);border-radius:12px"><table class="pd-mx">
+                    <thead><tr><th class="l">Barang</th><th>Jenis</th><th>Sisa</th><th>Minimum</th></tr></thead>
+                    <tbody>
+                        @foreach($d['lowStock']->sortBy('left')->take(10) as $it)
+                            @php $res = ['Accessory' => \App\Filament\Resources\Accessories\AccessoryResource::class, 'Consumable' => \App\Filament\Resources\Consumables\ConsumableResource::class, 'Komponen' => \App\Filament\Resources\Components\ComponentResource::class][$it['kind']] ?? null; @endphp
+                            <tr><td class="l">@if($res)<a class="pd-mxl" href="{{ $this->lowStockUrl($res) }}">{{ $it['name'] }}</a>@else{{ $it['name'] }}@endif</td><td>{{ $it['kind'] }}</td>
+                                <td class="{{ $it['left'] <= 0 ? 'warn' : '' }}">{{ rtrim(rtrim(number_format((float) $it['left'], 2, ',', '.'), '0'), ',') }}</td><td class="z">{{ rtrim(rtrim(number_format((float) $it['min'], 2, ',', '.'), '0'), ',') }}</td></tr>
+                        @endforeach
+                    </tbody>
+                </table></div>
+                @if($d['lowStock']->count() > 10)<div class="pd-mx-sub">Menampilkan 10 terendah dari {{ $d['lowStock']->count() }} item.</div>@endif
+            @endif
+        </div>
+        <div class="pd-card pd-c6">
+            <div class="pd-h"><h3>Perbaikan terbuka</h3><span>{{ $d['openRepairs'] }} tiket</span></div>
+            @if($d['openRepairList']->isEmpty())
+                <div class="pd-empty">Tidak ada perbaikan yang sedang berjalan.</div>
+            @else
+                <div style="overflow-x:auto;border:1px solid var(--line);border-radius:12px"><table class="pd-mx">
+                    <thead><tr><th class="l">Aset</th><th class="l">Masalah</th><th>Sejak</th><th>Hari</th></tr></thead>
+                    <tbody>
+                        @foreach($d['openRepairList'] as $rp0)
+                            @php $days = (int) $rp0->reported_at?->diffInDays(now()); @endphp
+                            <tr><td class="l">@if($rp0->asset)<a class="pd-mxl" href="{{ \App\Filament\Resources\Assets\AssetResource::getUrl('view', ['record' => $rp0->asset]) }}">{{ $rp0->asset->asset_tag }}</a>@else-@endif</td>
+                                <td class="l" style="font-weight:500">{{ \Illuminate\Support\Str::limit($rp0->issue, 60) }}</td>
+                                <td>{{ $rp0->reported_at?->format('d/m/Y') }}</td><td class="{{ $days > 14 ? 'warn' : '' }}">{{ $days }}</td></tr>
+                        @endforeach
+                    </tbody>
+                </table></div>
+                @if($d['openRepairs'] > $d['openRepairList']->count())<div class="pd-mx-sub">Menampilkan {{ $d['openRepairList']->count() }} tertua dari {{ $d['openRepairs'] }} tiket. <a class="pd-mxl" href="{{ \App\Filament\Resources\Repairs\RepairResource::getUrl() }}">Lihat semua</a></div>@endif
+            @endif
+        </div>
+    </section>
+
+    <section class="pd-grid pd-cols">
+        <div class="pd-card pd-c7">
+            @php $mxLoc = $this->statusMatrix('location'); @endphp
+            <div class="pd-h"><h3>Utilitas aset per lokasi</h3><span>{{ count($mxLoc['rows']) }} lokasi</span></div>
+            @include('filament.pages.dashboard-matrix', ['m' => $mxLoc, 'by' => 'location', 'rowLabel' => 'Lokasi'])
         </div>
 
-        <div class="pd-card pd-c7">
+        <div class="pd-card pd-c5">
             <div class="pd-h"><h3>Aktivitas terbaru</h3><span>serah terima & stok keluar</span></div>
             <div class="pd-list">
                 @forelse($d['activity'] as $a)
