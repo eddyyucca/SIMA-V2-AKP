@@ -16,9 +16,12 @@ class AssetAgentToken extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['asset_id', 'token_hash', 'token_lookup', 'created_by', 'revoked_at'];
+    protected $fillable = ['asset_id', 'token_hash', 'token_lookup', 'created_by', 'revoked_at', 'plain_token'];
 
-    protected $casts = ['revoked_at' => 'datetime'];
+    // plain_token: token asli (terenkripsi) yang tetap tampil untuk admin sampai agent pertama kali memakainya atau token diganti / dicabut
+    protected $casts = ['revoked_at' => 'datetime', 'plain_token' => 'encrypted'];
+
+    protected $hidden = ['token_hash', 'token_lookup', 'plain_token'];
 
     public function asset(): BelongsTo
     {
@@ -39,9 +42,23 @@ class AssetAgentToken extends Model
             'token_hash' => Hash::make($plaintext),
             'token_lookup' => static::lookupHash($plaintext),
             'created_by' => $createdBy,
+            'plain_token' => $plaintext,
         ]);
 
         return [$token, $plaintext];
+    }
+
+    /** Token aktif yang belum dipakai agent (masih boleh ditampilkan), atau null. */
+    public static function pendingPlain(Asset $asset): ?string
+    {
+        return static::where('asset_id', $asset->id)->whereNull('revoked_at')->whereNotNull('plain_token')->latest('id')->first()?->plain_token;
+    }
+
+    /** Cabut semua token aktif aset; token asli yang tersimpan ikut dihapus. */
+    public static function revokeActive(Asset $asset): void
+    {
+        static::where('asset_id', $asset->id)->whereNull('revoked_at')->update(['revoked_at' => now(), 'plain_token' => null]);
+        static::where('asset_id', $asset->id)->whereNotNull('plain_token')->update(['plain_token' => null]);
     }
 
     /** SHA-256 untuk pencarian langsung lewat indeks (aman untuk token acak berentropi tinggi). */

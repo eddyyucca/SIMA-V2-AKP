@@ -21,6 +21,11 @@ class AssetAgentToken
             return response()->json(['message' => 'Unauthorized'], 401);
         }
 
+        // agent sudah memakai tokennya = sudah terpasang: token asli tidak ditampilkan lagi
+        if ($token->plain_token !== null) {
+            $token->forceFill(['plain_token' => null])->saveQuietly();
+        }
+
         $request->attributes->set('agent_asset', $token->asset);
 
         return $next($request);

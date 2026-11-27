@@ -27,6 +27,8 @@
             <x-am.kpi :label="trans('agent.kpi_changes')" :value="$changesTotal" :sub="trans('agent.kpi_changes_sub')" />
         </div>
 
+        @include('filament.agent.token-box', ['asset' => $a])
+
         @if (count($alerts))
             <div class="am-card">
                 <h4>{{ trans('agent.col_alerts') }} ({{ count($alerts) }})</h4>

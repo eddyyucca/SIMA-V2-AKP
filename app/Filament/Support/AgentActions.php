@@ -55,11 +55,11 @@ class AgentActions
             Action::make('agent_token')->label('Buat Token Agent')->icon(Heroicon::OutlinedKey)
                 ->visible(fn () => self::allowed())
                 ->modalHeading('Buat token agent')
-                ->modalDescription('Token lama untuk aset ini dicabut. Token baru ditampilkan SEKALI: salin ke config.json agent atau installer.')
+                ->modalDescription('Token lama untuk aset ini dicabut. Token baru tampil di kartu Agent pada halaman ini sampai agent terpasang atau token diperbarui lagi: salin ke config.json agent atau installer.')
                 ->requiresConfirmation()
                 ->action(function () use ($asset) {
-                    $plain = self::svc()->issueToken($asset(), auth()->user());
-                    Notification::make()->title('Token agent dibuat. Salin sekarang, tidak akan ditampilkan lagi:')->body($plain)->success()->persistent()->send();
+                    self::svc()->issueToken($asset(), auth()->user());
+                    Notification::make()->title('Token agent dibuat')->body('Token tampil di kartu Agent di halaman ini, dan hilang setelah agent terpasang atau token diperbarui.')->success()->send();
                 }),
             Action::make('agent_revoke')->label('Cabut Token Agent')->icon(Heroicon::OutlinedNoSymbol)->color('danger')
                 ->visible(fn () => self::allowed() && $hasToken())

@@ -33,6 +33,37 @@ class AgentAdminTest extends AgentTestCase
         $this->withToken($second)->postJson('/api/agent/v1/heartbeat', [])->assertUnauthorized();
     }
 
+    public function test_new_token_is_shown_on_the_page_until_the_agent_is_installed_renewed_or_revoked(): void
+    {
+        $asset = $this->makeAsset();
+        $plain = $this->svc()->issueToken($asset, $this->staff());
+        $this->assertSame($plain, AssetAgentToken::pendingPlain($asset));
+        $this->assertNotSame($plain, \DB::table('asset_agent_tokens')->where('asset_id', $asset->id)->value('plain_token'), 'tersimpan terenkripsi');
+
+        // tampil di halaman detail aset dan detail agent (bukan di notifikasi)
+        $url = \App\Filament\Resources\Assets\AssetResource::getUrl('view', ['record' => $asset]);
+        $this->actingAs($this->staff())->get($url)->assertOk()->assertSee($plain)->assertSee('Salin');
+        auth()->forgetGuards();
+
+        // diperbarui: token lama hilang, yang baru tampil
+        $second = $this->svc()->issueToken($asset, $this->staff());
+        $this->assertSame($second, AssetAgentToken::pendingPlain($asset));
+        $this->assertSame(1, \DB::table('asset_agent_tokens')->where('asset_id', $asset->id)->whereNotNull('plain_token')->count());
+
+        // agent terpasang (memakai tokennya): tidak tampil lagi
+        $this->withToken($second)->postJson('/api/agent/v1/heartbeat', ['hostname' => 'PC'])->assertOk();
+        $this->assertNull(AssetAgentToken::pendingPlain($asset));
+        $this->actingAs($this->staff())->get($url)->assertOk()->assertDontSee($second);
+        auth()->forgetGuards();
+
+        // dicabut: tidak tampil
+        $third = $this->svc()->issueToken($asset, $this->staff());
+        $this->svc()->revokeToken($asset);
+        $this->assertNull(AssetAgentToken::pendingPlain($asset));
+        $this->assertSame(0, \DB::table('asset_agent_tokens')->where('asset_id', $asset->id)->whereNotNull('plain_token')->count());
+        $this->assertNotNull($third);
+    }
+
     public function test_commands_are_validated_deduplicated_capped_and_restart_is_admin_only(): void
     {
         $asset = $this->makeAsset();

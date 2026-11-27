@@ -23,21 +23,21 @@ class AgentAdminService
     /** Token baru; token aktif sebelumnya dicabut. Plaintext hanya dikembalikan di sini (tampilkan sekali). */
     public function issueToken(Asset $asset, ?User $by): string
     {
-        $asset->agentTokens()->whereNull('revoked_at')->update(['revoked_at' => now()]);
+        AssetAgentToken::revokeActive($asset);
         [, $plain] = AssetAgentToken::issueFor($asset, $by?->id);
         return $plain;
     }
 
     public function revokeToken(Asset $asset): void
     {
-        $asset->agentTokens()->whereNull('revoked_at')->update(['revoked_at' => now()]);
+        AssetAgentToken::revokeActive($asset);
     }
 
     /** Hapus perangkat dari monitor (agent terpasang di laptop yang salah). Aset dan datanya tidak disentuh. */
     public function purge(Asset $asset): void
     {
         DB::transaction(function () use ($asset) {
-            $asset->agentTokens()->whereNull('revoked_at')->update(['revoked_at' => now()]);
+            AssetAgentToken::revokeActive($asset);
             AssetHelperToken::where('asset_id', $asset->id)->delete();
             $asset->agentCommands()->active()->update(['status' => 'cancelled', 'finished_at' => now()]);
             $asset->agentHeartbeat()->delete();

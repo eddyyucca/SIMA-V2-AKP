@@ -192,6 +192,7 @@
             $stLabel = ['online' => 'Online', 'offline' => 'Offline', 'never_reported' => 'Belum pernah lapor'][$a->agent_status] ?? $a->agent_status;
         @endphp
         <div style="{{ $card }}">
+            @include('filament.agent.token-box', ['asset' => $a])
             <h3 style="font-weight:700;font-size:1.1rem;margin-bottom:8px">Perangkat (Agent) - <span style="color:{{ $a->agent_status === 'online' ? '#16a34a' : '#d64545' }}">{{ $stLabel }}</span></h3>
             <table style="width:100%;font-size:14px">
                 <tr><td style="color:#888;width:30%">Laporan terakhir</td><td>{{ $a->agent_last_seen?->format('d/m/Y H:i') ?? '-' }} {{ $a->agent_last_seen ? '(' . $a->agent_last_seen->diffForHumans() . ')' : '' }}</td></tr>
