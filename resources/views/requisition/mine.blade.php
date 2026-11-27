@@ -39,10 +39,10 @@
                                 <td class="py-3 px-4 font-mono font-bold text-slate-200 whitespace-nowrap">{{ $r->ticket_number ?? 'Belum bernomor' }}</td>
                                 <td class="py-3 px-4 text-slate-300">{{ $typeLabels[$r->type] ?? $r->type }}</td>
                                 <td class="py-3 px-4 text-slate-300">{{ $r->requester_name }}</td>
-                                <td class="py-3 px-4 text-slate-200">{{ $r->title }}</td>
+                                <td class="py-3 px-4 text-slate-200" style="min-width:200px">{{ $r->title }}</td>
                                 <td class="py-3 px-4 whitespace-nowrap">
                                     <span class="px-2.5 py-1 rounded-full text-[11px] font-bold {{ $tone[$r->status] ?? 'bg-slate-200 text-slate-700' }}">{{ $statusLabels[$r->status] ?? $r->status }}</span>
-                                    @if ($r->status === 'Rejected' && $r->update_note)<div class="text-[11px] text-rose-300 mt-1 max-w-xs">Alasan: {{ $r->update_note }}</div>@endif
+                                    @if ($r->status === 'Rejected' && $r->update_note)<div class="text-[11px] text-rose-300 mt-1" style="white-space:normal;max-width:260px;line-height:1.35">Alasan: {{ $r->update_note }}</div>@endif
                                 </td>
                                 <td class="py-3 px-4 text-xs whitespace-nowrap">
                                     @foreach ($r->accessoryHandovers as $h)<a class="block text-sky-300 underline" target="_blank" href="{{ route('accessory-bast.view', $h) }}">BAST {{ $h->bast_number }}</a>@endforeach

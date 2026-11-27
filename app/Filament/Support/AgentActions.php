@@ -18,29 +18,34 @@ class AgentActions
 {
     private static function svc(): AgentAdminService { return app(AgentAdminService::class); }
     private static function allowed(): bool { return (bool) auth()->user()?->can('manage inventory'); }
-    /** Unduh paket pasang agent (ZIP + token baru) supaya Support tidak perlu file server / flashdisk. */
+    /** Unduh installer agent (.exe saja). Bila aset belum punya token, token dibuat dan ditampilkan di halaman untuk diisikan pada installer. */
     public static function downloadAction(?\Closure $asset = null): Action
     {
         // di tabel: record dari baris ($record diisi Filament); di halaman detail: dari closure $asset
         $resolve = fn ($record = null): Asset => $asset ? $asset() : $record;
         return Action::make('agent_download')->label('Unduh Agent')->icon(Heroicon::OutlinedArrowDownTray)
             ->visible(fn () => self::allowed())
-            ->modalHeading('Unduh paket pasang agent')
+            ->modalHeading('Unduh installer agent')
             ->modalDescription(function ($record = null) use ($resolve) {
                 $a = $resolve($record);
-                return 'Paket ZIP berisi agent terbaru + token khusus untuk ' . $a->asset_tag . '. Membuat paket membuat token BARU' .
-                    ($a->agentTokens()->whereNull('revoked_at')->exists() ? ' dan MENCABUT token lama: agent yang sudah terpasang di laptop ini berhenti diterima sampai dipasang ulang dengan paket ini.' : '.') .
-                    ' Di laptop tujuan: ekstrak, lalu jalankan Pasang-Agent.cmd.';
+                return 'Mengunduh ' . \App\Services\AgentInstallerFile::FILENAME . ' untuk ' . $a->asset_tag . '. Jalankan di laptop tujuan, lalu isi alamat server dan token pada installer. ' .
+                    ($a->agentTokens()->whereNull('revoked_at')->exists()
+                        ? 'Aset ini sudah memiliki token; token tidak diganti. Token yang belum terpakai tampil pada kartu Agent di halaman ini.'
+                        : 'Token baru dibuat otomatis dan tampil pada kartu Agent di halaman ini sampai agent terpasang.');
             })
-            ->modalSubmitActionLabel('Buat & unduh')->requiresConfirmation()
+            ->modalSubmitActionLabel('Unduh')->requiresConfirmation()
             ->action(function ($record = null) use ($resolve) {
+                $svc = app(\App\Services\AgentInstallerFile::class);
                 try {
-                    $pkg = app(\App\Services\AgentInstallerPackage::class)->build($resolve($record), auth()->user());
+                    $path = $svc->path();
+                    $created = $svc->ensureToken($resolve($record), auth()->user());
                 } catch (\RuntimeException $e) {
                     Notification::make()->title($e->getMessage())->danger()->send();
                     return null;
                 }
-                return response()->download($pkg['path'], $pkg['filename'], ['Content-Type' => 'application/zip'])->deleteFileAfterSend(true);
+                if ($created) Notification::make()->title('Token agent dibuat')->body('Token tampil pada kartu Agent di halaman ini, dan hilang setelah agent terpasang.')->success()->send();
+
+                return response()->download($path, \App\Services\AgentInstallerFile::FILENAME, ['Content-Type' => 'application/vnd.microsoft.portable-executable']);
             });
     }
 

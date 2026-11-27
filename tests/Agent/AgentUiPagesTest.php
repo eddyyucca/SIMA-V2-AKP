@@ -146,24 +146,23 @@ class AgentUiPagesTest extends AgentTestCase
         $this->get('/agent-monitor/reports')->assertRedirect(AgentAlerts::getUrl());
     }
 
-    public function test_installer_package_can_be_downloaded_from_table_and_detail_with_a_fresh_token(): void
+    public function test_agent_download_gives_only_the_exe_and_makes_a_token_when_missing(): void
     {
-        // dari tabel utama, untuk laptop yang BELUM terpasang agent
-        $t = Livewire::test(ListAgentMonitor::class)->set('tableRecordsPerPage', 100)
-            ->callTableAction('agent_download', $this->missing)->assertHasNoTableActionErrors();
-        $this->assertSame(1, $this->missing->agentTokens()->whereNull('revoked_at')->count(), 'token baru dibuat');
+        $this->assertFileExists(base_path('agent-client/' . \App\Services\AgentInstallerFile::FILENAME));
 
-        // paket: agent + installer + config berisi token yang valid
-        $pkg = app(\App\Services\AgentInstallerPackage::class)->build($this->tokenOnly, auth()->user());
-        $zip = new \ZipArchive();
-        $this->assertTrue($zip->open($pkg['path']));
-        foreach (['agent.ps1', 'agent-update.ps1', 'install.ps1', 'uninstall.ps1', 'config.json', 'Pasang-Agent.cmd'] as $f) $this->assertNotFalse($zip->getFromName($f), $f);
-        $cfg = json_decode($zip->getFromName('config.json'), true);
-        $zip->close(); @unlink($pkg['path']);
-        $this->assertNotEmpty($cfg['token']);
-        $this->assertNotNull(AssetAgentToken::findActiveMatching($cfg["token"]), 'token di config.json cocok dengan database');
+        // laptop yang belum terpasang: token dibuat dan tampil di halaman; berkas yang diunduh hanya .exe
+        $this->assertSame(0, $this->missing->agentTokens()->whereNull('revoked_at')->count());
+        Livewire::test(ListAgentMonitor::class)->set('tableRecordsPerPage', 100)
+            ->callTableAction('agent_download', $this->missing)->assertHasNoTableActionErrors()
+            ->assertFileDownloaded('SIMA-Asset-Agent-Setup.exe');
+        $this->assertSame(1, $this->missing->agentTokens()->whereNull('revoked_at')->count());
+        $this->assertNotNull(AssetAgentToken::pendingPlain($this->missing));
 
-        // halaman detail punya tombolnya; staf tanpa izin tidak
+        // token yang sudah ada tidak diganti
+        $before = $this->tokenOnly->agentTokens()->whereNull('revoked_at')->value('id');
+        Livewire::test(ListAgentMonitor::class)->set('tableRecordsPerPage', 100)->callTableAction('agent_download', $this->tokenOnly)->assertFileDownloaded('SIMA-Asset-Agent-Setup.exe');
+        $this->assertSame($before, $this->tokenOnly->agentTokens()->whereNull('revoked_at')->value('id'));
+
         Livewire::test(ViewAgentDevice::class, ['record' => $this->good->id])->assertActionVisible('agent_download');
     }
 }
