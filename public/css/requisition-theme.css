@@ -388,6 +388,10 @@ nav.bg-white {
     position: sticky; top: 0; z-index: 30; border-bottom: 1px solid var(--border) !important;
 }
 
+/* Saat jendela (modal) terbuka, bilah navigasi tidak boleh menutupi bagian atas jendela atau tampak lebih terang dari latar yang diburamkan. */
+body:has(#modalContainer:not(.hidden)) nav.bg-white,
+body:has([id$="Modal"]:not(.hidden)) nav.bg-white { z-index: 0 !important; }
+
 /* ----- Jendela (modal) ----- */
 [id$="Modal"] > div { border-radius: 24px !important; box-shadow: 0 40px 90px -34px rgba(10, 22, 48, 0.55) !important; }
 
