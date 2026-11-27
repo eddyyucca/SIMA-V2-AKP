@@ -149,4 +149,41 @@ class SupervisorApprovalTest extends RequisitionTestCase
         $this->loginAs($this->worker)->get('/requisition/requests/create')->assertDontSee('Persetujuan Atasan')->assertSee('Request Saya');
         $this->get('/requisition/atasan')->assertOk();   // tanpa anak buah halaman tetap terbuka (kosong)
     }
+
+    public function test_with_sso_a_supervisor_who_never_logged_in_gets_an_account_and_sees_the_request_after_portal_login(): void
+    {
+        config(['sso.enabled' => true, 'sso.secret' => 'rahasia-uji-sso-0123456789abcdef0123456789abcdef', 'sso.app_code' => 'asset', 'sso.portal_url' => 'http://portal.test']);
+        $bossEmp = $this->makeRequester(['name' => 'Atasan Baru', 'nik' => '9100001']);          // belum punya akun
+        $this->assertNull($bossEmp->user_id);
+        $this->workerEmp->update(['supervisor_nik' => '9100001']);
+
+        $this->actingAs($this->worker)->withSession(['sso.local' => true])->post('/requisition/requests', $this->itr())->assertSessionHas('success');
+        $r = ITRequest::latest('id')->first();
+        $this->assertSame(ITRequest::AWAITING_SUPERVISOR, $r->status);
+        $bossEmp->refresh();
+        $this->assertNotNull($bossEmp->user_id, 'akun atasan dibuat otomatis');
+        $this->assertTrue($bossEmp->user->hasRole('User'));
+        $this->assertNotEmpty($bossEmp->user->notifications()->get(), 'atasan sudah menerima notifikasi');
+
+        // atasan masuk lewat Portal: dikenali lewat NIK (akun yang sama), langsung melihat request
+        auth()->forgetGuards(); $this->flushSession();
+        $now = time();
+        $token = \Firebase\JWT\JWT::encode(['iss' => 'http://portal.test', 'portal' => 'http://portal.test', 'aud' => 'asset', 'sub' => '501', 'iat' => $now, 'nbf' => $now, 'exp' => $now + 60,
+            'jti' => (string) \Illuminate\Support\Str::uuid(), 'usr' => '9100001', 'emp' => '9100001', 'name' => 'Atasan Baru', 'email' => 'atasan.baru@akp.test', 'role' => 'user', 'level' => 10, 'admin' => false],
+            'rahasia-uji-sso-0123456789abcdef0123456789abcdef', 'HS256', 'asset');
+        $this->get('/sso/callback?token=' . urlencode($token))->assertRedirect('/admin');
+        $this->assertSame($bossEmp->user_id, auth()->id(), 'tidak membuat akun ganda');
+        $this->assertSame(1, User::where('portal_user_id', '501')->count());
+        $this->get('/requisition/atasan')->assertOk()->assertSee('Mouse baru');
+    }
+
+    public function test_without_sso_no_account_is_created_for_a_supervisor_and_request_goes_straight_to_it(): void
+    {
+        config(['sso.enabled' => false]);
+        $bossEmp = $this->makeRequester(['name' => 'Atasan Lokal', 'nik' => '9100002']);
+        $this->workerEmp->update(['supervisor_nik' => '9100002']);
+        $this->actingAs($this->worker)->post('/requisition/requests', $this->itr());
+        $this->assertSame('Pending', ITRequest::latest('id')->first()->status);
+        $this->assertNull($bossEmp->fresh()->user_id);
+    }
 }

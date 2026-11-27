@@ -18,13 +18,32 @@ class RequestSupervisor
 {
     public const ESCALATE_AFTER_DAYS = 2;
 
-    /** Atasan langsung pemohon yang bisa login, atau null. */
+    /**
+     * Atasan langsung pemohon yang bisa login, atau null. Dengan login Portal (SSO) atasan yang belum pernah masuk dibuatkan akun
+     * lokalnya lebih dulu (sama seperti yang terjadi saat login Portal pertamanya), supaya request tidak melewati atasan hanya
+     * karena atasan belum pernah membuka aplikasi ini; saat ia masuk lewat Portal akunnya dikenali lewat NIK.
+     */
     public function supervisorOf(?Employee $e): ?Employee
     {
         if (! $e || blank($e->supervisor_nik)) return null;
-        $s = Employee::with('user')->where('nik', $e->supervisor_nik)->where('status', 'active')->whereNotNull('user_id')->first();
+        $s = Employee::with('user')->where('nik', $e->supervisor_nik)->where('status', 'active')->first();
+        if (! $s || $s->id === $e->id) return null;
+        if (! $s->user_id && config('sso.enabled')) $this->provisionAccount($s);
 
-        return $s && $s->id !== $e->id && $s->user?->is_active ? $s : null;
+        return $s->fresh('user')->user?->is_active ? $s->fresh('user') : null;
+    }
+
+    /** Akun lokal peran User untuk karyawan aktif yang belum punya akun (kata sandi acak: masuknya lewat Portal). */
+    public function provisionAccount(Employee $e): ?User
+    {
+        if ($e->user_id || $e->status !== 'active' || blank($e->nik)) return $e->user;
+        $email = filter_var($e->email, FILTER_VALIDATE_EMAIL) && ! User::whereCi('email', $e->email)->exists() ? $e->email : 'nik' . \Illuminate\Support\Str::slug($e->nik) . '@portal.akp.test';
+        if (User::whereCi('email', $email)->exists()) return null;     // email sudah dipakai akun lain: biarkan IT memutuskan
+        $u = User::create(['name' => $e->name, 'email' => $email, 'password' => \Illuminate\Support\Str::random(40), 'is_active' => true, 'must_change_password' => false]);
+        $u->syncRoles(['User']);
+        $e->forceFill(['user_id' => $u->id])->saveQuietly();
+
+        return $u;
     }
 
     /** Anak buah langsung (aktif) dari karyawan ini. */
