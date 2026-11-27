@@ -1157,9 +1157,10 @@
                             if (isNewlyVisible || prevStatus !== item.status) {
                                 playNotificationSound();
                                 const statusIcon = { Approved: '✓', 'In Progress': '⏳', Completed: '', Rejected: '✕' }[item.status] || '';
+                                const statusLabel = { 'Awaiting Supervisor': 'Menunggu Atasan', Pending: 'Menunggu Tim IT', Approved: 'Disetujui', 'In Progress': 'Diproses', Completed: 'Selesai', Rejected: 'Ditolak' }[item.status] || item.status;
                                 showToast({
                                     icon: statusIcon,
-                                    title: 'Status Diperbarui: ' + item.status,
+                                    title: 'Status Diperbarui: ' + statusLabel,
                                     body: item.title || 'Request Anda',
                                     accent: item.status === 'Rejected' ? 'rose' : (item.status === 'Completed' ? 'emerald' : 'amber'),
                                 });

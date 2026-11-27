@@ -32,7 +32,7 @@ class RequestStatusUpdated extends Notification
         return (new WebPushMessage())
             ->title('Status Request Diperbarui: ' . $typeLabel)
             ->icon('/images/logo-akp.png')
-            ->body(($this->request->title ?? 'Request Anda') . ' — Status: ' . $this->request->status)
+            ->body(($this->request->title ?? 'Request Anda') . ' — Status: ' . (['Awaiting Supervisor' => 'Menunggu Atasan', 'Pending' => 'Menunggu Tim IT', 'Approved' => 'Disetujui', 'In Progress' => 'Diproses', 'Completed' => 'Selesai', 'Rejected' => 'Ditolak'][$this->request->status] ?? $this->request->status))
             ->data(['url' => route('requests.create')])
             ->tag('status-update-' . $this->request->id)
             ->action('Lihat Detail', 'view');
