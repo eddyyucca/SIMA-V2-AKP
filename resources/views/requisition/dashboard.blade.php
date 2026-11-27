@@ -299,6 +299,9 @@
                         <span id="pendingApprovalsCount">{{ $pendingApprovals->total() }}</span> Menunggu Approval
                     </span>
                 </div>
+                @if (($awaitingSupervisor ?? 0) > 0)
+                    <p class="mb-3 text-xs text-violet-300">{{ $awaitingSupervisor }} request masih menunggu persetujuan atasan pemohon; otomatis masuk ke sini setelah disetujui atau lewat {{ \App\Services\RequestSupervisor::ESCALATE_AFTER_DAYS }} hari.</p>
+                @endif
 
                 <div class="overflow-x-auto">
                     <table class="rtable w-full text-left text-xs text-slate-300">

@@ -58,7 +58,7 @@ class ProcessRequest extends Page
             'loan_start_date' => $r->loan_start_date?->toDateString(), 'loan_end_date' => $r->loan_end_date?->toDateString(),
         ];
         $this->links = $r->links->map(fn ($l) => ['id' => $l->id, 'kind' => $l->kind, 'item_id' => $l->item_id, 'qty' => $l->qty, 'note' => $l->note, 'processed' => $l->processed_at !== null])->all();
-        if (! $this->links) $this->links = [['id' => null, 'kind' => $r->type === 'PEMINJAMAN_ASET' ? 'asset' : '', 'item_id' => null, 'qty' => 1, 'note' => null, 'processed' => false]];
+        if (! $this->links) $this->links = [['id' => null, 'kind' => in_array($r->type, ['PEMINJAMAN_ASET', 'BAK', 'TICKET_SISTEM'], true) ? 'asset' : '', 'item_id' => null, 'qty' => 1, 'note' => null, 'processed' => false]];
     }
 
     public function record(): ITRequest { return ITRequest::with(['links', 'employee', 'accessoryHandovers'])->findOrFail($this->requestId); }
@@ -81,6 +81,12 @@ class ProcessRequest extends Page
     public function options(string $kind): array
     {
         $own = collect($this->links)->where('kind', $kind)->pluck('item_id')->filter()->all();
+        if ($kind === 'asset' && in_array($this->record()->type, ['BAK', 'TICKET_SISTEM'], true)) {
+            // laporan kerusakan: aset yang dipegang pelapor (bukan hanya yang Tersedia), ditambah yang sudah ditautkan
+            return Asset::query()->where(fn ($q) => $q->when($this->employeeId, fn ($w) => $w->where('employee_id', $this->employeeId))->orWhereIn('id', $own))
+                ->whereNotIn('status', Asset::INACTIVE)->orderBy('asset_tag')->get()
+                ->mapWithKeys(fn ($a) => [$a->id => $a->asset_tag . ' — ' . trim($a->brand . ' ' . $a->model) . ' (' . (Asset::STATUSES[$a->status] ?? $a->status) . ')'])->all();
+        }
         return match ($kind) {
             'asset' => Asset::query()->where(fn ($q) => $q->where(fn ($w) => $w->where('status', 'available')->whereNull('employee_id')
                     ->whereNotIn('id', ArrivalPlanItem::whereIn('status', ArrivalPlanItem::RESERVING)->whereNotNull('asset_id')->pluck('asset_id')))->orWhereIn('id', $own))
@@ -102,7 +108,7 @@ class ProcessRequest extends Page
 
     public function addLink(): void
     {
-        $this->links[] = ['id' => null, 'kind' => $this->record()->type === 'PEMINJAMAN_ASET' ? 'asset' : '', 'item_id' => null, 'qty' => 1, 'note' => null, 'processed' => false];
+        $this->links[] = ['id' => null, 'kind' => in_array($this->record()->type, ['PEMINJAMAN_ASET', 'BAK', 'TICKET_SISTEM'], true) ? 'asset' : '', 'item_id' => null, 'qty' => 1, 'note' => null, 'processed' => false];
     }
 
     public function removeLink(int $i): void
@@ -150,6 +156,19 @@ class ProcessRequest extends Page
         }
         $this->load();
         Notification::make()->success()->title("$n aset dipinjamkan")->body('Status aset menjadi Dipinjam dan BAST peminjaman dibuat. Saat aset kembali, tandai "Sudah Kembali" di daftar Peminjaman Aset.')->send();
+    }
+
+    public function saveAndRepair(): void
+    {
+        if (! $this->persist()) return;
+        try {
+            $n = app(RequestProcessingService::class)->report($this->record());
+        } catch (\InvalidArgumentException $e) {
+            Notification::make()->title('Gagal membuat tiket perbaikan')->body($e->getMessage())->danger()->send();
+            return;
+        }
+        $this->load();
+        Notification::make()->success()->title("$n tiket perbaikan dibuat")->body('Status aset menjadi Perbaikan. Saat perbaikan ditandai selesai di menu Perbaikan, request ini otomatis Completed.')->send();
     }
 
     public function toHandover()

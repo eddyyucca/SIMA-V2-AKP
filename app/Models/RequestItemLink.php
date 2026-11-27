@@ -14,6 +14,7 @@ class RequestItemLink extends Model
     public const CLASSES = ['asset' => Asset::class, 'accessory' => Accessory::class, 'consumable' => Consumable::class, 'component' => Component::class];
 
     public function request() { return $this->belongsTo(ITRequest::class, 'request_id'); }
+    public function repair() { return $this->belongsTo(Repair::class); }
     public function assignment() { return $this->belongsTo(AssetAssignment::class, 'assignment_id'); }
 
     public function item(): ?Model

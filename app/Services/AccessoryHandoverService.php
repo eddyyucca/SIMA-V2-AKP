@@ -296,6 +296,7 @@ class AccessoryHandoverService
                 ], fn ($v) => $v !== null));
                 $h->items()->create(['stockable_type' => $class, 'stockable_id' => $item->id, 'accessory_id' => $l['accessory_id'], 'qty' => $l['qty'], 'condition' => $type === 'return' ? ($l['condition'] ?: 'good') : null, 'stock_movement_id' => $movement->id]);
             }
+            if ($request && $type === 'checkout') app(RequestLifecycle::class)->handedOver($request, $h->load('items'));   // status request ITERA ikut maju + pemohon dikabari
             return $h->load(['items.stockable', 'employee', 'request', 'department', 'location', 'asset', 'pic']);
         });
     }

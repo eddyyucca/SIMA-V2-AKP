@@ -244,6 +244,7 @@ class AssetService
                 $a->status_before_repair = null;
                 $a->save();
             }
+            app(RequestLifecycle::class)->repairFinished($repair);     // request BAK / Ticket Sistem asal tiket ini ikut selesai
             return $repair;
         });
     }

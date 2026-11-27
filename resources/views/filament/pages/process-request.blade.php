@@ -5,6 +5,8 @@
         $lbl = 'font-weight:600;font-size:13px;display:block;margin-bottom:3px';
         $err = fn ($k) => $errors->has($k) ? '<div style="color:#dc2626;font-size:12px;margin-top:3px">' . e($errors->first($k)) . '</div>' : '';
         $isLoan = $r->type === 'PEMINJAMAN_ASET';
+        $isDamage = in_array($r->type, ['BAK', 'TICKET_SISTEM'], true);
+        $assetOnly = $isLoan || $isDamage;
         $typeLabel = ['ITR' => 'IT Request', 'BAK' => 'Berita Acara Kerusakan', 'SURAT_JALAN' => 'Surat Jalan', 'TICKET_SISTEM' => 'Ticket Sistem', 'WO' => 'Work Order Instalasi Infrastruktur', 'PEMINJAMAN_ASET' => 'Peminjaman Aset'][$r->type] ?? $r->type;
         $card = 'background:rgba(127,127,127,.08);border-radius:12px;padding:18px;margin-bottom:16px';
     @endphp
@@ -51,13 +53,13 @@
         <div style="{{ $card }}">
             <h3 style="font-weight:700;margin-bottom:4px">2. Barang dari database</h3>
             <p style="font-size:13px;color:#888;margin-bottom:10px">
-                @if($isLoan) Pilih aset yang Tersedia untuk dipinjamkan. @else Pilih padanan barang yang diminta: aset, Accessories, Consumable, atau Komponen. @endif
+                @if($isLoan) Pilih aset yang Tersedia untuk dipinjamkan. @elseif($isDamage) Pilih aset yang rusak (aset yang dipegang pelapor); Tim IT membuatkan tiket perbaikan dari sini. @else Pilih padanan barang yang diminta: aset, Accessories, Consumable, atau Komponen. @endif
             </p>
             @foreach($links as $i => $l)
                 <div wire:key="link-{{ $i }}" style="display:grid;grid-template-columns:150px minmax(220px,1fr) 90px minmax(140px,1fr) auto;gap:8px;align-items:start;margin-bottom:8px">
                     <select wire:model.live="links.{{ $i }}.kind" @disabled($l['processed']) style="{{ $in }}">
                         <option value="">— jenis —</option>
-                        @foreach(\App\Models\RequestItemLink::KINDS as $k => $name)@if(! $isLoan || $k === 'asset')<option value="{{ $k }}">{{ $name }}</option>@endif @endforeach
+                        @foreach(\App\Models\RequestItemLink::KINDS as $k => $name)@if(! $assetOnly || $k === 'asset')<option value="{{ $k }}">{{ $name }}</option>@endif @endforeach
                     </select>
                     <select wire:model="links.{{ $i }}.item_id" @disabled($l['processed']) style="{{ $in }}">
                         <option value="">— pilih barang —</option>
@@ -66,7 +68,7 @@
                     <div><input type="number" step="any" min="0" wire:model="links.{{ $i }}.qty" @disabled($l['processed'] || ($l['kind'] ?? '') === 'asset') style="{{ $in }}" placeholder="Jumlah">{!! $err("links.$i.qty") !!}</div>
                     <input type="text" wire:model="links.{{ $i }}.note" placeholder="Catatan IT" style="{{ $in }}">
                     @if($l['processed'])
-                        <span style="font-size:12px;color:#16a34a;padding-top:8px">✓ Dipinjamkan</span>
+                        <span style="font-size:12px;color:#16a34a;padding-top:8px">{{ $isDamage ? '✓ Tiket perbaikan' : '✓ Dipinjamkan' }}</span>
                     @else
                         <button type="button" wire:click="removeLink({{ $i }})" title="Hapus baris" style="color:#dc2626;padding:6px 10px">✕</button>
                     @endif
@@ -79,6 +81,8 @@
             <button type="button" wire:click="save" style="padding:9px 18px;border-radius:8px;background:#1f78b0;color:#fff;font-weight:600">Simpan</button>
             @if($isLoan)
                 <button type="button" wire:click="saveAndBorrow" wire:confirm="Aset yang ditautkan akan berstatus Dipinjam dan BAST dibuat. Lanjutkan?" style="padding:9px 18px;border-radius:8px;background:#37baab;color:#fff;font-weight:600">Simpan &amp; Pinjamkan Aset</button>
+            @elseif($isDamage)
+                <button type="button" wire:click="saveAndRepair" wire:confirm="Aset yang ditautkan akan berstatus Perbaikan dan tiket perbaikan dibuat. Lanjutkan?" style="padding:9px 18px;border-radius:8px;background:#37baab;color:#fff;font-weight:600">Simpan &amp; Buat Tiket Perbaikan</button>
             @elseif($r->type === 'ITR')
                 <button type="button" wire:click="toHandover" style="padding:9px 18px;border-radius:8px;background:#37baab;color:#fff;font-weight:600">Simpan &amp; Buat BAST Serah Terima</button>
             @endif

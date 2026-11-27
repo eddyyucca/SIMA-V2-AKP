@@ -31,7 +31,7 @@
             <div class="bg-[#111827] border border-slate-800 rounded-2xl overflow-x-auto">
                 <table class="w-full text-sm text-left">
                     <thead class="text-xs uppercase text-slate-400 border-b border-slate-800">
-                        <tr><th class="py-3 px-4">No. Tiket</th><th class="py-3 px-4">Jenis</th><th class="py-3 px-4">Pemohon</th><th class="py-3 px-4">Judul</th><th class="py-3 px-4">Status</th><th class="py-3 px-4">Diajukan</th></tr>
+                        <tr><th class="py-3 px-4">No. Tiket</th><th class="py-3 px-4">Jenis</th><th class="py-3 px-4">Pemohon</th><th class="py-3 px-4">Judul</th><th class="py-3 px-4">Status</th><th class="py-3 px-4">Dokumen</th><th class="py-3 px-4">Diajukan</th></tr>
                     </thead>
                     <tbody class="divide-y divide-slate-800">
                         @forelse ($requests as $r)
@@ -46,10 +46,16 @@
                                     @if ($r->status === 'Rejected' && ($r->update_note || $r->supervisor_note))<div class="text-[11px] text-rose-300 mt-1 max-w-xs">{{ $r->supervisor_decision === 'rejected' ? $r->supervisor_note : $r->update_note }}</div>@endif
                                     @if ($r->supervisor_decision === 'escalated')<div class="text-[11px] text-slate-400 mt-1">Diteruskan otomatis ke Tim IT</div>@endif
                                 </td>
+                                <td class="py-3 px-4 text-xs whitespace-nowrap">
+                                    @foreach ($r->accessoryHandovers as $h)<a class="block text-sky-300 underline" target="_blank" href="{{ route('accessory-bast.view', $h) }}">BAST {{ $h->bast_number }}</a>@endforeach
+                                    @foreach ($r->links->whereNotNull('assignment_id') as $l)@if ($l->assignment)<a class="block text-sky-300 underline" target="_blank" href="{{ route('bast.view', $l->assignment) }}">BAST {{ $l->assignment->bast_number }}</a>@endif @endforeach
+                                    @if ($r->returned_at)<span class="block text-slate-400">Kembali {{ $r->returned_at->format('d M Y') }}</span>@endif
+                                    @if ($r->accessoryHandovers->isEmpty() && $r->links->whereNotNull('assignment_id')->isEmpty() && ! $r->returned_at)<span class="text-slate-600">—</span>@endif
+                                </td>
                                 <td class="py-3 px-4 text-slate-400 whitespace-nowrap">{{ $r->created_at->format('d M Y, H:i') }}</td>
                             </tr>
                         @empty
-                            <tr><td colspan="6" class="py-10 text-center text-slate-500">Belum ada request{{ array_filter($filters ?? []) ? ' yang cocok dengan filter' : '' }}.</td></tr>
+                            <tr><td colspan="7" class="py-10 text-center text-slate-500">Belum ada request{{ array_filter($filters ?? []) ? ' yang cocok dengan filter' : '' }}.</td></tr>
                         @endforelse
                     </tbody>
                 </table>

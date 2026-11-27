@@ -65,8 +65,10 @@ class RequestController extends Controller
         // Kolom & tombol Delete di tabel "List All Form" sekarang khusus Super Admin, admin biasa tidak lagi bisa hapus dari sini
         $isSuperAdmin = auth()->user()->isSuperAdmin();
 
+        $awaitingSupervisor = ITRequest::where('status', ITRequest::AWAITING_SUPERVISOR)->count();
+
         return view('requisition.dashboard', compact(
-            'totalRequests', 'pendingRequests', 'inProgressRequests', 'completedRequests',
+            'awaitingSupervisor', 'totalRequests', 'pendingRequests', 'inProgressRequests', 'completedRequests',
             'requests',
             'pendingApprovals', 'canManage', 'isSuperAdmin',
             'itrTypeCount', 'bakTypeCount', 'sjTypeCount', 'ticketSistemCount', 'woTypeCount'
@@ -210,7 +212,7 @@ class RequestController extends Controller
     // 2c. Halaman "Request Saya": riwayat lengkap milik user (dan anak buahnya) dengan pencarian + filter jenis/status.
     public function mine(Request $request)
     {
-        $q = $this->scopeToViewer(ITRequest::with(['approvedBy', 'supervisor']));
+        $q = $this->scopeToViewer(ITRequest::with(['approvedBy', 'supervisor', 'accessoryHandovers', 'links.assignment']));
         if ($request->filled('search')) {
             $like = str_replace(['\\', '%', '_'], ['\\\\', '\\%', '\\_'], trim($request->search));
             $q->where(fn ($w) => $w->where('title', 'like', "%{$like}%")->orWhere('requester_name', 'like', "%{$like}%"));
@@ -701,7 +703,11 @@ class RequestController extends Controller
 
         // Kabari pemilik request (kalau akunnya ada & sudah aktifkan notifikasi) via push notification browser
         if ($item->user) {
+            $labels = ['Approved' => 'Request disetujui Tim IT', 'In Progress' => 'Request sedang diproses', 'Completed' => 'Request selesai', 'Rejected' => 'Request ditolak Tim IT', 'Pending' => 'Request kembali menunggu'];
             $item->user->notify(new RequestStatusUpdated($item));
+            \Filament\Notifications\Notification::make()->title($labels[$item->status] ?? 'Status request berubah')
+                ->body(($item->ticket_number ?: $item->title) . ' — status: ' . $item->status . ($item->status === 'Rejected' && $item->update_note ? '. ' . $item->update_note : ''))
+                ->status($item->status === 'Rejected' ? 'danger' : ($item->status === 'Completed' ? 'success' : 'info'))->sendToDatabase($item->user);
         }
 
         if ($request->expectsJson()) {

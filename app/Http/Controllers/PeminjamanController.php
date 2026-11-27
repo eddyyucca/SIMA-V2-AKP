@@ -51,6 +51,7 @@ class PeminjamanController extends Controller
             }
             $item->returned_at = now();
             $item->save();
+            app(\App\Services\RequestLifecycle::class)->returned($item);
         }
 
         $message = 'Aset ditandai sudah kembali dan statusnya Tersedia.' . ($warnings ? ' Catatan: ' . implode(' ', $warnings) : '');

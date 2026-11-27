@@ -94,6 +94,29 @@ class RequestProcessingService
             $link->update(['assignment_id' => $a->id, 'processed_at' => now()]);
             $n++;
         }
+        app(RequestLifecycle::class)->borrowed($r, $n);
+        return $n;
+    }
+
+    /** BAK / Ticket Sistem: aset yang ditautkan dibuatkan tiket perbaikan (status aset menjadi Perbaikan). Mengembalikan jumlah tiket. */
+    public function report(ITRequest $r): int
+    {
+        $r = $r->fresh();
+        if (! in_array($r->type, ['BAK', 'TICKET_SISTEM'], true)) throw new InvalidArgumentException('Tiket perbaikan hanya dari request BAK atau Ticket Sistem.');
+        if (! in_array($r->status, AccessoryHandoverService::REQUEST_STATUSES, true)) throw new InvalidArgumentException('Request harus berstatus Approved atau In Progress sebelum tiket perbaikan dibuat.');
+        $todo = $r->links()->where('kind', 'asset')->whereNull('processed_at')->get();
+        if ($todo->isEmpty()) throw new InvalidArgumentException('Pilih aset yang rusak lebih dulu (atau semuanya sudah dibuatkan tiket).');
+        $emp = $r->employee_id ? Employee::find($r->employee_id) : null;
+
+        $n = 0;
+        foreach ($todo as $link) {
+            $asset = Asset::findOrFail($link->item_id);
+            $issue = trim(($r->ticket_number ?? '#' . $r->id) . ' — ' . $r->title . ($r->description ? ': ' . $r->description : ''));
+            $repair = $this->assets->reportDamage($asset, $emp, mb_substr($issue, 0, 1000));
+            $link->update(['repair_id' => $repair->id, 'processed_at' => now()]);
+            $n++;
+        }
+        app(RequestLifecycle::class)->reported($r, $n);
         return $n;
     }
 
