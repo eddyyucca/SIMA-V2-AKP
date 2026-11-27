@@ -18,12 +18,12 @@
             $isNeverProcessedPending = $item->status === 'Pending' && $item->sequence_number === null;
         @endphp
         <td data-label="Status" class="py-3 px-4 whitespace-nowrap">
-            <span class="px-2.5 py-1 rounded-full text-[10px] font-bold border whitespace-nowrap
+            <span @if($item->status == 'Awaiting Supervisor') style="background:#ede9fe;color:#5b21b6;border-color:#c4b5fd" @endif class="px-2.5 py-1 rounded-full text-[10px] font-bold border whitespace-nowrap
                 @if($item->status == 'Completed') bg-emerald-500/20 text-emerald-400 border-emerald-500/30
                 @elseif($item->status == 'In Progress') bg-blue-500/20 text-blue-400 border-blue-500/30
                 @elseif($item->status == 'Approved') bg-teal-500/20 text-teal-400 border-teal-500/30
                 @elseif($item->status == 'Rejected') bg-rose-500/20 text-rose-400 border-rose-500/30
-                @elseif($item->status == 'Awaiting Supervisor') bg-violet-500/20 text-violet-300 border-violet-500/30
+                @elseif($item->status == 'Awaiting Supervisor') awaiting-supervisor-badge
                 @else bg-amber-500/20 text-amber-400 border-amber-500/30 @endif">
                 {{ $item->status === 'Awaiting Supervisor' ? 'Menunggu Atasan' : ($isNeverProcessedPending ? 'Menunggu Approval' : $item->status) }}
             </span>

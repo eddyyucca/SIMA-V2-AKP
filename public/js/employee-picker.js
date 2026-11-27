@@ -248,6 +248,7 @@
             input.focus();
             return;
         }
+        hideItemBox();
         syncItemRefs(form);
     }, true);
 
@@ -302,6 +303,7 @@
         var mine = ++itemSeq;
         fetchJson(CFG.items + '?q=' + encodeURIComponent(q), itemAbort && itemAbort.signal).then(function (res) {
             if (mine !== itemSeq) return;
+            if (document.activeElement !== input) return;                // fokus sudah pindah: jangan munculkan kotak saran yang tertinggal
             var rows = res.data || [];
             ensureItemBox(); itemBox.innerHTML = '';
             if (!rows.length) { hideItemBox(); return; }                 // tidak ada saran: tetap boleh diketik bebas
