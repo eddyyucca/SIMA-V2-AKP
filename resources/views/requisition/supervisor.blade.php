@@ -50,7 +50,7 @@
                                 <td class="py-2 px-4 text-slate-400 whitespace-nowrap">{{ $r->supervisor_decided_at->format('d M Y, H:i') }}</td>
                                 <td class="py-2 px-4 text-slate-300">{{ $r->requester_name }}</td>
                                 <td class="py-2 px-4 text-slate-200">{{ $r->title }}</td>
-                                <td class="py-2 px-4 text-slate-300">{{ ['approved' => 'Disetujui', 'rejected' => 'Ditolak', 'escalated' => 'Diteruskan otomatis'][$r->supervisor_decision] ?? '-' }}{{ $r->supervisor_note && $r->supervisor_decision === 'rejected' ? ': ' . $r->supervisor_note : '' }}</td>
+                                <td class="py-2 px-4 text-slate-300">{{ ['approved' => 'Disetujui', 'approved_by_it' => 'Disetujui Tim IT', 'rejected' => 'Ditolak', 'escalated' => 'Diteruskan otomatis'][$r->supervisor_decision] ?? '-' }}{{ $r->supervisor_note && in_array($r->supervisor_decision, ['rejected', 'approved_by_it'], true) ? ': ' . $r->supervisor_note : '' }}</td>
                                 <td class="py-2 px-4 text-slate-400">{{ $r->status }}</td>
                             </tr>
                         @empty

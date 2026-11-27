@@ -44,6 +44,7 @@
                                     <span class="px-2.5 py-1 rounded-full text-[11px] font-bold {{ $tone[$r->status] ?? 'bg-slate-200 text-slate-700' }}">{{ $statusLabels[$r->status] ?? $r->status }}</span>
                                     @if ($r->isAwaitingSupervisor() && $r->supervisor)<div class="text-[11px] text-slate-400 mt-1">Menunggu {{ $r->supervisor->name }}</div>@endif
                                     @if ($r->status === 'Rejected' && ($r->update_note || $r->supervisor_note))<div class="text-[11px] text-rose-300 mt-1 max-w-xs">{{ $r->supervisor_decision === 'rejected' ? $r->supervisor_note : $r->update_note }}</div>@endif
+                                    @if ($r->supervisor_decision === 'approved_by_it')<div class="text-[11px] text-slate-400 mt-1 max-w-xs">{{ $r->supervisor_note }}</div>@endif
                                     @if ($r->supervisor_decision === 'escalated')<div class="text-[11px] text-slate-400 mt-1">Diteruskan otomatis ke Tim IT</div>@endif
                                 </td>
                                 <td class="py-3 px-4 text-xs whitespace-nowrap">

@@ -300,7 +300,24 @@
                     </span>
                 </div>
                 @if (($awaitingSupervisor ?? 0) > 0)
-                    <p class="mb-3 text-xs text-violet-300">{{ $awaitingSupervisor }} request masih menunggu persetujuan atasan pemohon; otomatis masuk ke sini setelah disetujui atau lewat {{ \App\Services\RequestSupervisor::ESCALATE_AFTER_DAYS }} hari.</p>
+                    <div class="mb-4 rounded-xl border border-violet-300 bg-violet-50 p-4">
+                        <div class="text-sm font-bold text-violet-900">{{ $awaitingSupervisor }} request menunggu persetujuan atasan</div>
+                        <p class="text-xs text-violet-800 mb-2">Otomatis masuk ke sini setelah atasan menyetujui atau lewat {{ \App\Services\RequestSupervisor::ESCALATE_AFTER_DAYS }} hari. Bila atasan berhalangan, Tim IT dapat menyetujui atas namanya; nama akun Anda tercatat pada keputusan.</p>
+                        <div class="space-y-2">
+                            @foreach ($awaitingList as $w)
+                                <form method="POST" action="{{ route('requests.supervisor.override', $w->id) }}" class="flex flex-wrap items-center gap-2 bg-white rounded-lg border border-violet-200 px-3 py-2 text-xs"
+                                      onsubmit="var n = prompt('Setujui atas nama atasan ({{ e($w->supervisor?->name ?? 'atasan') }}) sebagai {{ e(auth()->user()->name) }}.\nCatatan (opsional):'); if (n === null) return false; this.note.value = n; return true;">
+                                    @csrf
+                                    <input type="hidden" name="note" value="">
+                                    <span class="font-semibold text-slate-800">{{ $w->requester_name }}</span>
+                                    <span class="text-slate-500">{{ $w->department }}</span>
+                                    <span class="text-slate-700">· {{ $w->title }}</span>
+                                    <span class="text-slate-500">· menunggu {{ $w->supervisor?->name ?? 'atasan' }} sejak {{ $w->supervisor_asked_at?->diffForHumans() }}</span>
+                                    <button class="ml-auto px-3 py-1 rounded-md bg-violet-700 text-white font-semibold hover:bg-violet-600">Setujui (Tim IT)</button>
+                                </form>
+                            @endforeach
+                        </div>
+                    </div>
                 @endif
 
                 <div class="overflow-x-auto">

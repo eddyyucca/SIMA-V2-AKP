@@ -37,6 +37,8 @@ Route::middleware([Authenticate::class, \App\Http\Middleware\EnforcePortalSessio
 
     Route::middleware('requisition.role:admin,super_admin')->group(function () {
         Route::patch('/requests/{id}/status', [RequestController::class, 'updateStatus'])->name('requests.update-status');
+        // Tim IT menyetujui atas nama atasan (catatan memuat nama akun penyetuju)
+        Route::post('/requests/{id}/atasan-setujui', [RequestController::class, 'supervisorOverride'])->name('requests.supervisor.override');
         Route::patch('/requests/{id}/note', [RequestController::class, 'updateNote'])->name('requests.update-note');
         Route::post('/requests/{id}/document', [RequestController::class, 'uploadDocument'])->name('requests.document.upload');
         Route::get('/requests/{id}/document', [RequestController::class, 'viewDocument'])->name('requests.document.view');

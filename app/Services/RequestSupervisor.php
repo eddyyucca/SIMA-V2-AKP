@@ -104,6 +104,26 @@ class RequestSupervisor
         }
     }
 
+    /**
+     * Tim IT menyetujui atas nama atasan (mis. atasan berhalangan). Catatan keputusan selalu memuat nama akun yang menyetujui,
+     * supaya terlihat jelas bahwa ini bukan persetujuan atasan sendiri.
+     */
+    public function approveByIt(ITRequest $item, User $it, ?string $note = null): void
+    {
+        $item->forceFill([
+            'supervisor_decided_at' => now(), 'supervisor_decision' => 'approved_by_it', 'status' => 'Pending',
+            'supervisor_note' => 'Disetujui Tim IT (' . $it->name . ') atas nama atasan' . (filled($note) ? ': ' . trim($note) : ''),
+        ])->save();
+
+        $this->forwardToIt($item);
+        if ($item->user) {
+            $item->user->notify(new RequestStatusUpdated($item));
+            $this->inApp($item->user, 'Request Anda disetujui Tim IT', $this->label($item) . ': ' . ($item->title ?: '-') . ' — disetujui Tim IT (' . $it->name . ') atas nama atasan, kini diproses.', 'success', $item);
+        }
+        $boss = $item->supervisor?->user;
+        if ($boss) $this->inApp($boss, 'Request bawahan disetujui Tim IT', ($item->requester_name ?: 'Karyawan') . ' — ' . $this->label($item) . ': ' . ($item->title ?: '-') . ' disetujui Tim IT (' . $it->name . ') atas nama Anda.', 'info', $item);
+    }
+
     /** Kabari Tim IT (push + Telegram + notifikasi dalam aplikasi) bahwa request siap diproses. */
     public function forwardToIt(ITRequest $item): void
     {

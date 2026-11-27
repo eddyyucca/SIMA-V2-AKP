@@ -190,4 +190,32 @@ class SupervisorApprovalTest extends RequisitionTestCase
         $this->assertSame('Pending', ITRequest::latest('id')->first()->status);
         $this->assertNull($bossEmp->fresh()->user_id);
     }
+
+    public function test_it_team_can_approve_on_behalf_of_the_supervisor_with_their_own_name_in_the_note(): void
+    {
+        $this->actingAs($this->worker)->post('/requisition/requests', $this->itr());
+        $r = ITRequest::latest('id')->first();
+        $this->assertSame(ITRequest::AWAITING_SUPERVISOR, $r->status);
+
+        // karyawan biasa dan atasan lewat jalur ini tidak boleh (atasan memakai halaman Persetujuan Atasan)
+        $this->loginAs($this->worker)->postJson("/requisition/requests/{$r->id}/atasan-setujui")->assertForbidden();
+
+        $it = $this->makeUser('admin', ['name' => 'Dewi Support IT']);
+        $this->loginAs($it)->get('/requisition')->assertOk()->assertSee('Setujui (Tim IT)')->assertSee('Mouse baru');
+        $this->postJson("/requisition/requests/{$r->id}/atasan-setujui", ['note' => 'Atasan cuti'])->assertOk();
+
+        $r->refresh();
+        $this->assertSame('Pending', $r->status);
+        $this->assertSame('approved_by_it', $r->supervisor_decision);
+        $this->assertStringContainsString('Dewi Support IT', (string) $r->supervisor_note);
+        $this->assertStringContainsString('Atasan cuti', (string) $r->supervisor_note);
+        $this->loginAs($it)->getJson('/requisition/requests/pending-approvals')->assertJsonPath('count', 1);
+
+        // pemohon melihat siapa yang menyetujui; atasan diberi tahu
+        $this->loginAs($this->worker)->get('/requisition/saya')->assertSee('Dewi Support IT');
+        $this->assertContains('Request bawahan disetujui Tim IT', $this->boss->notifications()->pluck('data')->map(fn ($d) => $d['title'] ?? '')->all());
+
+        // sudah diputuskan: tidak bisa lagi
+        $this->loginAs($it)->postJson("/requisition/requests/{$r->id}/atasan-setujui")->assertStatus(409);
+    }
 }

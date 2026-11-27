@@ -65,10 +65,11 @@ class RequestController extends Controller
         // Kolom & tombol Delete di tabel "List All Form" sekarang khusus Super Admin, admin biasa tidak lagi bisa hapus dari sini
         $isSuperAdmin = auth()->user()->isSuperAdmin();
 
-        $awaitingSupervisor = ITRequest::where('status', ITRequest::AWAITING_SUPERVISOR)->count();
+        $awaitingList = ITRequest::with('supervisor')->where('status', ITRequest::AWAITING_SUPERVISOR)->oldest('supervisor_asked_at')->get();
+        $awaitingSupervisor = $awaitingList->count();
 
         return view('requisition.dashboard', compact(
-            'awaitingSupervisor', 'totalRequests', 'pendingRequests', 'inProgressRequests', 'completedRequests',
+            'awaitingSupervisor', 'awaitingList', 'totalRequests', 'pendingRequests', 'inProgressRequests', 'completedRequests',
             'requests',
             'pendingApprovals', 'canManage', 'isSuperAdmin',
             'itrTypeCount', 'bakTypeCount', 'sjTypeCount', 'ticketSistemCount', 'woTypeCount'
@@ -255,6 +256,19 @@ class RequestController extends Controller
         app(RequestSupervisor::class)->decide($item, auth()->user(), $data['decision'] === 'approve', $data['note'] ?? null);
 
         return $this->decideResponse($request, true, $data['decision'] === 'approve' ? 'Request disetujui dan diteruskan ke Tim IT.' : 'Request ditolak dan dikembalikan ke pemohon.');
+    }
+
+    // 2f. Tim IT menyetujui atas nama atasan; catatan otomatis memuat nama akun penyetuju.
+    public function supervisorOverride(Request $request, $id)
+    {
+        $data = $request->validate(['note' => 'nullable|string|max:500']);
+        $item = ITRequest::with('supervisor.user')->findOrFail($id);
+        if (! $item->isAwaitingSupervisor()) {
+            return $this->decideResponse($request, false, 'Request ini tidak sedang menunggu atasan.', 409);
+        }
+        app(RequestSupervisor::class)->approveByIt($item, auth()->user(), $data['note'] ?? null);
+
+        return $this->decideResponse($request, true, 'Request disetujui atas nama atasan dan masuk ke antrean Tim IT.');
     }
 
     private function decideResponse(Request $request, bool $ok, string $message, int $code = 200)
