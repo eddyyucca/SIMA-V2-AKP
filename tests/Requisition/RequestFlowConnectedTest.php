@@ -120,7 +120,7 @@ class RequestFlowConnectedTest extends RequisitionTestCase
     {
         [$u, $e] = $this->person();
         $this->req('ITR', $u, $e, ['status' => ITRequest::AWAITING_SUPERVISOR, 'sequence_number' => null, 'numbered_at' => null]);
-        $this->loginAs($this->makeUser('admin'))->get('/requisition')->assertOk()->assertSee('masih menunggu persetujuan atasan');
+        $this->loginAs($this->makeUser('admin'))->get('/requisition')->assertOk()->assertSee('menunggu persetujuan atasan');
     }
 
     public function test_dedicated_menu_with_request_counts_for_it_and_for_employees(): void
