@@ -43,7 +43,7 @@ class AccessoryHandoverTest extends RequisitionTestCase
     private function requester(string $name = 'Budi Peminta'): array
     {
         $u = $this->makeUser('user', ['name' => $name]);
-        $e = Employee::create(['name' => $name, 'email' => $u->email, 'nik' => 'REQ' . $u->id, 'status' => 'active', 'user_id' => $u->id]);
+        $e = $this->linkEmployee($u, ['name' => $name, 'email' => $u->email, 'nik' => 'REQ' . $u->id, 'status' => 'active']);
         return [$u, $e];
     }
 

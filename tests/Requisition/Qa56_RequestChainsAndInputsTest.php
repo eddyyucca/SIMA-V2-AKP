@@ -21,7 +21,7 @@ class Qa56_RequestChainsAndInputsTest extends RequisitionTestCase
     private function person(string $role = 'user'): array
     {
         $u = $this->makeUser($role, ['name' => 'Pemohon QA56']);
-        $e = Employee::create(['name' => 'Pemohon QA56', 'email' => $u->email, 'nik' => '56' . random_int(10000, 99999), 'status' => 'active', 'user_id' => $u->id]);
+        $e = $this->linkEmployee($u, ['name' => 'Pemohon QA56', 'email' => $u->email, 'nik' => '56' . random_int(10000, 99999), 'status' => 'active']);
         return [$u, $e];
     }
 

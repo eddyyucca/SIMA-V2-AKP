@@ -54,12 +54,15 @@ class RequestSupervisor
         return Employee::with('department')->where('supervisor_nik', $e->nik)->where('status', 'active')->where('id', '!=', $e->id)->orderBy('name')->get();
     }
 
-    /** Karyawan yang boleh dipilih akun peran User saat mengajukan: dirinya + anak buahnya. Null = tidak dibatasi (akun belum tertaut karyawan). */
+    /**
+     * Akun peran User hanya boleh mengajukan untuk karyawan yang tertaut ke akun loginnya sendiri (tidak bisa memilih karyawan lain).
+     * Null = tidak dibatasi (Tim IT). Akun User yang belum tertaut karyawan menghasilkan daftar kosong (tidak bisa mengajukan).
+     */
     public function allowedRequesters(User $u): ?Collection
     {
-        if ($u->role !== 'user' || ! $u->employee) return null;
+        if ($u->role !== 'user') return null;
 
-        return collect([$u->employee])->merge($this->subordinates($u->employee));
+        return $u->employee ? collect([$u->employee]) : collect();
     }
 
     /** Atasan yang harus menyetujui lebih dulu, atau null bila request boleh langsung ke Tim IT. */

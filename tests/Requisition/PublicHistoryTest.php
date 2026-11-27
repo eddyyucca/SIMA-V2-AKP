@@ -21,8 +21,8 @@ class PublicHistoryTest extends RequisitionTestCase
         // Request baru harus langsung kelihatan di History Request Terbaru begitu berhasil dibuat,
         // dengan status "Menunggu Approval" - bukan menunggu sampai diproses tim IT dulu.
         $user = $this->makeUser('user');
-        ITRequest::factory()->create(['type' => 'ITR', 'status' => 'Pending', 'sequence_number' => null, 'title' => 'Baru Saja Dibuat']);
-        ITRequest::factory()->create(['type' => 'ITR', 'status' => 'Completed', 'title' => 'Sudah Selesai Ini']);
+        ITRequest::factory()->create(['type' => 'ITR', 'user_id' => $user->id, 'status' => 'Pending', 'sequence_number' => null, 'title' => 'Baru Saja Dibuat']);
+        ITRequest::factory()->create(['type' => 'ITR', 'user_id' => $user->id, 'status' => 'Completed', 'title' => 'Sudah Selesai Ini']);
 
         $response = $this->actingAs($user)->getJson('/requisition/requests/history');
 
@@ -40,7 +40,7 @@ class PublicHistoryTest extends RequisitionTestCase
         // tampil labelnya "Pending" polos, sama seperti yang ditampilkan di List All Form - bukan
         // "Menunggu Approval" yang menyiratkan seolah-olah belum pernah disentuh tim IT sama sekali.
         $user = $this->makeUser('user');
-        ITRequest::factory()->create(['type' => 'ITR', 'status' => 'Pending', 'sequence_number' => 12, 'title' => 'Direvert Ke Pending Lagi']);
+        ITRequest::factory()->create(['type' => 'ITR', 'user_id' => $user->id, 'status' => 'Pending', 'sequence_number' => 12, 'title' => 'Direvert Ke Pending Lagi']);
 
         $response = $this->actingAs($user)->getJson('/requisition/requests/history');
         $rowsHtml = $response->json('rows_html');
@@ -92,9 +92,9 @@ class PublicHistoryTest extends RequisitionTestCase
         $response = $this->actingAs($otherUser)->getJson('/requisition/requests/history');
         $rowsHtml = $response->json('rows_html');
 
-        $this->assertStringContainsString('Request Milik Orang Lain', $rowsHtml);
+        // user lain sama sekali tidak melihat request orang lain (riwayat per akun login)
+        $this->assertStringNotContainsString('Request Milik Orang Lain', $rowsHtml);
         $this->assertStringNotContainsString('Catatan rahasia untuk pemilik request.', $rowsHtml);
-        $this->assertStringNotContainsString('View', $rowsHtml);
     }
 
     public function test_history_endpoint_shows_keterangan_view_button_to_admins_for_any_request(): void
@@ -178,9 +178,9 @@ class PublicHistoryTest extends RequisitionTestCase
 
         $this->assertStringContainsString('openMyFormModal', $this->actingAs($owner)->getJson('/requisition/requests/history')->json('rows_html'));
         $this->assertStringContainsString('openMyFormModal', $this->actingAs($admin)->getJson('/requisition/requests/history')->json('rows_html'));
-        // User lain tetap bisa melihat barisnya, tapi isi form (data lengkap) tidak ikut terkirim ke halaman
+        // User lain tidak melihat barisnya sama sekali
         $otherHtml = $this->actingAs($other)->getJson('/requisition/requests/history')->json('rows_html');
-        $this->assertStringContainsString('Form Milik Owner', $otherHtml);
+        $this->assertStringNotContainsString('Form Milik Owner', $otherHtml);
         $this->assertStringNotContainsString('openMyFormModal', $otherHtml);
     }
 }

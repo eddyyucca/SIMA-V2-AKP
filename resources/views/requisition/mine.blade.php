@@ -9,7 +9,7 @@
             <div class="flex flex-wrap items-end justify-between gap-3 mb-5">
                 <div>
                     <h1 class="text-2xl font-black text-white">Request Saya</h1>
-                    <p class="text-sm text-slate-400">Semua request milik Anda{{ auth()->user()->employee && app(\App\Services\RequestSupervisor::class)->subordinates(auth()->user()->employee)->isNotEmpty() ? ' dan anak buah Anda' : '' }}.</p>
+                    <p class="text-sm text-slate-400">Semua request yang Anda ajukan.</p>
                 </div>
                 <a href="{{ route('requests.create') }}" class="px-4 py-2 rounded-xl bg-gradient-to-r from-fuchsia-600 to-purple-600 text-white text-sm font-bold">+ Buat Request</a>
             </div>

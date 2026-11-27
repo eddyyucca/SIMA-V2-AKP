@@ -42,7 +42,23 @@ abstract class RequisitionTestCase extends TestCase
             'is_active' => true,
         ]);
         $u->assignRole(self::ROLE[$srRole]);
+        // akun User selalu tertaut ke satu karyawan (seperti login Portal / akun dari IT): pemohon request = karyawan akun loginnya
+        if ($srRole === 'user' && ! array_key_exists('no_employee', $attrs)) {
+            \App\Models\Employee::create(['name' => $attrs['employee_name'] ?? 'Budi Santoso', 'email' => 'emp' . Str::lower(Str::random(8)) . '@requisition.test', 'nik' => (string) random_int(1000000, 9999999),
+                'position' => 'Staff IT', 'department_id' => \App\Models\Department::where('name', 'Finance')->value('id') ?? \App\Models\Department::value('id'), 'status' => 'active', 'user_id' => $u->id]);
+        }
         return $u;
+    }
+
+    /** Atur data karyawan yang tertaut ke akun (dibuat otomatis oleh makeUser untuk peran User); membuat bila belum ada. */
+    protected function linkEmployee(User $u, array $attrs): \App\Models\Employee
+    {
+        $u->unsetRelation('employee');
+        $e = $u->employee ?: new \App\Models\Employee(['status' => 'active', 'email' => 'emp' . Str::lower(Str::random(8)) . '@requisition.test']);
+        $e->forceFill($attrs + ['user_id' => $u->id])->save();
+        $u->unsetRelation('employee');
+
+        return $e;
     }
 
     private ?\App\Models\Employee $defaultRequester = null;

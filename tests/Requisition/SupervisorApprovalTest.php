@@ -19,8 +19,8 @@ class SupervisorApprovalTest extends RequisitionTestCase
         parent::setUp();
         $this->boss = $this->makeUser('user', ['name' => 'Atasan Satu']);
         $this->worker = $this->makeUser('user', ['name' => 'Karyawan Dua']);
-        $this->bossEmp = $this->makeRequester(['name' => 'Atasan Satu', 'nik' => '9000001', 'user_id' => $this->boss->id]);
-        $this->workerEmp = $this->makeRequester(['name' => 'Karyawan Dua', 'nik' => '9000002', 'user_id' => $this->worker->id, 'supervisor_nik' => '9000001']);
+        $this->bossEmp = $this->linkEmployee($this->boss, ['name' => 'Atasan Satu', 'nik' => '9000001']);
+        $this->workerEmp = $this->linkEmployee($this->worker, ['name' => 'Karyawan Dua', 'nik' => '9000002', 'supervisor_nik' => '9000001']);
     }
 
     private function itr(array $over = []): array
@@ -28,18 +28,22 @@ class SupervisorApprovalTest extends RequisitionTestCase
         return $over + ['type' => 'ITR', 'title' => 'Mouse baru', 'description' => 'Mouse rusak', 'items' => [['name' => 'Mouse', 'qty' => 1]]];
     }
 
-    public function test_user_request_is_prefilled_for_self_and_cannot_be_filed_for_a_stranger(): void
+    public function test_requester_is_always_the_logged_in_employee_and_cannot_be_changed(): void
     {
         $html = $this->actingAs($this->worker)->get('/requisition/requests/create')->assertOk()->getContent();
         $this->assertStringContainsString('data-ep-self', $html);
-        $this->assertStringContainsString('data-ep-fixed', $html);       // tanpa anak buah: terkunci
+        $this->assertStringContainsString('data-ep-fixed', $html);       // kotak nama terkunci
 
+        // employee_id dari browser diabaikan: pemohon tetap karyawan akun login
         $other = $this->makeRequester(['name' => 'Orang Lain', 'nik' => '9000099']);
-        $this->post('/requisition/requests', $this->itr(['employee_id' => $other->id]))->assertForbidden();
+        $this->post('/requisition/requests', $this->itr(['employee_id' => $other->id, 'employee_name' => 'Orang Lain']))->assertRedirect();
+        $r = ITRequest::latest('id')->first();
+        $this->assertSame($this->workerEmp->id, $r->employee_id);
+        $this->assertSame('Karyawan Dua', $r->requester_name);
 
-        // tanpa employee_id: pemohon = dirinya sendiri
-        $this->post('/requisition/requests', $this->itr())->assertRedirect();
-        $this->assertSame($this->workerEmp->id, ITRequest::latest('id')->first()->employee_id);
+        // akun User tanpa karyawan tertaut tidak bisa mengajukan
+        $orphan = $this->makeUser('user', ['no_employee' => true]);
+        $this->loginAs($orphan)->post('/requisition/requests', $this->itr())->assertForbidden();
     }
 
     public function test_itr_goes_to_supervisor_first_then_it_team_after_approval(): void
@@ -104,19 +108,19 @@ class SupervisorApprovalTest extends RequisitionTestCase
         $this->assertSame('Pending', ITRequest::latest('id')->first()->status);
     }
 
-    public function test_supervisor_can_file_for_a_subordinate_and_only_for_them(): void
+    public function test_even_a_supervisor_cannot_file_for_a_subordinate_or_search_other_employees(): void
     {
-        $this->actingAs($this->boss)->get('/requisition/requests/create')->assertOk()->assertDontSee('data-ep-fixed', false);
+        $this->actingAs($this->boss)->get('/requisition/requests/create')->assertOk()->assertSee('data-ep-fixed', false);
         $this->post('/requisition/requests', $this->itr(['employee_id' => $this->workerEmp->id]))->assertRedirect();
-        $this->assertSame($this->workerEmp->id, ITRequest::latest('id')->first()->employee_id);
-        $this->assertSame('Pending', ITRequest::latest('id')->first()->status, 'diajukan atasan sendiri: langsung ke Tim IT');
+        $r = ITRequest::latest('id')->first();
+        $this->assertSame($this->bossEmp->id, $r->employee_id, 'atasan hanya bisa mengajukan atas namanya sendiri');
+        $this->assertSame('Pending', $r->status, 'atasan sendiri: langsung ke Tim IT');
 
-        $emps = $this->getJson('/requisition/lookup/employees?q=Karyawan')->json('data');
-        $this->assertSame(['Karyawan Dua'], array_column($emps, 'name'));
-        $this->assertSame([], $this->getJson('/requisition/lookup/employees?q=Budi')->json('data'));
+        $this->assertSame([], $this->getJson('/requisition/lookup/employees?q=Karyawan')->json('data'));
+        $this->assertSame(['Atasan Satu'], array_column($this->getJson('/requisition/lookup/employees?q=Atasan')->json('data'), 'name'));
     }
 
-    public function test_history_and_my_requests_only_show_own_and_subordinate_requests(): void
+    public function test_history_and_my_requests_only_show_own_requests(): void
     {
         $mine = ITRequest::factory()->create(['user_id' => $this->worker->id, 'employee_id' => $this->workerEmp->id, 'title' => 'Punya Karyawan Dua', 'status' => 'Pending', 'sequence_number' => null]);
         ITRequest::factory()->create(['user_id' => null, 'title' => 'Punya Orang Lain', 'status' => 'Pending', 'sequence_number' => null]);
@@ -124,8 +128,8 @@ class SupervisorApprovalTest extends RequisitionTestCase
         $this->actingAs($this->worker)->getJson('/requisition/requests/history')->assertOk()->assertSee('Punya Karyawan Dua')->assertDontSee('Punya Orang Lain');
         $this->get('/requisition/saya')->assertOk()->assertSee('Punya Karyawan Dua')->assertDontSee('Punya Orang Lain');
         $this->get('/requisition/saya?status=Completed')->assertOk()->assertDontSee('Punya Karyawan Dua');
-        // atasan melihat milik anak buah
-        $this->loginAs($this->boss)->get('/requisition/saya')->assertOk()->assertSee('Punya Karyawan Dua');
+        // atasan tidak melihat milik anak buah di Request Saya (hanya lewat halaman Persetujuan Atasan)
+        $this->loginAs($this->boss)->get('/requisition/saya')->assertOk()->assertDontSee('Punya Karyawan Dua');
         // Tim IT melihat semua
         $this->loginAs($this->makeUser('admin'))->getJson('/requisition/requests/history')->assertSee('Punya Orang Lain');
     }

@@ -20,16 +20,18 @@ class EmployeeLookupTest extends RequisitionTestCase
     {
         $this->getJson('/requisition/lookup/employees?q=an')->assertStatus(401);
         $this->makeRequester(['name' => 'Cari Aku Lookup']);
-        foreach (['user', 'admin', 'super_admin'] as $role) {
+        foreach (['admin', 'super_admin'] as $role) {
             $this->loginAs($this->makeUser($role))->getJson('/requisition/lookup/employees?q=Cari Aku')->assertOk()->assertJsonPath('data.0.name', 'Cari Aku Lookup');
         }
+        // akun User tidak bisa mencari karyawan lain
+        $this->loginAs($this->makeUser('user'))->getJson('/requisition/lookup/employees?q=Cari Aku')->assertOk()->assertJsonPath('data', []);
     }
 
     public function test_search_returns_the_fields_needed_to_fill_the_form_and_nothing_sensitive(): void
     {
         $d = $this->dept('Finance');
         $e = $this->makeRequester(['name' => 'Rahma Lookup', 'nik' => '55501', 'position' => 'Akuntan', 'department_id' => $d->id, 'email' => 'rahma.secret@x.test', 'phone' => '0812']);
-        $r = $this->loginAs($this->makeUser('user'))->getJson('/requisition/lookup/employees?q=Rahma Lookup')->assertOk();
+        $r = $this->loginAs($this->makeUser('admin'))->getJson('/requisition/lookup/employees?q=Rahma Lookup')->assertOk();
         $this->assertSame(['id' => $e->id, 'name' => 'Rahma Lookup', 'nik' => '55501', 'position' => 'Akuntan', 'department' => $d->name, 'section' => null], $r->json('data.0'));
         $this->assertStringNotContainsString('rahma.secret', $r->getContent());          // tidak ada email / data pribadi lain
         $this->assertStringNotContainsString('0812', $r->getContent());
@@ -40,7 +42,7 @@ class EmployeeLookupTest extends RequisitionTestCase
         $this->makeRequester(['name' => 'Wijaya Satu Zq', 'nik' => '77001']);
         $this->makeRequester(['name' => 'Aji Wijaya Dua Zq', 'nik' => '77002']);
         $this->makeRequester(['name' => 'Wijaya Resign Zq', 'nik' => '77003', 'status' => 'resigned']);
-        $u = $this->loginAs($this->makeUser('user'));
+        $u = $this->loginAs($this->makeUser('admin'));
         $names = fn ($q) => collect($u->getJson('/requisition/lookup/employees?q=' . urlencode($q))->assertOk()->json('data'))->pluck('name')->all();
 
         $this->assertSame(['Wijaya Satu Zq', 'Aji Wijaya Dua Zq'], $names('Wijaya'));             // awalan nama lebih dulu, lalu yang lain; resign tidak muncul
@@ -55,7 +57,7 @@ class EmployeeLookupTest extends RequisitionTestCase
     public function test_search_treats_wildcards_literally_and_ignores_oversized_input(): void
     {
         $this->makeRequester(['name' => 'Normal Lookup Wc']);
-        $u = $this->loginAs($this->makeUser('user'));
+        $u = $this->loginAs($this->makeUser('admin'));
         $this->assertSame([], $u->getJson('/requisition/lookup/employees?q=' . urlencode('%%'))->assertOk()->json('data'));     // % bukan pola "semua"
         $this->assertSame([], $u->getJson('/requisition/lookup/employees?q=' . urlencode('N_rmal'))->assertOk()->json('data'));  // _ bukan "satu huruf apa saja"
         $this->assertSame([], $u->getJson('/requisition/lookup/employees?q=' . urlencode("x' OR 1=1 --"))->assertOk()->json('data'));
@@ -117,7 +119,7 @@ class EmployeeLookupTest extends RequisitionTestCase
     {
         $admin = $this->makeUser('admin');
         $orig = $this->makeRequester(['name' => 'Budi Wijaya A', 'nik' => '4001', 'position' => 'Akuntan', 'department_id' => $this->dept('Finance')->id]);
-        $this->loginAs($this->makeUser('user'))->postJson('/requisition/requests', ['type' => 'ITR', 'employee_id' => $orig->id, 'title' => 'T', 'description' => 'D', 'items' => [['name' => 'Laptop', 'qty' => 1]]])->assertOk();
+        $this->loginAs($this->makeUser('admin'))->postJson('/requisition/requests', ['type' => 'ITR', 'employee_id' => $orig->id, 'title' => 'T', 'description' => 'D', 'items' => [['name' => 'Laptop', 'qty' => 1]]])->assertOk();
         $r = ITRequest::latest('id')->firstOrFail();
 
         // data karyawan berubah di database; edit biasa (employee_id sama) TIDAK menimpa catatan request
@@ -144,7 +146,7 @@ class EmployeeLookupTest extends RequisitionTestCase
     {
         $admin = $this->makeUser('admin');
         $e = $this->makeRequester(['name' => 'Akan Resign']);
-        $this->loginAs($this->makeUser('user'))->postJson('/requisition/requests', ['type' => 'ITR', 'employee_id' => $e->id, 'title' => 'T', 'description' => 'D', 'items' => [['name' => 'Laptop', 'qty' => 1]]])->assertOk();
+        $this->loginAs($this->makeUser('admin'))->postJson('/requisition/requests', ['type' => 'ITR', 'employee_id' => $e->id, 'title' => 'T', 'description' => 'D', 'items' => [['name' => 'Laptop', 'qty' => 1]]])->assertOk();
         $r = ITRequest::latest('id')->firstOrFail();
         $e->update(['status' => 'resigned']);
         $this->loginAs($admin)->patchJson("/requisition/requests/{$r->id}", ['employee_id' => $e->id, 'employee_name' => 'Akan Resign', 'employee_nik' => '123456', 'position' => 'Staff IT', 'title' => 'T9', 'description' => 'D'])->assertOk();

@@ -199,17 +199,17 @@ class RequestController extends Controller
             ->get();
     }
 
-    /** Akun peran User yang tertaut karyawan hanya melihat request miliknya dan anak buahnya; Tim IT dan akun belum tertaut melihat semua. */
+    /** Akun peran User hanya melihat request miliknya sendiri; Tim IT melihat semua. */
     private function scopeToViewer($query)
     {
         $user = auth()->user();
         $allowed = app(RequestSupervisor::class)->allowedRequesters($user);
         if ($allowed === null) return $query;
 
-        return $query->where(fn ($q) => $q->where('user_id', $user->id)->orWhereIn('employee_id', $allowed->pluck('id')->all()));
+        return $query->where(fn ($q) => $q->where('user_id', $user->id)->orWhereIn('employee_id', $allowed->pluck('id')->all() ?: [0]));
     }
 
-    // 2c. Halaman "Request Saya": riwayat lengkap milik user (dan anak buahnya) dengan pencarian + filter jenis/status.
+    // 2c. Halaman "Request Saya": riwayat lengkap milik user dengan pencarian + filter jenis/status.
     public function mine(Request $request)
     {
         $q = $this->scopeToViewer(ITRequest::with(['approvedBy', 'supervisor', 'accessoryHandovers', 'links.assignment']));
@@ -286,16 +286,15 @@ class RequestController extends Controller
     }
 
     /**
-     * Akun peran User yang sudah tertaut ke data karyawan hanya boleh mengajukan untuk dirinya dan anak buah langsungnya (HRIS).
-     * Tanpa pilihan, pemohon = dirinya sendiri. Akun lain (Tim IT, atau User yang belum tertaut karyawan) tidak dibatasi.
+     * Akun peran User hanya mengajukan untuk dirinya: pemohon SELALU karyawan yang tertaut ke akun login (isian browser diabaikan).
+     * Akun yang belum tertaut ke data karyawan tidak bisa mengajukan. Tim IT tidak dibatasi.
      */
     private function enforceRequester(Request $request): void
     {
         $allowed = app(RequestSupervisor::class)->allowedRequesters(auth()->user());
         if ($allowed === null) return;
-        if (! $request->filled('employee_id')) $request->merge(['employee_id' => auth()->user()->employee->id]);
-        if (! Employee::whereKey((int) $request->employee_id)->exists()) return;     // id tak dikenal: ditolak validasi (422) oleh resolveEmployee
-        abort_unless($allowed->contains('id', (int) $request->employee_id), 403, 'Anda hanya dapat mengajukan request untuk diri sendiri atau anak buah langsung Anda.');
+        abort_if($allowed->isEmpty(), 403, 'Akun Anda belum tertaut ke data karyawan. Hubungi Tim IT.');
+        $request->merge(['employee_id' => $allowed->first()->id]);
     }
 
     /**

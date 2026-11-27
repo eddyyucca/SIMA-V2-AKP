@@ -23,7 +23,7 @@ class MergeIntegrationTest extends RequisitionTestCase
     /** Karyawan yang tertaut ke akun, dengan satu aset dipegang. */
     private function employeeWithAsset(User $user, string $status = 'deployed'): array
     {
-        $emp = Employee::create(['name' => 'Budi Pemakai', 'email' => $user->email, 'nik' => 'REQ-' . $user->id, 'status' => 'active', 'user_id' => $user->id]);
+        $emp = $this->linkEmployee($user, ['name' => 'Budi Pemakai', 'email' => $user->email, 'nik' => 'REQ-' . $user->id, 'status' => 'active']);
         $asset = Asset::where('status', 'available')->whereNull('employee_id')->orderBy('id')->firstOrFail();
         $asset->update(['employee_id' => $emp->id, 'status' => $status]);
         return [$emp, $asset->fresh()];
@@ -178,7 +178,7 @@ class MergeIntegrationTest extends RequisitionTestCase
 
     public function test_nik_is_digits_only_in_requests_just_like_it_asset(): void
     {
-        $u = $this->makeUser('user');
+        $u = $this->makeUser('admin');      // Tim IT mengajukan atas nama karyawan yang NIK-nya belum ada di database
         $emp = $this->makeRequester(['name' => 'Tanpa Nik', 'nik' => null]);          // NIK hanya diisi di formulir bila belum ada di database
         $ticket = fn (array $over = []) => $this->ticket(['employee_id' => $emp->id] + $over);
         foreach (['1001', '3201202401', '12345'] as $nik) {
@@ -198,7 +198,7 @@ class MergeIntegrationTest extends RequisitionTestCase
     {
         $u = $this->makeUser('user');
         $dept = \App\Models\Department::first();
-        Employee::create(['name' => 'Siti Aminah', 'email' => $u->email, 'nik' => '7788', 'position' => 'Akuntan', 'department_id' => $dept->id, 'status' => 'active', 'user_id' => $u->id]);
+        $this->linkEmployee($u, ['name' => 'Siti Aminah', 'email' => $u->email, 'nik' => '7788', 'position' => 'Akuntan', 'department_id' => $dept->id, 'status' => 'active']);
         $html = $this->loginAs($u)->get('/requisition/requests/create')->assertOk()->getContent();
         $this->assertStringNotContainsString('"nik":"7788"', $html);
         $this->assertStringNotContainsString('var p = {', $html);

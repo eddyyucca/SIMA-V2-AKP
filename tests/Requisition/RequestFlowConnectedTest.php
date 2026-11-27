@@ -18,7 +18,7 @@ class RequestFlowConnectedTest extends RequisitionTestCase
     private function person(): array
     {
         $u = $this->makeUser('user');
-        $e = Employee::create(['name' => 'Pemohon Alur', 'email' => $u->email, 'nik' => 'FL' . $u->id, 'status' => 'active', 'user_id' => $u->id]);
+        $e = $this->linkEmployee($u, ['name' => 'Pemohon Alur', 'email' => $u->email, 'nik' => 'FL' . $u->id, 'status' => 'active']);
         return [$u, $e];
     }
 

@@ -32,7 +32,7 @@ class EditResubmitTest extends RequisitionTestCase
         $response->assertSessionHasNoErrors();
         $this->assertDatabaseHas('i_t_requests', [
             'id' => $item->id,
-            'requester_name' => 'Budi Santoso Revisi',
+            'requester_name' => 'Budi Santoso',      // nama pemohon dari karyawan akun login, tidak bisa diubah lewat form
             'status' => 'Pending', // otomatis dikirim ulang sebagai Pending
         ]);
     }

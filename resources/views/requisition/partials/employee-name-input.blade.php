@@ -2,10 +2,10 @@
      Parameter: ring (warna fokus), id (opsional), placeholder, value, employeeId (pemulihan setelah validasi gagal),
      strict (bawaan true: wajib memilih dari daftar; false = formulir edit, request lama boleh belum terhubung). --}}
 @php
-    // Akun peran User yang tertaut karyawan: pemohon terisi otomatis dirinya sendiri (dikunci bila tak punya anak buah di HRIS).
+    // Akun peran User yang tertaut karyawan: pemohon terisi otomatis dirinya sendiri (selalu terkunci).
     $epAllowed = app(\App\Services\RequestSupervisor::class)->allowedRequesters(auth()->user());
-    $epSelf = ($strict ?? true) && $epAllowed ? auth()->user()->employee->loadMissing('department') : null;
-    $epFixed = $epAllowed !== null && $epAllowed->count() === 1;
+    $epSelf = ($strict ?? true) && $epAllowed && $epAllowed->isNotEmpty() ? $epAllowed->first()->loadMissing('department') : null;
+    $epFixed = $epAllowed !== null;     // akun User: pemohon selalu dirinya sendiri, tidak bisa diganti
     $epSelfJson = $epSelf ? json_encode(['id' => $epSelf->id, 'name' => $epSelf->name, 'nik' => $epSelf->nik, 'position' => $epSelf->position, 'department' => $epSelf->department?->name]) : '';
     if ($epSelf && empty($value)) { $value = $epSelf->name; $employeeId = $epSelf->id; }
 @endphp
