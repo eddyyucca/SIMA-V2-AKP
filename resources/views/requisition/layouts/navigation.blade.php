@@ -13,6 +13,22 @@
                     </a>
                 </div>
 
+                <!-- Menu semua akun: buat request, request saya, dan (bagi atasan) persetujuan anak buah -->
+                @auth
+                    @php
+                        $navEmp = auth()->user()->employee;
+                        $navSubs = $navEmp ? app(\App\Services\RequestSupervisor::class)->subordinates($navEmp)->count() : 0;
+                        $navWaiting = $navSubs > 0 ? \App\Models\ITRequest::where('supervisor_employee_id', $navEmp->id)->where('status', \App\Models\ITRequest::AWAITING_SUPERVISOR)->count() : 0;
+                    @endphp
+                    <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                        <x-nav-link :href="route('requests.create')" :active="request()->routeIs('requests.create')">Buat Request</x-nav-link>
+                        <x-nav-link :href="route('requests.mine')" :active="request()->routeIs('requests.mine')">Request Saya</x-nav-link>
+                        @if ($navSubs > 0)
+                            <x-nav-link :href="route('requests.supervisor')" :active="request()->routeIs('requests.supervisor')">Persetujuan Atasan @if ($navWaiting) <span class="ms-1 inline-flex items-center justify-center rounded-full bg-rose-600 text-white text-[10px] font-bold px-1.5 min-w-[18px] h-[18px]">{{ $navWaiting }}</span> @endif</x-nav-link>
+                        @endif
+                    </div>
+                @endauth
+
                 <!-- 1. HANYA TAMPILKAN LINK DASHBOARD JIKA SUDAH LOGIN & PUNYA AKSES (TIM IT) -->
                 @auth
                     @if (auth()->user()->isAdmin() || auth()->user()->can('view inventory'))
@@ -61,6 +77,13 @@
     <!-- Responsive Navigation Menu (Mobile) -->
     @auth
         <div id="navMobile" :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
+            <div class="pt-2 pb-1 space-y-1">
+                <x-responsive-nav-link :href="route('requests.create')" :active="request()->routeIs('requests.create')">Buat Request</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('requests.mine')" :active="request()->routeIs('requests.mine')">Request Saya</x-responsive-nav-link>
+                @if (($navSubs ?? 0) > 0)
+                    <x-responsive-nav-link :href="route('requests.supervisor')" :active="request()->routeIs('requests.supervisor')">Persetujuan Atasan{{ ($navWaiting ?? 0) ? ' (' . $navWaiting . ')' : '' }}</x-responsive-nav-link>
+                @endif
+            </div>
             @if (auth()->user()->isAdmin() || auth()->user()->can('view inventory'))
                 <div class="pt-2 pb-3 space-y-1">
                     @if (auth()->user()->isAdmin())

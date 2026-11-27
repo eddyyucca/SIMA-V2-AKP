@@ -45,6 +45,11 @@ class ITRequest extends Model
         'document_path',
         'document_name',
         'numbered_at',
+        'supervisor_employee_id',
+        'supervisor_asked_at',
+        'supervisor_decided_at',
+        'supervisor_decision',
+        'supervisor_note',
     ];
 
     protected $casts = [
@@ -58,6 +63,8 @@ class ITRequest extends Model
         'approved_at' => 'datetime',
         'completed_at' => 'datetime',
         'numbered_at' => 'datetime',
+        'supervisor_asked_at' => 'datetime',
+        'supervisor_decided_at' => 'datetime',
     ];
 
     protected $appends = [
@@ -72,6 +79,19 @@ class ITRequest extends Model
     {
         return $this->hasMany(AccessoryHandover::class, 'request_id');
     }
+
+    public const AWAITING_SUPERVISOR = 'Awaiting Supervisor';
+
+    /** Jenis request yang lebih dulu butuh persetujuan atasan pemohon. */
+    public const SUPERVISOR_TYPES = ['ITR', 'PEMINJAMAN_ASET'];
+
+    /** Atasan yang diminta menyetujui request ini. */
+    public function supervisor(): BelongsTo
+    {
+        return $this->belongsTo(Employee::class, 'supervisor_employee_id')->withTrashed();
+    }
+
+    public function isAwaitingSupervisor(): bool { return $this->status === self::AWAITING_SUPERVISOR; }
 
     /** Karyawan di IT Asset yang dicocokkan tim IT dengan pemohon request ini. */
     public function employee(): BelongsTo

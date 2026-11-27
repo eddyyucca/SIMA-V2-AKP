@@ -59,7 +59,7 @@
         p.hint.classList.remove('hidden');
         p.hint.style.color = kind === 'error' ? '#dc2626' : (kind === 'warn' ? '#b45309' : '#059669');
         (Array.isArray(html) ? html : [html]).forEach(function (line) { p.hint.appendChild(el('div', null, line)); });
-        if (kind !== 'error' && p.id.value) {
+        if (kind !== 'error' && p.id.value && !input.dataset.epFixed) {
             var change = el('button', { type: 'button', 'data-ep-clear': '1', style: 'text-decoration:underline;margin-top:2px;color:#1f6fb5;font-weight:600' }, 'Ganti karyawan');
             p.hint.appendChild(change);
         }
@@ -249,6 +249,18 @@
         }
         syncItemRefs(form);
     }, true);
+
+    // ───────── akun User: pemohon terisi otomatis dirinya sendiri (data-ep-self), juga setelah formulir direset ─────────
+    function prefillSelf(root) {
+        (root || document).querySelectorAll('[data-employee-picker][data-ep-self]').forEach(function (input) {
+            var emp; try { emp = JSON.parse(input.getAttribute('data-ep-self')); } catch (e) { return; }
+            if (emp && !parts(input).id.value) applySelection(input, emp);
+            else if (emp) applySelection(input, emp, { keepValues: false });
+        });
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { prefillSelf(); }); else prefillSelf();
+    document.addEventListener('reset', function (e) { setTimeout(function () { prefillSelf(e.target); }, 0); }, true);
+    EP.prefillSelf = prefillSelf;
 
     // ───────── API untuk halaman ─────────
     /** Formulir edit: tampilkan keterhubungan request dengan database. Nilai field sudah diisi oleh halaman; tidak ditimpa. */

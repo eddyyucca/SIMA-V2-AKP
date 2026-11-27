@@ -24,6 +24,10 @@ Route::middleware([Authenticate::class, \App\Http\Middleware\EnforcePortalSessio
     Route::get('/requests/create', [RequestController::class, 'create'])->name('requests.create');
     Route::get('/requests/history', [RequestController::class, 'publicHistoryJson'])->name('requests.history');
     Route::post('/requests', [RequestController::class, 'store'])->name('requests.store');
+    // Request saya (riwayat lengkap + filter) dan persetujuan atasan (hanya akun yang punya anak buah di HRIS)
+    Route::get('/saya', [RequestController::class, 'mine'])->name('requests.mine');
+    Route::get('/atasan', [RequestController::class, 'supervisorIndex'])->name('requests.supervisor');
+    Route::post('/atasan/{id}', [RequestController::class, 'supervisorDecide'])->name('requests.supervisor.decide');
     // Pencarian untuk formulir request: karyawan (isi otomatis NIK / department / jabatan) dan saran nama barang ITR. Semua peran, dibatasi frekuensinya.
     Route::get('/lookup/employees', [\App\Http\Controllers\EmployeeLookupController::class, 'employees'])->middleware('throttle:120,1')->name('lookup.employees');
     Route::get('/lookup/items', [\App\Http\Controllers\EmployeeLookupController::class, 'items'])->middleware('throttle:120,1')->name('lookup.items');

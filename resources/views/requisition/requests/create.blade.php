@@ -99,7 +99,7 @@
                     </button>
                 </div>
                 <div id="formGuidePanel" class="hidden mt-4 bg-[#111827] border border-slate-800 rounded-2xl p-5 sm:p-6">
-                    <p class="text-xs text-slate-400 mb-4">Semua request wajib melalui approval Tim IT. Nomor tiket resmi baru terbit setelah request disetujui.</p>
+                    <p class="text-xs text-slate-400 mb-4">Semua request wajib melalui approval Tim IT. Nomor tiket resmi baru terbit setelah request disetujui. ITR dan Peminjaman Aset dari akun karyawan lebih dulu disetujui atasan langsung (sesuai data HRIS); bila atasan belum menjawab {{ \App\Services\RequestSupervisor::ESCALATE_AFTER_DAYS }} hari, request diteruskan otomatis ke Tim IT.</p>
                     <dl class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
                         <div>
                             <dt class="font-bold text-amber-400 uppercase tracking-wide">Ticket Sistem — Laporan Kendala</dt>

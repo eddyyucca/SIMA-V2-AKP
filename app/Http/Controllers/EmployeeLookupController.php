@@ -30,7 +30,10 @@ class EmployeeLookupController extends Controller
         if (mb_strlen($q) < 2) return response()->json(['data' => []]);
 
         $like = $this->like($q);
+        // akun peran User hanya bisa memilih dirinya dan anak buah langsungnya (HRIS)
+        $allowed = app(\App\Services\RequestSupervisor::class)->allowedRequesters($request->user());
         $rows = Employee::query()->with('department')->where('status', 'active')
+            ->when($allowed !== null, fn ($w) => $w->whereIn('id', $allowed->pluck('id')->all()))
             ->where(fn ($w) => $w->where('name', 'like', "%{$like}%")->orWhere('nik', 'like', "{$like}%"))
             ->orderByRaw('CASE WHEN lower(name) LIKE lower(?) THEN 0 ELSE 1 END', ["{$like}%"])->orderBy('name')
             ->limit(self::MAX_RESULTS)->get();

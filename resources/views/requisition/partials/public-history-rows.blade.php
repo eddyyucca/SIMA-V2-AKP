@@ -23,8 +23,9 @@
                 @elseif($item->status == 'In Progress') bg-blue-500/20 text-blue-400 border-blue-500/30
                 @elseif($item->status == 'Approved') bg-teal-500/20 text-teal-400 border-teal-500/30
                 @elseif($item->status == 'Rejected') bg-rose-500/20 text-rose-400 border-rose-500/30
+                @elseif($item->status == 'Awaiting Supervisor') bg-violet-500/20 text-violet-300 border-violet-500/30
                 @else bg-amber-500/20 text-amber-400 border-amber-500/30 @endif">
-                {{ $isNeverProcessedPending ? 'Menunggu Approval' : $item->status }}
+                {{ $item->status === 'Awaiting Supervisor' ? 'Menunggu Atasan' : ($isNeverProcessedPending ? 'Menunggu Approval' : $item->status) }}
             </span>
         </td>
         <td data-label="Diproses Oleh" class="py-3 px-4 text-slate-400">{{ $item->approvedBy->name ?? '-' }}</td>
@@ -42,7 +43,7 @@
                 // setelah pemilik resubmit dan disetujui ulang). Peminjaman Aset juga cuma punya PDF
                 // kalau durasinya >= 7 hari (lihat downloadPdf()).
                 $canViewPdf = $item->type !== 'TICKET_SISTEM' && ! $showEdit && $isOwnerOrManager
-                    && ! in_array($item->status, ['Pending', 'Rejected'], true)
+                    && ! in_array($item->status, ['Pending', 'Rejected', 'Awaiting Supervisor'], true)
                     && ($item->type !== 'PEMINJAMAN_ASET' || (int) $item->loan_duration_days >= 7);
                 // Hapus tersedia untuk semua tipe form (termasuk Surat Jalan & TT yang tidak bisa diedit).
                 // Pemilik request cuma boleh hapus miliknya sendiri yang sudah Rejected (sama seperti

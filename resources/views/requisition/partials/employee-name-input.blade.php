@@ -1,8 +1,18 @@
 {{-- Kotak cari karyawan untuk kolom Nama pada formulir request (lihat public/js/employee-picker.js).
      Parameter: ring (warna fokus), id (opsional), placeholder, value, employeeId (pemulihan setelah validasi gagal),
      strict (bawaan true: wajib memilih dari daftar; false = formulir edit, request lama boleh belum terhubung). --}}
+@php
+    // Akun peran User yang tertaut karyawan: pemohon terisi otomatis dirinya sendiri (dikunci bila tak punya anak buah di HRIS).
+    $epAllowed = app(\App\Services\RequestSupervisor::class)->allowedRequesters(auth()->user());
+    $epSelf = ($strict ?? true) && $epAllowed ? auth()->user()->employee->loadMissing('department') : null;
+    $epFixed = $epAllowed !== null && $epAllowed->count() === 1;
+    $epSelfJson = $epSelf ? json_encode(['id' => $epSelf->id, 'name' => $epSelf->name, 'nik' => $epSelf->nik, 'position' => $epSelf->position, 'department' => $epSelf->department?->name]) : '';
+    if ($epSelf && empty($value)) { $value = $epSelf->name; $employeeId = $epSelf->id; }
+@endphp
 <div class="relative" data-ep-wrap>
     <input type="text" name="employee_name" @if (! empty($id)) id="{{ $id }}" @endif data-employee-picker @if ($strict ?? true) data-ep-required="1" @endif
+        @if ($epSelf) data-ep-self="{{ $epSelfJson }}" @endif
+        @if ($epFixed) data-ep-fixed="1" readonly title="Diisi otomatis dari data karyawan Anda" @endif
         required autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false"
         placeholder="{{ $placeholder ?? 'Ketik nama karyawan, lalu pilih dari daftar' }}" value="{{ $value ?? '' }}"
         class="w-full bg-[#1f2937] border border-slate-700 rounded-lg px-4 py-3 text-sm text-white focus:ring-2 focus:ring-{{ $ring ?? 'purple' }}-500">

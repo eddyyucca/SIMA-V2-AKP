@@ -9,6 +9,7 @@ Schedule::command('inventory:notify monthly')->monthlyOn(1, '08:00');
 // System Requisition: reminder Peminjaman Aset yang jatuh tempo/terlambat, tiap 30 menit
 // (peminjaman jam-an juga cepat terdeteksi). Butuh scheduler berjalan (container scheduler).
 Schedule::command('peminjaman:remind')->everyThirtyMinutes();
+Schedule::command('requisition:escalate-supervisor')->hourly();   // request yang menunggu atasan > 2 hari diteruskan ke Tim IT
 
 // HRIS = sumber kebenaran karyawan (aktif/resign, jabatan, department). Hanya berjalan bila HRIS_API_URL & HRIS_API_TOKEN terisi.
 if (filled(config('services.hris.url')) && filled(config('services.hris.token'))) {
