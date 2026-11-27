@@ -144,11 +144,7 @@ class RequestController extends Controller
     // List All Form/list Peminjaman & History Request Terbaru.
     private function pendingApprovalsQuery()
     {
-        return ITRequest::with('user')
-            ->where('status', 'Pending')
-            ->whereNull('sequence_number')
-            ->whereIn('type', ['ITR', 'BAK', 'TICKET_SISTEM', 'WO', 'PEMINJAMAN_ASET'])
-            ->latest();
+        return ITRequest::with('user')->incoming()->latest();
     }
 
     // 1c. Endpoint AJAX untuk auto-refresh "Incoming Requests (Pending)" secara berkala tanpa reload

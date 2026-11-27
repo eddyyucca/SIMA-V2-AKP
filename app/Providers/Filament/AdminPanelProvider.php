@@ -44,6 +44,17 @@ class AdminPanelProvider extends PanelProvider
             ->databaseNotifications()
             ->databaseNotificationsPolling('60s')
             ->navigationGroups(['Inventaris', 'Transaksi', 'Master Data', 'Laporan'])
+            // menu khusus request ITERA untuk Tim IT, dengan jumlah request yang menunggu keputusan
+            ->navigationItems([
+                \Filament\Navigation\NavigationItem::make('Request ITERA')
+                    ->icon('heroicon-o-inbox-arrow-down')
+                    ->url(fn () => route('dashboard'))
+                    ->sort(-10)
+                    ->visible(fn () => (bool) auth()->user()?->canManageRequests())
+                    ->badge(fn () => ($n = \App\Models\ITRequest::incoming()->count()) ? (string) $n : null, color: 'warning')
+                    ->badgeTooltip(fn () => ($a = \App\Models\ITRequest::where('status', \App\Models\ITRequest::AWAITING_SUPERVISOR)->count())
+                        ? \App\Models\ITRequest::incoming()->count() . ' menunggu Tim IT · ' . $a . ' menunggu atasan' : \App\Models\ITRequest::incoming()->count() . ' request menunggu Tim IT'),
+            ])
             ->globalSearch()
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverClusters(in: app_path('Filament/Clusters'), for: 'App\\Filament\\Clusters')

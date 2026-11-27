@@ -18,11 +18,13 @@
                     @php
                         $navEmp = auth()->user()->employee;
                         $navSubs = $navEmp ? app(\App\Services\RequestSupervisor::class)->subordinates($navEmp)->count() : 0;
+                        $navOpen = \App\Models\ITRequest::openFor(auth()->id())->count();
+                        $navIncoming = auth()->user()->isAdmin() ? \App\Models\ITRequest::incoming()->count() : 0;
                         $navWaiting = $navSubs > 0 ? \App\Models\ITRequest::where('supervisor_employee_id', $navEmp->id)->where('status', \App\Models\ITRequest::AWAITING_SUPERVISOR)->count() : 0;
                     @endphp
                     <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                         <x-nav-link :href="route('requests.create')" :active="request()->routeIs('requests.create')">Buat Request</x-nav-link>
-                        <x-nav-link :href="route('requests.mine')" :active="request()->routeIs('requests.mine')">Request Saya</x-nav-link>
+                        <x-nav-link :href="route('requests.mine')" :active="request()->routeIs('requests.mine')">Request Saya @if ($navOpen) <span class="ms-1 inline-flex items-center justify-center rounded-full bg-sky-600 text-white text-[10px] font-bold px-1.5 min-w-[18px] h-[18px]">{{ $navOpen }}</span> @endif</x-nav-link>
                         @if ($navSubs > 0)
                             <x-nav-link :href="route('requests.supervisor')" :active="request()->routeIs('requests.supervisor')">Persetujuan Atasan @if ($navWaiting) <span class="ms-1 inline-flex items-center justify-center rounded-full bg-rose-600 text-white text-[10px] font-bold px-1.5 min-w-[18px] h-[18px]">{{ $navWaiting }}</span> @endif</x-nav-link>
                         @endif
@@ -35,7 +37,7 @@
                         <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                             @if (auth()->user()->isAdmin())
                                 <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                                    {{ __('Dashboard') }}
+                                    {{ __('Dashboard') }} @if (($navIncoming ?? 0) > 0) <span class="ms-1 inline-flex items-center justify-center rounded-full bg-amber-500 text-white text-[10px] font-bold px-1.5 min-w-[18px] h-[18px]">{{ $navIncoming }}</span> @endif
                                 </x-nav-link>
                             @endif
                             @can('view inventory')
@@ -79,7 +81,7 @@
         <div id="navMobile" :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
             <div class="pt-2 pb-1 space-y-1">
                 <x-responsive-nav-link :href="route('requests.create')" :active="request()->routeIs('requests.create')">Buat Request</x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('requests.mine')" :active="request()->routeIs('requests.mine')">Request Saya</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('requests.mine')" :active="request()->routeIs('requests.mine')">Request Saya{{ ($navOpen ?? 0) ? ' (' . $navOpen . ')' : '' }}</x-responsive-nav-link>
                 @if (($navSubs ?? 0) > 0)
                     <x-responsive-nav-link :href="route('requests.supervisor')" :active="request()->routeIs('requests.supervisor')">Persetujuan Atasan{{ ($navWaiting ?? 0) ? ' (' . $navWaiting . ')' : '' }}</x-responsive-nav-link>
                 @endif

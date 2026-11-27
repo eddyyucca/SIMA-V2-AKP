@@ -91,6 +91,18 @@ class ITRequest extends Model
         return $this->belongsTo(Employee::class, 'supervisor_employee_id')->withTrashed();
     }
 
+    /** Request baru yang menunggu keputusan Tim IT (panel "Incoming Requests"): Pending dan belum pernah bernomor. */
+    public function scopeIncoming($q)
+    {
+        return $q->where('status', 'Pending')->whereNull('sequence_number')->whereIn('type', ['ITR', 'BAK', 'TICKET_SISTEM', 'WO', 'PEMINJAMAN_ASET']);
+    }
+
+    /** Request milik satu akun yang masih berjalan (belum Completed / Rejected). */
+    public function scopeOpenFor($q, int $userId)
+    {
+        return $q->where('user_id', $userId)->whereIn('status', [self::AWAITING_SUPERVISOR, 'Pending', 'Approved', 'In Progress']);
+    }
+
     public function isAwaitingSupervisor(): bool { return $this->status === self::AWAITING_SUPERVISOR; }
 
     /** Karyawan di IT Asset yang dicocokkan tim IT dengan pemohon request ini. */
