@@ -59,7 +59,7 @@
         p.hint.classList.remove('hidden');
         p.hint.style.color = kind === 'error' ? '#dc2626' : (kind === 'warn' ? '#b45309' : '#059669');
         (Array.isArray(html) ? html : [html]).forEach(function (line) { p.hint.appendChild(el('div', null, line)); });
-        if (kind !== 'error' && p.id.value && !input.dataset.epFixed) {
+        if (kind !== 'error' && p.id.value && !input.dataset.epFixed && !input.dataset.epLocked) {
             var change = el('button', { type: 'button', 'data-ep-clear': '1', style: 'text-decoration:underline;margin-top:2px;color:#1f6fb5;font-weight:600' }, 'Ganti karyawan');
             p.hint.appendChild(change);
         }
@@ -221,6 +221,7 @@
 
     document.addEventListener('click', function (e) {
         var clear = e.target.closest && e.target.closest('[data-ep-clear]');
+        if (clear && clear.closest('[data-ep-wrap]').querySelector('[data-ep-fixed],[data-ep-locked]')) { clear.remove(); return; }
         if (clear) {
             var input = clear.closest('[data-ep-wrap]').querySelector('[data-employee-picker]');
             clearSelection(input, true);
@@ -270,7 +271,9 @@
         var p = parts(input);
         input.value = item.requester_name || '';
         closeList(input);
+        delete input.dataset.epLocked; if (!input.dataset.epFixed) input.readOnly = false;
         if (item.employee_id) {
+            input.readOnly = true; input.dataset.epLocked = '1';           // pemohon request yang sudah tertaut tidak bisa diganti
             applySelection(input, { id: item.employee_id, name: item.requester_name || '' }, { keepValues: true });
         } else {
             clearSelection(input, false);

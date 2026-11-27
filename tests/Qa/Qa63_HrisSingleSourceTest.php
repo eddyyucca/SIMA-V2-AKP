@@ -137,6 +137,8 @@ class Qa63_HrisSingleSourceTest extends QaTestCase
     public function test_lookup_returns_section_and_smoke_reports_employees_missing_in_hris(): void
     {
         $e = Employee::create(['nik' => '9990020', 'name' => 'Cari Section', 'email' => 'cs@x.test', 'status' => 'active', 'section' => 'WORKSHOP', 'hris_missing_at' => now()]);
-        $this->as($this->admin())->getJson('/requisition/lookup/employees?q=Cari Section')->assertOk()->assertJsonPath('data.0.section', 'WORKSHOP');
+        $admin = $this->admin();
+        Employee::where('user_id', $admin->id)->update(['user_id' => null]);     // akun darurat tanpa karyawan tertaut boleh mencari; akun yang tertaut hanya melihat dirinya
+        $this->as($admin)->getJson('/requisition/lookup/employees?q=Cari Section')->assertOk()->assertJsonPath('data.0.section', 'WORKSHOP');
     }
 }

@@ -55,14 +55,15 @@ class RequestSupervisor
     }
 
     /**
-     * Akun peran User hanya boleh mengajukan untuk karyawan yang tertaut ke akun loginnya sendiri (tidak bisa memilih karyawan lain).
-     * Null = tidak dibatasi (Tim IT). Akun User yang belum tertaut karyawan menghasilkan daftar kosong (tidak bisa mengajukan).
+     * Pemohon request selalu karyawan yang tertaut ke akun loginnya (semua peran, termasuk Tim IT): tidak ada pilihan karyawan lain.
+     * Akun User yang belum tertaut karyawan tidak bisa mengajukan (daftar kosong). Hanya akun Tim IT yang belum tertaut karyawan
+     * tidak dibatasi (null), supaya akun darurat tetap bisa bekerja.
      */
     public function allowedRequesters(User $u): ?Collection
     {
-        if ($u->role !== 'user') return null;
+        if ($u->employee) return collect([$u->employee]);
 
-        return $u->employee ? collect([$u->employee]) : collect();
+        return $u->role === 'user' ? collect() : null;
     }
 
     /** Atasan yang harus menyetujui lebih dulu, atau null bila request boleh langsung ke Tim IT. */

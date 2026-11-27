@@ -128,15 +128,16 @@ class EmployeeLookupTest extends RequisitionTestCase
         $r->refresh();
         $this->assertSame(['4001', 'Akuntan', 'T2', $orig->id], [$r->nik, $r->position, $r->title, $r->employee_id]);      // nama DB non-Title Case tidak ditolak
 
-        // memilih karyawan lain: data pemohon diambil dari database karyawan baru
+        // memilih karyawan lain / mengubah identitas pemohon diabaikan: pemohon request yang sudah tertaut tidak bisa diganti siapa pun
         $new = $this->makeRequester(['name' => 'Karyawan Baru Edit', 'nik' => '5005', 'position' => 'Operator', 'department_id' => $this->dept('GA')->id]);
         $this->loginAs($admin)->patchJson("/requisition/requests/{$r->id}", ['employee_id' => $new->id, 'employee_name' => 'Palsu', 'employee_nik' => '1', 'position' => 'Direktur', 'title' => 'T3', 'description' => 'D'])->assertOk();
         $r->refresh();
-        $this->assertSame([$new->id, 'Karyawan Baru Edit', '5005', 'Operator', $this->dept('GA')->name], [$r->employee_id, $r->requester_name, $r->nik, $r->position, $r->department]);
+        $this->assertSame([$orig->id, 'Budi Wijaya A', '4001', 'Akuntan', 'T3'], [$r->employee_id, $r->requester_name, $r->nik, $r->position, $r->title]);
 
         // karyawan resign tidak bisa dipilih; request lama tanpa tautan tetap bisa diedit seperti biasa
         $res = $this->makeRequester(['name' => 'Karyawan Resign Edit', 'status' => 'resigned']);
-        $this->loginAs($admin)->patchJson("/requisition/requests/{$r->id}", ['employee_id' => $res->id, 'title' => 'T4', 'description' => 'D'])->assertStatus(422)->assertJsonValidationErrors('employee_id');
+        $this->loginAs($admin)->patchJson("/requisition/requests/{$r->id}", ['employee_id' => $res->id, 'employee_name' => 'x', 'employee_nik' => '1', 'position' => 'x', 'title' => 'T4', 'description' => 'D'])->assertOk();
+        $this->assertSame($orig->id, $r->fresh()->employee_id, 'karyawan resign / lain tidak bisa dipasang sebagai pemohon');
         $legacy = ITRequest::factory()->create(['type' => 'ITR', 'user_id' => $admin->id, 'status' => 'Pending', 'employee_id' => null, 'requester_name' => 'Nama Lama', 'nik' => '12', 'position' => 'Staff', 'department' => 'Finance', 'title' => 'L', 'description' => 'D']);
         $this->loginAs($admin)->patchJson("/requisition/requests/{$legacy->id}", ['employee_name' => 'Nama Lama Baru', 'employee_nik' => '12', 'department' => 'Finance', 'position' => 'Staff', 'title' => 'L2', 'description' => 'D'])->assertOk();
         $this->loginAs($admin)->patchJson("/requisition/requests/{$legacy->id}", ['employee_name' => 'huruf kecil semua', 'employee_nik' => '12', 'position' => 'Staff', 'title' => 'L3', 'description' => 'D'])->assertStatus(422)->assertJsonValidationErrors('employee_name');   // aturan lama tetap untuk yang belum tertaut

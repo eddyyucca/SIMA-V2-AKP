@@ -203,6 +203,7 @@ class RequestController extends Controller
     private function scopeToViewer($query)
     {
         $user = auth()->user();
+        if ($user->role !== 'user') return $query;
         $allowed = app(RequestSupervisor::class)->allowedRequesters($user);
         if ($allowed === null) return $query;
 
@@ -517,7 +518,9 @@ class RequestController extends Controller
 
         // Karyawan boleh diganti dengan memilih ulang dari database; bila tidak diganti, data pemohon yang tersimpan tetap
         // (request adalah catatan pada saat dibuat, bukan dihitung ulang dari data karyawan terbaru).
-        if (! auth()->user()->canManageRequests()) $this->enforceRequester($request);
+        // pemohon request tidak bisa diganti oleh siapa pun (termasuk Tim IT); hanya request lama yang belum tertaut yang boleh ditautkan
+        if ($item->employee_id) $request->merge(['employee_id' => $item->employee_id]);
+        elseif (! auth()->user()->canManageRequests()) $this->enforceRequester($request);
         $employee = $this->resolveEmployee($request, false, $item->employee_id);
         $relink = $employee !== null && (int) $employee->id !== (int) $item->employee_id;
         $requesterRules = $relink ? $this->employeeBackedRules($employee, true) : [
@@ -579,8 +582,12 @@ class RequestController extends Controller
             'admin_notes'    => $validated['admin_notes'] ?? null,
         ];
 
-        // karyawan diganti: data pemohon diambil dari database karyawan yang baru dipilih
+        // karyawan diganti: data pemohon diambil dari database karyawan yang baru dipilih (hanya request lama yang belum tertaut)
         if ($relink) $dataToUpdate = array_merge($dataToUpdate, $this->requesterFrom($employee, $request));
+        // request yang sudah tertaut ke karyawan: identitas pemohon (nama, NIK, department, jabatan) tidak bisa diubah lewat formulir
+        if ($item->employee_id) {
+            $dataToUpdate = array_merge($dataToUpdate, ['requester_name' => $item->requester_name, 'nik' => $item->nik, 'department' => $item->department, 'position' => $item->position]);
+        }
 
         // Tanggal pinjam/kembali berubah = jadwal reminder lama sudah tidak relevan, reset supaya
         // siklus H-30 menit / jatuh tempo / tiap 6 jam dihitung ulang dari tanggal yang baru.
