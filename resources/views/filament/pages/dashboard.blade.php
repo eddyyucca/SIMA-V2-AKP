@@ -313,7 +313,7 @@
     @php $mxCat = $this->statusMatrix('category'); @endphp
     <section class="pd-grid">
         <div class="pd-card">
-            <div class="pd-h"><h3>Utilitas aset per kategori</h3><span>utilisasi {{ $mxCat['utilisasi'] }}% · {{ number_format($mxCat['total']['deployed']) }} dipakai dari {{ number_format($mxCat['total']['total']) }} aset aktif milik@if($d['rentalCount'] > 0) · {{ number_format($d['rentalCount']) }} aset sewa dihitung terpisah@endif</span></div>
+            <div class="pd-h"><h3>Utilitas aset per kategori</h3><span>utilisasi {{ $mxCat['utilisasi'] }}% · {{ number_format($mxCat['total']['deployed']) }} dipakai dari {{ number_format($mxCat['total']['total']) }} aset aktif milik {{ $d['rentalCount'] > 0 ? ' · ' . number_format($d['rentalCount']) . ' aset sewa dihitung terpisah' : '' }}</span></div>
             @include('filament.pages.dashboard-matrix', ['m' => $mxCat, 'by' => 'category', 'rowLabel' => 'Kategori'])
             <div class="pd-mx-sub">Klik angka untuk membuka daftar aset dengan filter yang sama. <b>Dipakai tapi tanpa nama</b> = status Dipakai tetapi tidak ada pemegangnya (perlu dibereskan).</div>
         </div>
