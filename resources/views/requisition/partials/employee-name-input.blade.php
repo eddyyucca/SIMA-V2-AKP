@@ -3,7 +3,7 @@
      strict (bawaan true: wajib memilih dari daftar; false = formulir edit, request lama boleh belum terhubung). --}}
 @php
     // Akun peran User yang tertaut karyawan: pemohon terisi otomatis dirinya sendiri (selalu terkunci).
-    $epAllowed = app(\App\Services\RequestSupervisor::class)->allowedRequesters(auth()->user());
+    $epAllowed = app(\App\Services\RequesterScope::class)->allowedRequesters(auth()->user());
     $epSelf = ($strict ?? true) && $epAllowed && $epAllowed->isNotEmpty() ? $epAllowed->first()->loadMissing('department') : null;
     $epFixed = $epAllowed !== null;     // akun User: pemohon selalu dirinya sendiri, tidak bisa diganti
     $epSelfJson = $epSelf ? json_encode(['id' => $epSelf->id, 'name' => $epSelf->name, 'nik' => $epSelf->nik, 'position' => $epSelf->position, 'department' => $epSelf->department?->name]) : '';

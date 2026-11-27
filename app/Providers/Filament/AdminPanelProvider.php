@@ -52,8 +52,7 @@ class AdminPanelProvider extends PanelProvider
                     ->sort(-10)
                     ->visible(fn () => (bool) auth()->user()?->canManageRequests())
                     ->badge(fn () => ($n = \App\Models\ITRequest::incoming()->count()) ? (string) $n : null, color: 'warning')
-                    ->badgeTooltip(fn () => ($a = \App\Models\ITRequest::where('status', \App\Models\ITRequest::AWAITING_SUPERVISOR)->count())
-                        ? \App\Models\ITRequest::incoming()->count() . ' menunggu Tim IT · ' . $a . ' menunggu atasan' : \App\Models\ITRequest::incoming()->count() . ' request menunggu Tim IT'),
+                    ->badgeTooltip(fn () => \App\Models\ITRequest::incoming()->count() . ' request menunggu peninjauan Tim IT'),
             ])
             ->globalSearch()
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')

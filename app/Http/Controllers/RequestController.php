@@ -9,7 +9,8 @@ use App\Models\RequestItemLink;
 use App\Models\User;
 use App\Notifications\NewRequestSubmitted;
 use App\Notifications\RequestStatusUpdated;
-use App\Services\RequestSupervisor;
+use App\Services\RequestLifecycle;
+use App\Services\RequesterScope;
 use App\Services\TelegramNotifier;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -65,11 +66,8 @@ class RequestController extends Controller
         // Kolom & tombol Delete di tabel "List All Form" sekarang khusus Super Admin, admin biasa tidak lagi bisa hapus dari sini
         $isSuperAdmin = auth()->user()->isSuperAdmin();
 
-        $awaitingList = ITRequest::with('supervisor')->where('status', ITRequest::AWAITING_SUPERVISOR)->oldest('supervisor_asked_at')->get();
-        $awaitingSupervisor = $awaitingList->count();
-
         return view('requisition.dashboard', compact(
-            'awaitingSupervisor', 'awaitingList', 'totalRequests', 'pendingRequests', 'inProgressRequests', 'completedRequests',
+            'totalRequests', 'pendingRequests', 'inProgressRequests', 'completedRequests',
             'requests',
             'pendingApprovals', 'canManage', 'isSuperAdmin',
             'itrTypeCount', 'bakTypeCount', 'sjTypeCount', 'ticketSistemCount', 'woTypeCount'
@@ -201,7 +199,7 @@ class RequestController extends Controller
     {
         $user = auth()->user();
         if ($user->role !== 'user') return $query;
-        $allowed = app(RequestSupervisor::class)->allowedRequesters($user);
+        $allowed = app(RequesterScope::class)->allowedRequesters($user);
         if ($allowed === null) return $query;
 
         return $query->where(fn ($q) => $q->where('user_id', $user->id)->orWhereIn('employee_id', $allowed->pluck('id')->all() ?: [0]));
@@ -210,7 +208,7 @@ class RequestController extends Controller
     // 2c. Halaman "Request Saya": riwayat lengkap milik user dengan pencarian + filter jenis/status.
     public function mine(Request $request)
     {
-        $q = $this->scopeToViewer(ITRequest::with(['approvedBy', 'supervisor', 'accessoryHandovers', 'links.assignment']));
+        $q = $this->scopeToViewer(ITRequest::with(['approvedBy', 'accessoryHandovers', 'links.assignment']));
         if ($request->filled('search')) {
             $like = str_replace(['\\', '%', '_'], ['\\\\', '\\%', '\\_'], trim($request->search));
             $q->where(fn ($w) => $w->where('title', 'like', "%{$like}%")->orWhere('requester_name', 'like', "%{$like}%"));
@@ -222,60 +220,6 @@ class RequestController extends Controller
             'requests' => $q->latest()->paginate(15)->withQueryString(),
             'filters' => $request->only('search', 'type', 'status'),
         ]);
-    }
-
-    // 2d. Halaman persetujuan atasan: request anak buah yang menunggu keputusan + riwayat keputusan terakhir.
-    public function supervisorIndex()
-    {
-        $me = auth()->user()->employee;
-        abort_unless($me, 403, 'Akun Anda belum tertaut ke data karyawan.');
-
-        $base = ITRequest::with('user')->where('supervisor_employee_id', $me->id);
-
-        return view('requisition.supervisor', [
-            'waiting' => (clone $base)->where('status', ITRequest::AWAITING_SUPERVISOR)->oldest('supervisor_asked_at')->get(),
-            'decided' => (clone $base)->whereNotNull('supervisor_decided_at')->latest('supervisor_decided_at')->take(20)->get(),
-            'subordinates' => app(RequestSupervisor::class)->subordinates($me),
-        ]);
-    }
-
-    // 2e. Keputusan atasan: setujui (lanjut ke Tim IT) atau tolak (kembali ke pemohon untuk diperbaiki).
-    public function supervisorDecide(Request $request, $id)
-    {
-        $data = $request->validate(['decision' => 'required|in:approve,reject', 'note' => 'nullable|string|max:1000']);
-        $me = auth()->user()->employee;
-        $item = ITRequest::findOrFail($id);
-        abort_unless($me && $item->supervisor_employee_id === $me->id, 403, 'Request ini bukan untuk Anda setujui.');
-        if (! $item->isAwaitingSupervisor()) {
-            return $this->decideResponse($request, false, 'Request ini sudah diputuskan atau diteruskan ke Tim IT.', 409);
-        }
-        if ($data['decision'] === 'reject' && blank($data['note'] ?? null)) {
-            return $this->decideResponse($request, false, 'Isi alasan penolakan supaya pemohon tahu apa yang harus diperbaiki.', 422);
-        }
-
-        app(RequestSupervisor::class)->decide($item, auth()->user(), $data['decision'] === 'approve', $data['note'] ?? null);
-
-        return $this->decideResponse($request, true, $data['decision'] === 'approve' ? 'Request disetujui dan diteruskan ke Tim IT.' : 'Request ditolak dan dikembalikan ke pemohon.');
-    }
-
-    // 2f. Tim IT menyetujui atas nama atasan; catatan otomatis memuat nama akun penyetuju.
-    public function supervisorOverride(Request $request, $id)
-    {
-        $data = $request->validate(['note' => 'nullable|string|max:500']);
-        $item = ITRequest::with('supervisor.user')->findOrFail($id);
-        if (! $item->isAwaitingSupervisor()) {
-            return $this->decideResponse($request, false, 'Request ini tidak sedang menunggu atasan.', 409);
-        }
-        app(RequestSupervisor::class)->approveByIt($item, auth()->user(), $data['note'] ?? null);
-
-        return $this->decideResponse($request, true, 'Request disetujui atas nama atasan dan masuk ke antrean Tim IT.');
-    }
-
-    private function decideResponse(Request $request, bool $ok, string $message, int $code = 200)
-    {
-        if ($request->expectsJson()) return response()->json(['success' => $ok, 'message' => $message], $ok ? 200 : $code);
-
-        return back()->with($ok ? 'success' : 'error', $message);
     }
 
     // 2b. Endpoint AJAX untuk auto-refresh History Request Terbaru (berlaku semua role, termasuk user)
@@ -302,7 +246,7 @@ class RequestController extends Controller
      */
     private function enforceRequester(Request $request): void
     {
-        $allowed = app(RequestSupervisor::class)->allowedRequesters(auth()->user());
+        $allowed = app(RequesterScope::class)->allowedRequesters(auth()->user());
         if ($allowed === null) return;
         abort_if($allowed->isEmpty(), 403, 'Akun Anda belum tertaut ke data karyawan. Hubungi Tim IT.');
         $request->merge(['employee_id' => $allowed->first()->id]);
@@ -457,20 +401,9 @@ class RequestController extends Controller
         // sehingga tim IT melihatnya sudah terpilih di halaman Proses Request.
         if ($item->type === 'ITR') $this->linkSuggestedItems($item);
 
-        // ITR / Peminjaman Aset dari akun User: lebih dulu ke atasan pemohon (bila ada); lainnya langsung ke Tim IT
-        $sup = app(RequestSupervisor::class);
-        $approver = $sup->approverFor((string) $item->type, $employee, auth()->user());
-        if ($approver) {
-            $sup->ask($item, $approver);
-            $message = 'Request berhasil dibuat dan dikirim ke atasan (' . $approver->name . ') untuk disetujui.';
-        } else {
-            // Kabari semua tim IT (admin/super_admin) via push notification browser
-            User::requisitionAdmins()->get()
-                ->each(fn ($it) => $it->notify(new NewRequestSubmitted($item)));
-            // + sekali ke grup Telegram bersama (bukan per-admin, supaya grup tidak kebanjiran duplikat)
-            TelegramNotifier::notifyNewRequest($item);
-            $message = 'Request berhasil dibuat!';
-        }
+        // Semua request langsung ke Tim IT untuk ditinjau (disetujui atau ditolak)
+        app(RequestLifecycle::class)->notifyIt($item);
+        $message = 'Request berhasil dibuat dan dikirim ke Tim IT untuk ditinjau.';
 
         if ($request->expectsJson()) {
             return response()->json(['success' => true, 'message' => $message]);
@@ -637,24 +570,15 @@ class RequestController extends Controller
 
         $item->update($dataToUpdate);
 
-        // Kirim ulang setelah revisi = sama seperti request baru: ke atasan lebih dulu bila perlu, kalau tidak langsung ke Tim IT
+        // Kirim ulang setelah revisi = sama seperti request baru: Tim IT dikabari kembali
         if ($isResubmission) {
-            $sup = app(RequestSupervisor::class);
-            $approver = $sup->approverFor((string) $item->type, $item->employee()->first(), auth()->user());
-            if ($approver) {
-                $sup->ask($item, $approver);
-            } else {
-                $item->forceFill(['supervisor_decision' => null, 'supervisor_note' => null])->save();
-                User::requisitionAdmins()->get()
-                    ->each(fn ($it) => $it->notify(new NewRequestSubmitted($item)));
-                TelegramNotifier::notifyNewRequest($item);
-            }
+            app(RequestLifecycle::class)->notifyIt($item);
         }
 
         // request yang belum pernah disetujui belum punya nomor tiket: pakai judul / jenisnya supaya pesan tidak menulis Request ""
         $ref = $item->ticket_number ?: ($item->title ?: ($item->type ?: 'Request'));
         $message = 'Request "' . $ref . '" berhasil diperbarui';
-        $message .= $item->status === 'Pending' ? ' dan dikirim ulang untuk approval.' : ($item->isAwaitingSupervisor() ? ' dan dikirim ulang ke atasan.' : '.');
+        $message .= $item->status === 'Pending' ? ' dan dikirim ulang ke Tim IT untuk ditinjau.' : '.';
 
         if ($request->expectsJson()) {
             return response()->json(['success' => true, 'message' => $message]);

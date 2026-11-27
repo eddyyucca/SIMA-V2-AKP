@@ -45,11 +45,6 @@ class ITRequest extends Model
         'document_path',
         'document_name',
         'numbered_at',
-        'supervisor_employee_id',
-        'supervisor_asked_at',
-        'supervisor_decided_at',
-        'supervisor_decision',
-        'supervisor_note',
     ];
 
     protected $casts = [
@@ -63,8 +58,6 @@ class ITRequest extends Model
         'approved_at' => 'datetime',
         'completed_at' => 'datetime',
         'numbered_at' => 'datetime',
-        'supervisor_asked_at' => 'datetime',
-        'supervisor_decided_at' => 'datetime',
     ];
 
     protected $appends = [
@@ -80,17 +73,6 @@ class ITRequest extends Model
         return $this->hasMany(AccessoryHandover::class, 'request_id');
     }
 
-    public const AWAITING_SUPERVISOR = 'Awaiting Supervisor';
-
-    /** Jenis request yang lebih dulu butuh persetujuan atasan pemohon. */
-    public const SUPERVISOR_TYPES = ['ITR', 'PEMINJAMAN_ASET'];
-
-    /** Atasan yang diminta menyetujui request ini. */
-    public function supervisor(): BelongsTo
-    {
-        return $this->belongsTo(Employee::class, 'supervisor_employee_id')->withTrashed();
-    }
-
     /** Request baru yang menunggu keputusan Tim IT (panel "Incoming Requests"): Pending dan belum pernah bernomor. */
     public function scopeIncoming($q)
     {
@@ -100,10 +82,9 @@ class ITRequest extends Model
     /** Request milik satu akun yang masih berjalan (belum Completed / Rejected). */
     public function scopeOpenFor($q, int $userId)
     {
-        return $q->where('user_id', $userId)->whereIn('status', [self::AWAITING_SUPERVISOR, 'Pending', 'Approved', 'In Progress']);
+        return $q->where('user_id', $userId)->whereIn('status', ['Pending', 'Approved', 'In Progress']);
     }
 
-    public function isAwaitingSupervisor(): bool { return $this->status === self::AWAITING_SUPERVISOR; }
 
     /** Karyawan di IT Asset yang dicocokkan tim IT dengan pemohon request ini. */
     public function employee(): BelongsTo

@@ -1,8 +1,8 @@
 <x-app-layout>
     @php
         $typeLabels = ['TICKET_SISTEM' => 'Ticket Sistem', 'ITR' => 'IT Request', 'BAK' => 'BAK', 'WO' => 'Work Order', 'PEMINJAMAN_ASET' => 'Peminjaman Aset', 'SURAT_JALAN' => 'Surat Jalan'];
-        $statusLabels = ['Awaiting Supervisor' => 'Menunggu Atasan', 'Pending' => 'Menunggu Tim IT', 'Approved' => 'Disetujui', 'In Progress' => 'Diproses', 'Completed' => 'Selesai', 'Rejected' => 'Ditolak'];
-        $tone = ['Awaiting Supervisor' => 'bg-violet-100 text-violet-700', 'Pending' => 'bg-amber-100 text-amber-700', 'Approved' => 'bg-teal-100 text-teal-700', 'In Progress' => 'bg-blue-100 text-blue-700', 'Completed' => 'bg-emerald-100 text-emerald-700', 'Rejected' => 'bg-rose-100 text-rose-700'];
+        $statusLabels = ['Pending' => 'Menunggu Tim IT', 'Approved' => 'Disetujui', 'In Progress' => 'Diproses', 'Completed' => 'Selesai', 'Rejected' => 'Ditolak'];
+        $tone = ['Pending' => 'bg-amber-100 text-amber-700', 'Approved' => 'bg-teal-100 text-teal-700', 'In Progress' => 'bg-blue-100 text-blue-700', 'Completed' => 'bg-emerald-100 text-emerald-700', 'Rejected' => 'bg-rose-100 text-rose-700'];
     @endphp
     <div class="py-8 bg-slate-950 min-h-screen">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -42,10 +42,7 @@
                                 <td class="py-3 px-4 text-slate-200">{{ $r->title }}</td>
                                 <td class="py-3 px-4 whitespace-nowrap">
                                     <span class="px-2.5 py-1 rounded-full text-[11px] font-bold {{ $tone[$r->status] ?? 'bg-slate-200 text-slate-700' }}">{{ $statusLabels[$r->status] ?? $r->status }}</span>
-                                    @if ($r->isAwaitingSupervisor() && $r->supervisor)<div class="text-[11px] text-slate-400 mt-1">Menunggu {{ $r->supervisor->name }}</div>@endif
-                                    @if ($r->status === 'Rejected' && ($r->update_note || $r->supervisor_note))<div class="text-[11px] text-rose-300 mt-1 max-w-xs">{{ $r->supervisor_decision === 'rejected' ? $r->supervisor_note : $r->update_note }}</div>@endif
-                                    @if ($r->supervisor_decision === 'approved_by_it')<div class="text-[11px] text-slate-400 mt-1 max-w-xs">{{ $r->supervisor_note }}</div>@endif
-                                    @if ($r->supervisor_decision === 'escalated')<div class="text-[11px] text-slate-400 mt-1">Diteruskan otomatis ke Tim IT</div>@endif
+                                    @if ($r->status === 'Rejected' && $r->update_note)<div class="text-[11px] text-rose-300 mt-1 max-w-xs">Alasan: {{ $r->update_note }}</div>@endif
                                 </td>
                                 <td class="py-3 px-4 text-xs whitespace-nowrap">
                                     @foreach ($r->accessoryHandovers as $h)<a class="block text-sky-300 underline" target="_blank" href="{{ route('accessory-bast.view', $h) }}">BAST {{ $h->bast_number }}</a>@endforeach

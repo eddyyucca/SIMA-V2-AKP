@@ -14,6 +14,19 @@ use Filament\Notifications\Notification;
  */
 class RequestLifecycle
 {
+    /** Request baru (atau dikirim ulang) siap ditinjau Tim IT: push browser, Telegram, dan notifikasi dalam aplikasi. */
+    public function notifyIt(ITRequest $item): void
+    {
+        \App\Models\User::requisitionAdmins()->get()->each(fn ($it) => $it->notify(new \App\Notifications\NewRequestSubmitted($item)));
+        TelegramNotifier::notifyNewRequest($item);
+        app(NotificationService::class)->notify(['Admin', 'Staff IT'], 'Request baru menunggu peninjauan', ($item->requester_name ?: 'Karyawan') . ' mengajukan ' . $this->typeLabel($item) . ': ' . ($item->title ?: '-'), 'info');
+    }
+
+    public function typeLabel(ITRequest $item): string
+    {
+        return ['ITR' => 'IT Request', 'PEMINJAMAN_ASET' => 'Peminjaman Aset', 'TICKET_SISTEM' => 'Ticket Sistem', 'BAK' => 'BAK', 'WO' => 'Work Order'][$item->type] ?? (string) $item->type;
+    }
+
     /** BAST serah terima dibuat dari request ITR. */
     public function handedOver(ITRequest $r, AccessoryHandover $h): void
     {

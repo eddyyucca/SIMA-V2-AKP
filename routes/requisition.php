@@ -24,10 +24,8 @@ Route::middleware([Authenticate::class, \App\Http\Middleware\EnforcePortalSessio
     Route::get('/requests/create', [RequestController::class, 'create'])->name('requests.create');
     Route::get('/requests/history', [RequestController::class, 'publicHistoryJson'])->name('requests.history');
     Route::post('/requests', [RequestController::class, 'store'])->name('requests.store');
-    // Request saya (riwayat lengkap + filter) dan persetujuan atasan (hanya akun yang punya anak buah di HRIS)
+    // Request saya (riwayat lengkap + filter)
     Route::get('/saya', [RequestController::class, 'mine'])->name('requests.mine');
-    Route::get('/atasan', [RequestController::class, 'supervisorIndex'])->name('requests.supervisor');
-    Route::post('/atasan/{id}', [RequestController::class, 'supervisorDecide'])->name('requests.supervisor.decide');
     // Pencarian untuk formulir request: karyawan (isi otomatis NIK / department / jabatan) dan saran nama barang ITR. Semua peran, dibatasi frekuensinya.
     Route::get('/lookup/employees', [\App\Http\Controllers\EmployeeLookupController::class, 'employees'])->middleware('throttle:120,1')->name('lookup.employees');
     Route::get('/lookup/items', [\App\Http\Controllers\EmployeeLookupController::class, 'items'])->middleware('throttle:120,1')->name('lookup.items');
@@ -37,8 +35,6 @@ Route::middleware([Authenticate::class, \App\Http\Middleware\EnforcePortalSessio
 
     Route::middleware('requisition.role:admin,super_admin')->group(function () {
         Route::patch('/requests/{id}/status', [RequestController::class, 'updateStatus'])->name('requests.update-status');
-        // Tim IT menyetujui atas nama atasan (catatan memuat nama akun penyetuju)
-        Route::post('/requests/{id}/atasan-setujui', [RequestController::class, 'supervisorOverride'])->name('requests.supervisor.override');
         Route::patch('/requests/{id}/note', [RequestController::class, 'updateNote'])->name('requests.update-note');
         Route::post('/requests/{id}/document', [RequestController::class, 'uploadDocument'])->name('requests.document.upload');
         Route::get('/requests/{id}/document', [RequestController::class, 'viewDocument'])->name('requests.document.view');

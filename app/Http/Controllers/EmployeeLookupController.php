@@ -31,7 +31,7 @@ class EmployeeLookupController extends Controller
 
         $like = $this->like($q);
         // akun peran User tidak bisa mencari karyawan lain: hanya dirinya sendiri
-        $allowed = app(\App\Services\RequestSupervisor::class)->allowedRequesters($request->user());
+        $allowed = app(\App\Services\RequesterScope::class)->allowedRequesters($request->user());
         $rows = Employee::query()->with('department')->where('status', 'active')
             ->when($allowed !== null, fn ($w) => $w->whereIn('id', $allowed->pluck('id')->all() ?: [0]))
             ->where(fn ($w) => $w->where('name', 'like', "%{$like}%")->orWhere('nik', 'like', "{$like}%"))

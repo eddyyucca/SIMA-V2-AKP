@@ -116,33 +116,24 @@ class RequestFlowConnectedTest extends RequisitionTestCase
         $this->assertContains('Request disetujui Tim IT', $this->inbox($u));
     }
 
-    public function test_it_dashboard_shows_how_many_requests_wait_for_a_supervisor(): void
-    {
-        [$u, $e] = $this->person();
-        $this->req('ITR', $u, $e, ['status' => ITRequest::AWAITING_SUPERVISOR, 'sequence_number' => null, 'numbered_at' => null]);
-        $this->loginAs($this->makeUser('admin'))->get('/requisition')->assertOk()->assertSee('menunggu persetujuan atasan');
-    }
-
     public function test_dedicated_menu_with_request_counts_for_it_and_for_employees(): void
     {
         [$u, $e] = $this->person();
         $this->req('ITR', $u, $e, ['status' => 'Pending', 'sequence_number' => null, 'numbered_at' => null]);
         $this->req('TICKET_SISTEM', $u, $e, ['status' => 'Pending', 'sequence_number' => null, 'numbered_at' => null, 'category' => 'Hardware', 'admin_notes' => 'x']);
-        $this->req('ITR', $u, $e, ['status' => ITRequest::AWAITING_SUPERVISOR, 'sequence_number' => null, 'numbered_at' => null]);
         $this->req('ITR', $u, $e, ['status' => 'Completed']);
 
-        // Tim IT: menu "Request ITERA" di sidebar panel dengan jumlah yang menunggu Tim IT (2), tooltip menyebut yang menunggu atasan
+        // Tim IT: menu "Request ITERA" di sidebar panel dengan jumlah yang menunggu Tim IT (2), tooltip menyebut jumlahnya
         $this->assertSame(2, ITRequest::incoming()->count());
         $html = $this->loginAs($this->itStaff())->get(\App\Filament\Resources\Assets\AssetResource::getUrl())->assertOk()->getContent();
         $this->assertStringContainsString('Request ITERA', $html);
-        $this->assertStringContainsString('2 menunggu Tim IT', $html);
-        $this->assertStringContainsString('1 menunggu atasan', $html);
+        $this->assertStringContainsString('2 request menunggu peninjauan Tim IT', $html);
         // dashboard ITERA: lencana pada menu Dashboard
         $this->get('/requisition')->assertOk()->assertSee('bg-amber-500', false);
 
-        // karyawan: tidak melihat menu Tim IT; "Request Saya" memuat jumlah request yang masih berjalan (3)
+        // karyawan: tidak melihat menu Tim IT; "Request Saya" memuat jumlah request yang masih berjalan (2)
         $html = $this->loginAs($u)->get('/requisition/requests/create')->assertOk()->getContent();
-        $this->assertMatchesRegularExpression('/Request Saya\s*<span[^>]*>\s*3\s*<\/span>/', $html);
+        $this->assertMatchesRegularExpression('/Request Saya\s*<span[^>]*>\s*2\s*<\/span>/', $html);
         $this->assertStringNotContainsString('bg-amber-500 text-white text-[10px]', $html);
     }
 }
